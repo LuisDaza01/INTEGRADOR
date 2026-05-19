@@ -27,24 +27,27 @@ const logger = require('../utils/logger');
  * - idleTimeoutMillis: Tiempo antes de cerrar conexión inactiva
  * - connectionTimeoutMillis: Tiempo máximo esperando conexión
  */
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    }
+  : {
+      host: config.database.host,
+      port: config.database.port,
+      user: config.database.user,
+      password: config.database.password,
+      database: config.database.name,
+      ssl: config.app.env === 'production' ? { rejectUnauthorized: false } : false,
+    }
+
 const pool = new Pool({
-  host: config.database.host,
-  port: config.database.port,
-  user: config.database.user,
-  password: config.database.password,
-  database: config.database.name,
-  
-  // Pool settings
-  min: config.database.poolMin,              // Mínimo 2 conexiones
-  max: config.database.poolMax,              // Máximo 20 conexiones
-  idleTimeoutMillis: config.database.idleTimeout,           // 30 segundos
-  connectionTimeoutMillis: config.database.connectionTimeout, // 2 segundos
-  
-  // Configuraciones adicionales
-  application_name: 'naturapiscis_api',      // Nombre para identificar en logs de PostgreSQL
-  
-  // SSL en producción (opcional)
-  ssl: config.app.env === 'production' ? { rejectUnauthorized: false } : false
+  ...poolConfig,
+  min: config.database.poolMin,
+  max: config.database.poolMax,
+  idleTimeoutMillis: config.database.idleTimeout,
+  connectionTimeoutMillis: config.database.connectionTimeout,
+  application_name: 'naturapiscis_api',
 });
 
 // ============================================

@@ -1,15 +1,21 @@
 // src/utils/pushNotification.js
-const { Expo } = require('expo-server-sdk');
-const expo = new Expo();
+let expoInstance = null;
+let ExpoClass = null;
 
-/**
- * Envía una notificación push a un token de Expo.
- * Si el token es inválido o está vacío, no hace nada (silent fail).
- */
+const getExpo = async () => {
+  if (!expoInstance) {
+    const mod = await import('expo-server-sdk');
+    ExpoClass = mod.Expo;
+    expoInstance = new ExpoClass();
+  }
+  return { expo: expoInstance, Expo: ExpoClass };
+};
+
 const sendPushNotification = async (pushToken, { title, body, data = {} }) => {
-  if (!pushToken || !Expo.isExpoPushToken(pushToken)) return;
-
   try {
+    const { expo, Expo } = await getExpo();
+    if (!pushToken || !Expo.isExpoPushToken(pushToken)) return;
+
     const chunks = expo.chunkPushNotifications([{
       to:    pushToken,
       sound: 'default',
@@ -22,7 +28,6 @@ const sendPushNotification = async (pushToken, { title, body, data = {} }) => {
       await expo.sendPushNotificationsAsync(chunk);
     }
   } catch (error) {
-    // No propagar el error — las notificaciones son opcionales
     console.error('⚠️  pushNotification error:', error.message);
   }
 };

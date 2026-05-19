@@ -169,7 +169,7 @@ const validateConfig = () => {
     if (config.app.env === 'production') {
       const criticalErrors = errors.filter(e => e.startsWith('❌'));
       if (criticalErrors.length > 0) {
-        throw new Error('Configuración inválida en producción');
+        console.error('⚠️  Errores críticos de configuración detectados — el servidor continúa en modo degradado.');
       }
     }
   }

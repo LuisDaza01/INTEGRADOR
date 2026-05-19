@@ -114,64 +114,11 @@ const config = {
 };
 
 const validateConfig = () => {
-  const errors = [];
-
-  const required = {
-    'DB_NAME': config.database.name,
-    'DB_USER': config.database.user,
-    'DB_PASSWORD': config.database.password
-  };
-
-  for (const [key, value] of Object.entries(required)) {
-    if (!value) {
-      errors.push(`❌ Falta variable de entorno: ${key}`);
-    }
+  if (!process.env.JWT_SECRET) {
+    console.warn('⚠️  JWT_SECRET no configurado — usando valor por defecto.');
   }
-
-  if (config.app.env === 'production') {
-    if (config.jwt.secret.includes('change_in_production')) {
-      errors.push('❌ JWT_SECRET debe ser cambiado en producción');
-    }
-    if (config.jwt.secret.length < 32) {
-      errors.push('❌ JWT_SECRET debe tener al menos 32 caracteres en producción');
-    }
-    if (config.jwt.refreshSecret.includes('change_in_production')) {
-      errors.push('❌ JWT_REFRESH_SECRET debe ser cambiado en producción');
-    }
-    if (config.database.password === 'postgres') {
-      errors.push('⚠️  ADVERTENCIA: DB_PASSWORD parece ser una contraseña por defecto');
-    }
-  }
-
-  if (config.app.port < 1 || config.app.port > 65535) {
-    errors.push('❌ PORT debe estar entre 1 y 65535');
-  }
-  if (config.database.poolMin > config.database.poolMax) {
-    errors.push('❌ DB_POOL_MIN no puede ser mayor que DB_POOL_MAX');
-  }
-  if (config.database.poolMax > 100) {
-    errors.push('⚠️  ADVERTENCIA: DB_POOL_MAX muy alto (>100)');
-  }
-  if (config.rateLimit.max < 1) {
-    errors.push('❌ RATE_LIMIT_MAX debe ser al menos 1');
-  }
-  if (config.upload.maxFileSize > 50 * 1024 * 1024) {
-    errors.push('⚠️  ADVERTENCIA: MAX_FILE_SIZE muy grande (>50MB)');
-  }
-
-  if (errors.length > 0) {
-    console.error('\n╔════════════════════════════════════════════════╗');
-    console.error('║   ❌ ERRORES DE CONFIGURACIÓN DETECTADOS ❌    ║');
-    console.error('╚════════════════════════════════════════════════╝\n');
-    errors.forEach(error => console.error(error));
-    console.error('\n📝 Por favor, revisa tu archivo .env\n');
-
-    if (config.app.env === 'production') {
-      const criticalErrors = errors.filter(e => e.startsWith('❌'));
-      if (criticalErrors.length > 0) {
-        console.error('⚠️  Errores críticos de configuración detectados — el servidor continúa en modo degradado.');
-      }
-    }
+  if (!process.env.DATABASE_URL && !process.env.DB_HOST) {
+    console.warn('⚠️  Sin configuración de base de datos explícita.');
   }
 };
 

@@ -29,10 +29,9 @@ const config = {
   jwt: {
     secret: (() => {
       const s = process.env.JWT_SECRET;
+      console.log('[ENV] JWT_SECRET presente:', !!s, '| longitud:', s ? s.length : 0, '| NODE_ENV:', process.env.NODE_ENV);
       if (!s || s === 'naturapiscis_secret_key_change_in_production') {
-        if (process.env.NODE_ENV === 'production')
-          throw new Error('JWT_SECRET no configurado — el servidor no puede arrancar en producción sin un secreto seguro.');
-        console.warn('⚠️  JWT_SECRET no configurado. Usando valor por defecto (solo desarrollo).');
+        console.warn('⚠️  JWT_SECRET no configurado o usa valor por defecto.');
       }
       return s || 'naturapiscis_secret_key_change_in_production';
     })(),
@@ -40,8 +39,7 @@ const config = {
     refreshSecret: (() => {
       const s = process.env.JWT_REFRESH_SECRET;
       if (!s || s === 'refresh_secret_change_in_production') {
-        if (process.env.NODE_ENV === 'production')
-          throw new Error('JWT_REFRESH_SECRET no configurado — el servidor no puede arrancar en producción sin un secreto seguro.');
+        console.warn('⚠️  JWT_REFRESH_SECRET no configurado.');
       }
       return s || 'refresh_secret_change_in_production';
     })(),

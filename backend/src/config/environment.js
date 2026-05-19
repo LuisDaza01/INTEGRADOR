@@ -59,9 +59,12 @@ const config = {
         'http://localhost:19006',
         'exp://localhost:19000',
       ];
-      const whitelist = allowed.length ? allowed : defaults;
+      const whitelist = allowed.length ? [...defaults, ...allowed] : defaults;
       // Permitir requests sin origin (mobile apps, Postman, server-to-server)
-      if (!origin || whitelist.includes(origin)) return callback(null, true);
+      if (!origin) return callback(null, true);
+      // Permitir todos los dominios de Railway
+      if (origin.endsWith('.railway.app')) return callback(null, true);
+      if (whitelist.includes(origin)) return callback(null, true);
       callback(new Error(`CORS: origen no permitido — ${origin}`));
     },
     credentials: true,

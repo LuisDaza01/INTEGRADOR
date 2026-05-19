@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0d9488" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NaturaPiscis" />
+
+    <!-- SEO -->
+    <meta name="description" content="Compra pescado fresco directo del productor del Chapare. Monitoreo IoT en tiempo real. NaturaPiscis." />
+    <meta name="keywords" content="piscicultura, tambaqui, chapare, pescado fresco, bolivia, acuicultura" />
+    <meta name="author" content="NaturaPiscis" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="NaturaPiscis — Piscicultura del Chapare" />
+    <meta property="og:description" content="Compra pescado fresco directo del productor con trazabilidad y monitoreo IoT." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo-naturapiscis.png" />
+
+    <!-- Iconos -->
+    <link rel="icon" type="image/png" href="/logo-naturapiscis.png" />
+    <link rel="apple-touch-icon" href="/logo-naturapiscis.png" />
+
+    <title>NaturaPiscis</title>
+
+    <!-- Anti-flicker: aplica el tema antes de que React monte -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('np_theme');
+          var isDark = stored !== 'light';
+          var bg = isDark ? '#060d1f' : '#f0f7ff';
+          var text = isDark ? '#e2e8f0' : '#0f172a';
+          document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+          document.documentElement.style.backgroundColor = bg;
+          document.documentElement.style.color = text;
+        } catch (e) { /* ignore */ }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Registrar Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('✅ SW registrado:', reg.scope))
+            .catch(err => console.warn('⚠️ SW error:', err))
+        })
+      }
+    </script>
+  </body>
+</html>

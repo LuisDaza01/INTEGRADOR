@@ -1,0 +1,432 @@
+"use client"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+  BarChart3,
+  Bell,
+  Droplets,
+  Fish,
+  Home,
+  LogOut,
+  MessageSquare,
+  Settings,
+  User,
+  ClipboardList,
+  Package,
+  HelpCircle,
+  ChevronLeft,
+  Menu,
+  X,
+  Zap,
+  Calendar,
+  CalendarCheck,
+} from "lucide-react"
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "../../contexts/ThemeContext";
+
+const SidebarProductor = () => {
+  const { D } = useTheme()
+  const { logout, user } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const currentTab = location.pathname.split('/dashboard-productor/')[1]?.split('/')[0] || 'inicio'
+
+  const iniciales = user?.nombre
+    ? user.nombre.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase()
+    : "P"
+  const nombreCompleto = user?.nombre || "Productor"
+  const rol = user?.rol || "productor"
+  const [expanded, setExpanded] = useState(true)
+  const [screenSize, setScreenSize] = useState('desktop')
+  const [isMobile, setIsMobile] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
+
+  useEffect(() => {
+    const updateScreenSize = () => {
+      const width = window.innerWidth
+      const mobile = width < 768
+      setIsMobile(mobile)
+      if (width < 768) { setScreenSize('mobile'); setExpanded(false) }
+      else if (width < 1024) { setScreenSize('tablet'); setExpanded(false) }
+      else if (width < 1280) { setScreenSize('desktop'); setExpanded(true) }
+      else { setScreenSize('large'); setExpanded(true) }
+      if (!mobile && isMobileMenuOpen) setIsMobileMenuOpen(false)
+    }
+    updateScreenSize()
+    window.addEventListener("resize", updateScreenSize)
+    return () => window.removeEventListener("resize", updateScreenSize)
+  }, [isMobileMenuOpen])
+
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        if (isMobileMenuOpen) setIsMobileMenuOpen(false)
+        if (showLogoutModal) setShowLogoutModal(false)
+      }
+    }
+    if (isMobileMenuOpen) {
+      document.addEventListener('keydown', handleEscKey)
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.removeEventListener('keydown', handleEscKey)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen, showLogoutModal])
+
+  const handleLogout = () => setShowLogoutModal(true)
+  const confirmLogout = () => { logout(); setShowLogoutModal(false) }
+  const cancelLogout = () => setShowLogoutModal(false)
+
+  const handleItemClick = (itemId) => {
+    const path = itemId === 'dashboard' ? '/dashboard-productor/inicio' : `/dashboard-productor/${itemId}`
+    navigate(path)
+    if (isMobile) setIsMobileMenuOpen(false)
+  }
+
+  const mainMenu = [
+    { id: "dashboard",  icon: Home,          text: "Dashboard",    glowColor: "#38bdf8" },
+    { id: "monitoring", icon: Droplets,       text: "Monitoreo",    glowColor: "#22d3ee" },
+    { id: "pedidos",    icon: ClipboardList,  text: "Pedidos",      badge: "5", glowColor: "#fb923c" },
+    { id: "inventario", icon: Package,        text: "Inventario",   glowColor: "#4ade80" },
+    { id: "calendario", icon: Calendar,       text: "Calendario",   glowColor: "#fbbf24" },
+    { id: "reservas",   icon: CalendarCheck,  text: "Reservas",     glowColor: "#a78bfa" },
+  ]
+
+  const analyticsMenu = [
+    { id: "estadisticas",  icon: BarChart3,     text: "Estadísticas",  glowColor: "#c084fc" },
+    { id: "mensajes",      icon: MessageSquare, text: "Mensajes",       badge: "3", glowColor: "#818cf8" },
+    { id: "notificaciones",icon: Bell,          text: "Notificaciones", badge: "7", glowColor: "#f87171" },
+  ]
+
+  const configMenu = [
+    { id: "perfil",  icon: User,       text: "Perfil",  glowColor: "#94a3b8" },
+    { id: "ajustes", icon: Settings,   text: "Ajustes", glowColor: "#94a3b8" },
+    { id: "ayuda",   icon: HelpCircle, text: "Ayuda",   glowColor: "#94a3b8" },
+  ]
+
+  const sidebarVariants = {
+    expanded:  { width: screenSize === 'large' ? '280px' : '260px', transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
+    collapsed: { width: '72px',  transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
+  }
+
+  const contentVariants = {
+    expanded:  { opacity: 1, display: "block", transition: { delay: 0.1, duration: 0.2 } },
+    collapsed: { opacity: 0, display: "none",  transition: { duration: 0.15 } },
+  }
+
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full min-h-screen" style={{
+      background: D.sidebarBg,
+      backdropFilter: 'blur(24px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+      borderRight: `1px solid ${D.border}`,
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Ambient glow orbs */}
+      <div style={{ position: 'absolute', top: '8%', left: '-40%', width: '90%', height: '30%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '40%', right: '-30%', width: '70%', height: '25%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(20,184,166,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '15%', left: '-20%', width: '60%', height: '20%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(192,132,252,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+      {/* Logo / Header */}
+      <div className="relative flex items-center justify-between px-4 py-5 flex-shrink-0"
+        style={{ borderBottom: `1px solid ${D.border}` }}>
+        {/* Glow accent */}
+        <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${D.primary}, ${D.teal}, transparent)` }} />
+
+        {(expanded || isMobile) && (
+          <motion.div variants={contentVariants} className="flex items-center gap-3 min-w-0">
+            <div className="relative flex-shrink-0">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 16px rgba(14,165,233,0.5)' }}>
+                <Fish size={18} className="text-white" />
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0f172a]" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-sm tracking-wide truncate" style={{ color: D.text }}>NaturaPiscis</p>
+              <p className="text-xs truncate" style={{ color: D.primary }}>Panel Productor</p>
+            </div>
+          </motion.div>
+        )}
+
+        {!expanded && !isMobile && (
+          <div className="mx-auto relative">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 16px rgba(14,165,233,0.5)' }}>
+              <Fish size={18} className="text-white" />
+            </div>
+          </div>
+        )}
+
+        {/* Mobile close */}
+        {isMobile && (
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 rounded-lg transition-colors flex-shrink-0"
+            style={{ background: D.card }}>
+            <X size={18} style={{ color: D.muted }} />
+          </motion.button>
+        )}
+
+        {/* Desktop toggle */}
+        {!isMobile && (
+          <button onClick={() => setExpanded(!expanded)}
+            className="absolute -right-4 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all"
+            style={{ background: D.surface, border: `1px solid ${D.border}`, boxShadow: `0 0 12px ${D.shimmer}` }}>
+            <motion.div animate={{ rotate: expanded ? 0 : 180 }} transition={{ duration: 0.3 }}>
+              <ChevronLeft size={14} className="text-sky-400" />
+            </motion.div>
+          </button>
+        )}
+      </div>
+
+      {/* Vertical gradient strip on left edge */}
+      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 2, background: 'linear-gradient(180deg, #38bdf8, #14b8a6, #a78bfa, #38bdf8)', opacity: 0.5, pointerEvents: 'none' }} />
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto flex flex-col">
+        <div className="space-y-7">
+          <MenuSection title="Principal" items={mainMenu} currentTab={currentTab} setCurrentTab={handleItemClick}
+            expanded={expanded || isMobile} contentVariants={contentVariants} isMobile={isMobile} />
+          <MenuSection title="Análisis" items={analyticsMenu} currentTab={currentTab} setCurrentTab={handleItemClick}
+            expanded={expanded || isMobile} contentVariants={contentVariants} isMobile={isMobile} />
+          <MenuSection title="Sistema" items={configMenu} currentTab={currentTab} setCurrentTab={handleItemClick}
+            expanded={expanded || isMobile} contentVariants={contentVariants} isMobile={isMobile} />
+        </div>
+        <div className="flex-1 min-h-0" />
+      </nav>
+
+      {/* User Profile */}
+      <div className="px-3 py-4 flex-shrink-0" style={{ borderTop: `1px solid ${D.border}` }}>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-shrink-0">
+            <div className="h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm"
+              style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 12px rgba(14,165,233,0.4)', color: '#fff' }}>
+              {iniciales}
+            </div>
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ border: `2px solid ${D.surface}` }} />
+          </div>
+
+          {(expanded || isMobile) && (
+            <motion.div variants={contentVariants} className="min-w-0 flex-1">
+              <p className="text-sm font-semibold truncate" style={{ color: D.text }}>{nombreCompleto}</p>
+              <p className="text-xs capitalize truncate" style={{ color: D.primary }}>{rol}</p>
+            </motion.div>
+          )}
+        </div>
+
+        {(expanded || isMobile) && (
+          <motion.button variants={contentVariants} onClick={handleLogout}
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-xl transition-all"
+            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.2)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(239,68,68,0.2)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.boxShadow = 'none' }}>
+            <LogOut size={15} />
+            Cerrar Sesión
+          </motion.button>
+        )}
+
+        {!expanded && !isMobile && (
+          <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+            onClick={handleLogout} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
+            className="mt-3 w-full flex items-center justify-center p-2 rounded-xl transition-all"
+            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
+            title="Cerrar sesión">
+            <LogOut size={15} />
+          </motion.button>
+        )}
+      </div>
+    </div>
+  )
+
+  if (isMobile) {
+    return (
+      <>
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="fixed top-4 left-4 z-50 p-3 rounded-xl shadow-lg transition-shadow md:hidden"
+          style={{ background: D.surface, border: `1px solid ${D.border}`, boxShadow: `0 0 16px ${D.shimmer}` }}>
+          <Menu size={22} className="text-sky-400" />
+        </motion.button>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 backdrop-blur-sm"
+              style={{ background: 'rgba(0,0,0,0.7)' }}
+              onClick={() => setIsMobileMenuOpen(false)} />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div initial={{ x: -320, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -320, opacity: 0 }} transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="fixed left-0 top-0 bottom-0 w-72 z-50 flex flex-col min-h-screen shadow-2xl"
+              style={{ boxShadow: '4px 0 40px rgba(56,189,248,0.15)' }}>
+              <SidebarContent />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <LogoutModal showLogoutModal={showLogoutModal} confirmLogout={confirmLogout} cancelLogout={cancelLogout} />
+      </>
+    )
+  }
+
+  return (
+    <motion.aside initial={false} animate={expanded ? "expanded" : "collapsed"} variants={sidebarVariants}
+      className="relative min-h-screen h-full flex flex-col flex-shrink-0"
+      style={{
+        width: expanded ? (screenSize === 'large' ? '280px' : '260px') : '72px',
+        minWidth: expanded ? (screenSize === 'large' ? '280px' : '260px') : '72px',
+        maxWidth: expanded ? (screenSize === 'large' ? '280px' : '260px') : '72px',
+        boxShadow: '4px 0 40px rgba(0,0,0,0.15)',
+        borderRight: `1px solid ${D.border}`,
+      }}>
+      <SidebarContent />
+      <LogoutModal showLogoutModal={showLogoutModal} confirmLogout={confirmLogout} cancelLogout={cancelLogout} />
+    </motion.aside>
+  )
+}
+
+const MenuSection = ({ title, items, currentTab, setCurrentTab, expanded, contentVariants, isMobile }) => {
+  const { D } = useTheme();
+  return (
+  <div>
+    {(expanded || isMobile) && (
+      <motion.h3 variants={contentVariants}
+        className="px-2 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+        <span className="flex-1 h-px" style={{ background: `linear-gradient(90deg, transparent, ${D.border})` }} />
+        <span style={{ color: D.muted, letterSpacing: '0.12em' }}>{title}</span>
+        <span className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${D.border}, transparent)` }} />
+      </motion.h3>
+    )}
+    <div className="space-y-1">
+      {items.map((item) => (
+        <SidebarItem key={item.id} {...item}
+          isActive={currentTab === item.id}
+          onClick={() => setCurrentTab(item.id)}
+          expanded={expanded || isMobile}
+          contentVariants={contentVariants}
+          isMobile={isMobile} />
+      ))}
+    </div>
+  </div>
+  )
+}
+
+const SidebarItem = ({ icon: Icon, text, isActive, onClick, badge, glowColor, expanded, contentVariants, isMobile }) => {
+  const { D } = useTheme();
+  return (
+  <div className="relative group">
+    <motion.button onClick={onClick}
+      whileHover={{ x: expanded ? 3 : 0 }}
+      whileTap={{ scale: 0.97 }}
+      className="relative w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200"
+      style={isActive ? {
+        background: `linear-gradient(135deg, ${glowColor}22, ${glowColor}0a)`,
+        border: `1px solid ${glowColor}40`,
+        boxShadow: `0 0 24px ${glowColor}20, inset 0 0 24px ${glowColor}08, 0 2px 8px rgba(0,0,0,0.3)`,
+        color: glowColor,
+      } : {
+        color: D.sub,
+        border: '1px solid transparent',
+      }}
+      onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = D.inputBg; e.currentTarget.style.color = D.text; e.currentTarget.style.border = `1px solid ${D.border}` } }}
+      onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = D.sub; e.currentTarget.style.border = '1px solid transparent' } }}>
+
+      {/* Active left glow bar */}
+      {isActive && (
+        <motion.div layoutId="activeBar"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
+          style={{ background: glowColor, boxShadow: `0 0 8px ${glowColor}` }} />
+      )}
+
+      <Icon size={18} className={`shrink-0 transition-colors ${expanded ? "mr-3" : ""}`}
+        style={{ color: isActive ? glowColor : 'inherit', filter: isActive ? `drop-shadow(0 0 4px ${glowColor})` : 'none' }} />
+
+      {!expanded && !isMobile && badge && (
+        <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full flex items-center justify-center text-white font-bold"
+          style={{ fontSize: 9, background: '#ef4444', boxShadow: '0 0 6px rgba(239,68,68,0.6)' }}>
+          {badge}
+        </span>
+      )}
+
+      {expanded && (
+        <motion.div variants={contentVariants} className="flex-1 min-w-0 flex items-center justify-between">
+          <span className="truncate font-semibold">{text}</span>
+          {badge && (
+            <span className="ml-2 px-1.5 py-0.5 rounded-full text-white font-bold flex-shrink-0"
+              style={{ fontSize: 9, background: isActive ? glowColor : '#ef4444', boxShadow: isActive ? `0 0 8px ${glowColor}60` : '0 0 6px rgba(239,68,68,0.5)' }}>
+              {badge}
+            </span>
+          )}
+        </motion.div>
+      )}
+    </motion.button>
+
+    {/* Tooltip collapsed */}
+    {!expanded && !isMobile && (
+      <div className="absolute left-full ml-3 px-3 py-2 rounded-xl text-sm pointer-events-none whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-all duration-200"
+        style={{ background: D.card, border: `1px solid ${glowColor}35`, color: glowColor, boxShadow: `0 8px 30px rgba(0,0,0,0.3), 0 0 16px ${glowColor}20` }}>
+        <span className="font-semibold">{text}</span>
+        {badge && <span className="ml-2 text-xs" style={{ color: '#f87171' }}>({badge})</span>}
+        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: `${glowColor}30` }} />
+      </div>
+    )}
+  </div>
+  )
+}
+
+const LogoutModal = ({ showLogoutModal, confirmLogout, cancelLogout }) => {
+  const { D } = useTheme()
+  return (
+  <AnimatePresence>
+    {showLogoutModal && (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm"
+        style={{ background: 'rgba(0,0,0,0.7)' }} onClick={cancelLogout}>
+        <motion.div initial={{ scale: 0.85, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.85, opacity: 0, y: 20 }} transition={{ duration: 0.3, ease: "easeOut" }}
+          className="rounded-2xl p-6 max-w-sm w-full"
+          style={{ background: D.card, border: '1px solid rgba(239,68,68,0.2)', boxShadow: '0 0 40px rgba(239,68,68,0.15)' }}
+          onClick={e => e.stopPropagation()}>
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-full mb-4"
+              style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', boxShadow: '0 0 20px rgba(239,68,68,0.2)' }}>
+              <LogOut size={24} style={{ color: '#f87171' }} />
+            </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: D.text }}>¿Cerrar Sesión?</h3>
+            <p className="text-sm mb-6 leading-relaxed" style={{ color: D.muted }}>
+              Tendrás que iniciar sesión nuevamente para acceder al panel de productor.
+            </p>
+            <div className="flex gap-3">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={cancelLogout}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors"
+                style={{ background: D.surface, color: D.muted, border: `1px solid ${D.border}` }}>
+                Cancelar
+              </motion.button>
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={confirmLogout}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all"
+                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', color: '#fff', boxShadow: '0 0 16px rgba(220,38,38,0.3)' }}>
+                Cerrar Sesión
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+  )
+}
+
+export default SidebarProductor

@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "NaturaPiscis",
+    "slug": "naturapiscis-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#22c55e",
+          "sounds": []
+        }
+      ],
+      "expo-asset",
+      "expo-font",
+      "expo-secure-store",
+      "expo-web-browser"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.naturapiscis.app"
+    },
+    "android": {
+      "package": "com.naturapiscis.app",
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAHk2PMVr6HrM2iXeWplVeYpi25KlhjDXE"
+        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e10ab32f-b356-49f7-9d7a-fba2c5197d59"
+      }
+    }
+  }
+}

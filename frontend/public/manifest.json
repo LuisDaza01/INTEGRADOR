@@ -1,0 +1,44 @@
+{
+  "name": "NaturaPiscis — Piscicultura del Chapare",
+  "short_name": "NaturaPiscis",
+  "description": "Plataforma de comercialización acuícola con monitoreo IoT en tiempo real. Compra pescado fresco directo del productor.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d9488",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["food", "shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/logo-naturapiscis.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-naturapiscis.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Tienda",
+      "short_name": "Tienda",
+      "description": "Ver productos disponibles",
+      "url": "/dashboard-consumidor/tienda",
+      "icons": [{ "src": "/logo-naturapiscis.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mis Pedidos",
+      "short_name": "Pedidos",
+      "description": "Ver mis pedidos",
+      "url": "/dashboard-consumidor/mis-pedidos",
+      "icons": [{ "src": "/logo-naturapiscis.png", "sizes": "96x96" }]
+    }
+  ]
+}

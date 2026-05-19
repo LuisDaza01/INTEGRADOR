@@ -1,0 +1,20 @@
+# Claude Code internal directory
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# node_modules (each subfolder has its own .gitignore)
+node_modules/
+
+# Grafana (optional - remove if you want to version this)
+# grafana-dashboard.json
+
+# Large/compiled files
+*.zip
+*.tar.gz

@@ -1,0 +1,287 @@
+# ============================================
+# NATURAPISCIS - .gitignore
+# ============================================
+# Este archivo indica a Git qué archivos/carpetas NO debe versionar
+
+# ============================================
+# DEPENDENCIAS
+# ============================================
+
+# Carpeta de módulos de Node.js
+node_modules/
+
+# Logs de npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Archivos de lock (opcional, algunos equipos los versionan)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ============================================
+# VARIABLES DE ENTORNO
+# ============================================
+
+# Archivo de variables de entorno (CONTIENE SECRETOS)
+.env
+
+# Archivos de entorno locales
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================================
+# LOGS
+# ============================================
+
+# Carpeta de logs
+logs/
+*.log
+
+# Logs de npm
+npm-debug.log*
+yarn-debug.log*
+
+# Logs de aplicación
+combined.log
+error.log
+exceptions.log
+rejections.log
+
+# Carpeta de logs (pero mantener .gitkeep)
+logs/*
+!logs/.gitkeep
+
+# ============================================
+# ARCHIVOS SUBIDOS POR USUARIOS
+# ============================================
+
+# Carpeta de uploads (pero mantener .gitkeep)
+uploads/*
+!uploads/.gitkeep
+
+# Archivos temporales de uploads
+tmp/
+temp/
+
+# ============================================
+# TESTING Y COBERTURA
+# ============================================
+
+# Cobertura de código
+coverage/
+*.lcov
+.nyc_output/
+
+# Directorios de testing
+.cache/
+test-results/
+
+# ============================================
+# CACHE Y TEMPORALES
+# ============================================
+
+# Cache de Node.js
+.node_repl_history
+.npm/
+
+# Cache de ESLint
+.eslintcache
+
+# Cache de Jest
+.jest/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*.swn
+*.bak
+*.backup
+
+# ============================================
+# BUILD Y DIST
+# ============================================
+
+# Carpetas de build
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# ============================================
+# IDEs Y EDITORES
+# ============================================
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IntelliJ IDEA / WebStorm
+.idea/
+*.iml
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================
+# SISTEMA OPERATIVO
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# CERTIFICADOS Y LLAVES
+# ============================================
+
+# Certificados SSL
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+
+# Llaves SSH
+id_rsa
+id_rsa.pub
+*.ppk
+
+# ============================================
+# BASE DE DATOS
+# ============================================
+
+# Archivos de SQLite
+*.sqlite
+*.sqlite3
+*.db
+
+# Backups de base de datos
+*.sql.backup
+*.dump
+*.bak
+
+# Migraciones locales (opcional)
+# migrations/*.sql
+
+# ============================================
+# DOCKER
+# ============================================
+
+# Archivos de Docker (opcional, algunos equipos los versionan)
+# docker-compose.override.yml
+
+# ============================================
+# PM2
+# ============================================
+
+# Configuración de PM2
+.pm2/
+ecosystem.config.js
+
+# ============================================
+# TERRAFORM
+# ============================================
+
+# Archivos de estado de Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# ============================================
+# DOCUMENTACIÓN GENERADA
+# ============================================
+
+# Documentación auto-generada
+docs/generated/
+api-docs/
+
+# ============================================
+# OTROS
+# ============================================
+
+# Archivos de respaldo
+*.backup
+*.old
+
+# Archivos comprimidos
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Archivos de sesión
+.session
+sessions/
+
+# Archivos de debug
+debug.log
+*.debug
+
+# Archivos de profiling
+*.cpuprofile
+*.heapprofile
+
+# ============================================
+# ESPECÍFICO DEL PROYECTO
+# ============================================
+
+# Archivos de configuración locales específicos
+config.local.js
+config.local.json
+
+# Carpeta de datos de desarrollo
+dev-data/
+
+# Archivos de prueba/ejemplo que no deben versionarse
+# playground/
+# sandbox/
+
+# ============================================
+# NOTAS
+# ============================================
+
+# Este .gitignore está configurado para un proyecto Node.js/Express
+# Ajusta según las necesidades específicas de tu proyecto

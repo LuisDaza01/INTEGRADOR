@@ -13,6 +13,15 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
+// Enviar token como Bearer header como fallback a cookies (necesario en Safari mobile)
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const AuthContext = createContext();
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -56,10 +65,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-      const userData = response.data.data?.usuario || response.data.usuario || response.data.user || response.data;
+      const responseData = response.data.data || response.data;
+      const userData = responseData?.usuario || responseData?.user || responseData;
+      const token = response.data.data?.token || response.data.token;
 
       if (!userData) throw new Error('No se recibieron datos del usuario');
 
+      if (token) localStorage.setItem('auth_token', token);
       setUser(userData);
       localStorage.setItem('usuario', JSON.stringify(userData));
       setSessionTick(t => t + 1);
@@ -85,8 +97,10 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await axios.post(`${API_URL}/auth/registro`, userData);
       const newUser = response.data.data?.usuario || response.data.data?.user || response.data.usuario;
+      const token = response.data.data?.token || response.data.token;
 
       if (newUser) {
+        if (token) localStorage.setItem('auth_token', token);
         setUser(newUser);
         localStorage.setItem('usuario', JSON.stringify(newUser));
         setSessionTick(t => t + 1);
@@ -110,9 +124,11 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post(`${API_URL}/auth/google`, { id_token: idToken });
       const dataObj = response.data.data || response.data;
       const userData = dataObj.usuario || dataObj.user;
+      const token = response.data.data?.token || response.data.token;
 
       if (!userData) throw new Error('Respuesta inválida del servidor');
 
+      if (token) localStorage.setItem('auth_token', token);
       setUser(userData);
       localStorage.setItem('usuario', JSON.stringify(userData));
       setSessionTick(t => t + 1);
@@ -141,7 +157,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setError(null);
       localStorage.removeItem('usuario');
-      // Limpieza de tokens legacy si existieran
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('token');
       setSessionTick(t => t + 1);
     }

@@ -13,15 +13,6 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-// Enviar token como Bearer header como fallback a cookies (necesario en Safari mobile)
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 export const AuthContext = createContext();
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';

@@ -9,13 +9,11 @@
 // ============================================
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-
-axios.defaults.withCredentials = true;
+import api from '../api/config/axios';
 
 export const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_URL = '';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -33,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     const verifySession = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_URL}/auth/verificar`);
+        const response = await api.get('/auth/verificar');
         const userData = response.data.data?.usuario || response.data.usuario;
         if (userData) {
           setUser(userData);
@@ -55,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+      const response = await api.post('/auth/login', { email, password });
       const responseData = response.data.data || response.data;
       const userData = responseData?.usuario || responseData?.user || responseData;
       const token = response.data.data?.token || response.data.token;
@@ -86,7 +84,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(`${API_URL}/auth/registro`, userData);
+      const response = await api.post('/auth/registro', userData);
       const newUser = response.data.data?.usuario || response.data.data?.user || response.data.usuario;
       const token = response.data.data?.token || response.data.token;
 
@@ -112,7 +110,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(`${API_URL}/auth/google`, { id_token: idToken });
+      const response = await api.post('/auth/google', { id_token: idToken });
       const dataObj = response.data.data || response.data;
       const userData = dataObj.usuario || dataObj.user;
       const token = response.data.data?.token || response.data.token;
@@ -141,7 +139,7 @@ export const AuthProvider = ({ children }) => {
   // ── LOGOUT ─────────────────────────────────────────────────────
   const logout = useCallback(async () => {
     try {
-      await axios.post(`${API_URL}/auth/logout`);
+      await api.post('/auth/logout');
     } catch {
       // El logout local sigue aunque la llamada al backend falle
     } finally {
@@ -159,7 +157,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.put(`${API_URL}/perfil`, profileData);
+      const response = await api.put('/perfil', profileData);
       const updatedData = response.data.data || response.data;
       const updatedUser = { ...user, ...updatedData };
 

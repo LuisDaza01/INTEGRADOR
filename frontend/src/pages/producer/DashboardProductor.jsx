@@ -458,7 +458,7 @@ const DashboardProductor = () => {
           </div>
         )}
 
-        <main className="flex-1 min-w-0 overflow-hidden" style={{ background: D.bg }}>
+        <main className="flex-1 min-w-0 overflow-hidden dashboard-main" style={{ background: D.bg }}>
           <div className="h-full overflow-y-auto">
             <div className="p-4 lg:p-6">
               {isHome && (

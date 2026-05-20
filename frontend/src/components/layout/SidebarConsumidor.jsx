@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Home, Users, ShoppingCart, Package, User,
-  HelpCircle, LogOut, ChevronRight, Menu, X, CalendarDays, MessageCircle, Microscope,
+  HelpCircle, LogOut, ChevronRight, Menu, X, CalendarDays, MessageCircle, Microscope, MoreHorizontal,
 } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
 import { useTheme } from "../../contexts/ThemeContext"
@@ -14,11 +14,28 @@ const menuItems = [
   { id: "productores", label: "Productores", icon: Users,        color: '#14b8a6', path: "/dashboard-consumidor/productores" },
   { id: "carrito",     label: "Carrito",     icon: ShoppingCart, color: '#fb923c', path: "/dashboard-consumidor/carrito", badge: null },
   { id: "mis-pedidos",  label: "Mis Pedidos",  icon: Package,      color: '#a78bfa', path: "/dashboard-consumidor/mis-pedidos"  },
-  { id: "mis-reservas", label: "Mis Reservas", icon: CalendarDays,    color: '#4ade80', path: "/dashboard-consumidor/mis-reservas" },
+  { id: "mis-reservas", label: "Reservas", icon: CalendarDays,    color: '#4ade80', path: "/dashboard-consumidor/mis-reservas" },
   { id: "mensajes",     label: "Mensajes",     icon: MessageCircle,   color: '#38bdf8', path: "/dashboard-consumidor/mensajes"    },
-  { id: "perfil",       label: "Mi Perfil",    icon: User,            color: '#34d399', path: "/dashboard-consumidor/perfil"      },
-  { id: "analizar-frescura", label: "Analizar Frescura", icon: Microscope, color: '#22c55e', path: "/dashboard-consumidor/analizar-frescura" },
+  { id: "perfil",       label: "Perfil",    icon: User,            color: '#34d399', path: "/dashboard-consumidor/perfil"      },
+  { id: "analizar-frescura", label: "Frescura", icon: Microscope, color: '#22c55e', path: "/dashboard-consumidor/analizar-frescura" },
   { id: "ayuda",       label: "Ayuda",       icon: HelpCircle,   color: '#64748b', path: "/dashboard-consumidor/ayuda" },
+]
+
+// Items que aparecen en la barra inferior (los 5 más usados)
+const bottomNavItems = [
+  menuItems[0], // Inicio
+  menuItems[1], // Productores
+  menuItems[2], // Carrito
+  menuItems[3], // Mis Pedidos
+  menuItems[6], // Perfil
+]
+
+// Items que van en el sheet "Más"
+const moreItems = [
+  menuItems[4], // Reservas
+  menuItems[5], // Mensajes
+  menuItems[7], // Frescura
+  menuItems[8], // Ayuda
 ]
 
 const SidebarConsumidor = () => {
@@ -36,6 +53,7 @@ const SidebarConsumidor = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   useEffect(() => {
     const check = () => {
@@ -287,51 +305,197 @@ const SidebarConsumidor = () => {
     </AnimatePresence>
   )
 
-  // ── MOBILE ─────────────────────────────────────────────────────
+  // ── MOBILE — Bottom Navigation Bar ────────────────────────────
   if (isMobile) {
     return (
       <>
-        <motion.button
-          whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-          onClick={() => setIsMobileMenuOpen(true)}
-          style={{
-            position: 'fixed', top: 14, left: 14, zIndex: 50,
-            background: 'rgba(10,15,30,0.95)',
-            border: `1px solid ${D.border}`,
-            borderRadius: 12, padding: '10px', cursor: 'pointer',
-            color: D.primary,
-            boxShadow: '0 0 16px rgba(56,189,248,0.2)',
-          }}
-        >
-          <Menu size={22} />
-        </motion.button>
+        {/* Bottom Nav Bar */}
+        <nav style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+          background: D.sidebarBg || 'rgba(6,13,31,0.97)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderTop: `1px solid ${D.border}`,
+          display: 'flex', alignItems: 'stretch',
+          height: 62,
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          boxShadow: '0 -4px 24px rgba(0,0,0,0.35)',
+        }}>
+          {bottomNavItems.map(item => {
+            const Icon = item.icon
+            const active = currentTab === item.id
+            return (
+              <motion.button
+                key={item.id}
+                whileTap={{ scale: 0.88 }}
+                onClick={() => handleItemClick(item)}
+                style={{
+                  flex: 1, display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center', gap: 3,
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  position: 'relative', padding: '6px 2px',
+                }}
+              >
+                {active && (
+                  <motion.div
+                    layoutId="bottomNavIndicator"
+                    style={{
+                      position: 'absolute', top: 0, left: '20%', right: '20%',
+                      height: 2, borderRadius: '0 0 3px 3px',
+                      background: item.color,
+                      boxShadow: `0 0 8px ${item.color}`,
+                    }}
+                  />
+                )}
+                <div style={{
+                  padding: '5px 10px', borderRadius: 10,
+                  background: active ? `${item.color}18` : 'transparent',
+                  transition: 'background 0.15s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon size={20} color={active ? item.color : D.muted} />
+                </div>
+                <span style={{
+                  fontSize: 9, fontWeight: active ? 700 : 500,
+                  color: active ? item.color : D.muted,
+                  lineHeight: 1, letterSpacing: '0.01em',
+                }}>
+                  {item.label}
+                </span>
+              </motion.button>
+            )
+          })}
 
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 40, backdropFilter: 'blur(4px)' }}
-            />
-          )}
-        </AnimatePresence>
+          {/* Botón "Más" */}
+          <motion.button
+            whileTap={{ scale: 0.88 }}
+            onClick={() => setMoreOpen(true)}
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 3,
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '6px 2px',
+            }}
+          >
+            <div style={{
+              padding: '5px 10px', borderRadius: 10,
+              background: 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <MoreHorizontal size={20} color={D.muted} />
+            </div>
+            <span style={{ fontSize: 9, fontWeight: 500, color: D.muted, lineHeight: 1 }}>Más</span>
+          </motion.button>
+        </nav>
 
+        {/* Bottom Sheet "Más" */}
         <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ x: -300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              style={{
-                position: 'fixed', left: 0, top: 0, bottom: 0, width: 300,
-                background: D.surface,
-                border: `1px solid ${D.border}`,
-                borderLeft: 'none',
-                boxShadow: '4px 0 32px rgba(0,0,0,0.5)',
-                zIndex: 50, display: 'flex', flexDirection: 'column',
-              }}
-            >
-              <SidebarContent />
-            </motion.div>
+          {moreOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setMoreOpen(false)}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 55, backdropFilter: 'blur(4px)' }}
+              />
+              <motion.div
+                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                style={{
+                  position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 60,
+                  background: D.surface || 'rgba(14,26,46,0.99)',
+                  borderTop: `1px solid ${D.border}`,
+                  borderRadius: '20px 20px 0 0',
+                  paddingBottom: 'calc(62px + env(safe-area-inset-bottom))',
+                  boxShadow: '0 -8px 40px rgba(0,0,0,0.4)',
+                }}
+              >
+                {/* Handle */}
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+                  <div style={{ width: 36, height: 4, borderRadius: 2, background: D.border }} />
+                </div>
+
+                {/* User info */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 20px 16px',
+                  borderBottom: `1px solid ${D.border}`,
+                }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%',
+                    background: 'linear-gradient(135deg,#14b8a6,#38bdf8)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, fontWeight: 700, color: '#fff',
+                    boxShadow: '0 0 12px rgba(56,189,248,0.3)',
+                    flexShrink: 0,
+                  }}>
+                    {iniciales}
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: D.text, margin: 0 }}>{nombreCompleto}</p>
+                    <p style={{ fontSize: 11, color: D.muted, margin: 0 }}>Consumidor</p>
+                  </div>
+                </div>
+
+                {/* More items grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '16px 16px 8px' }}>
+                  {moreItems.map(item => {
+                    const Icon = item.icon
+                    const active = currentTab === item.id
+                    return (
+                      <motion.button
+                        key={item.id}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => { handleItemClick(item); setMoreOpen(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 12,
+                          padding: '14px 16px', borderRadius: 14,
+                          border: `1px solid ${active ? item.color + '40' : D.border}`,
+                          background: active ? `${item.color}12` : 'rgba(255,255,255,0.03)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <div style={{
+                          width: 36, height: 36, borderRadius: 10,
+                          background: `${item.color}18`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          <Icon size={18} color={item.color} />
+                        </div>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: active ? item.color : D.text }}>
+                          {item.label}
+                        </span>
+                      </motion.button>
+                    )
+                  })}
+                </div>
+
+                {/* Logout */}
+                <div style={{ padding: '4px 16px 8px' }}>
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => { setMoreOpen(false); setShowLogoutModal(true) }}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '14px 16px', borderRadius: 14,
+                      border: `1px solid rgba(248,113,113,0.2)`,
+                      background: 'rgba(248,113,113,0.05)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: 'rgba(248,113,113,0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <LogOut size={18} color={D.red || '#f87171'} />
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: D.red || '#f87171' }}>
+                      Cerrar Sesión
+                    </span>
+                  </motion.button>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 

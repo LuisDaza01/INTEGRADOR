@@ -16,6 +16,7 @@ import {
   HelpCircle,
   ChevronLeft,
   Menu,
+  MoreHorizontal,
   X,
   Zap,
   Calendar,
@@ -42,6 +43,7 @@ const SidebarProductor = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   useEffect(() => {
     const updateScreenSize = () => {
@@ -246,34 +248,201 @@ const SidebarProductor = () => {
     </div>
   )
 
+  // ── MOBILE — Bottom Navigation Bar ────────────────────────────
   if (isMobile) {
+    const bottomNav = [
+      mainMenu[0],    // Dashboard
+      mainMenu[2],    // Pedidos
+      mainMenu[3],    // Inventario
+      analyticsMenu[0], // Estadísticas
+      configMenu[0],  // Perfil
+    ]
+    const moreMenuItems = [
+      mainMenu[1],    // Monitoreo
+      mainMenu[4],    // Calendario
+      mainMenu[5],    // Reservas
+      analyticsMenu[1], // Mensajes
+      analyticsMenu[2], // Notificaciones
+      configMenu[1],  // Ajustes
+      configMenu[2],  // Ayuda
+    ]
+
     return (
       <>
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="fixed top-4 left-4 z-50 p-3 rounded-xl shadow-lg transition-shadow md:hidden"
-          style={{ background: D.surface, border: `1px solid ${D.border}`, boxShadow: `0 0 16px ${D.shimmer}` }}>
-          <Menu size={22} className="text-sky-400" />
-        </motion.button>
+        <nav style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+          background: D.sidebarBg || 'rgba(6,13,31,0.97)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderTop: `1px solid ${D.border}`,
+          display: 'flex', alignItems: 'stretch',
+          height: 62,
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          boxShadow: '0 -4px 24px rgba(0,0,0,0.35)',
+        }}>
+          {bottomNav.map(item => {
+            const Icon = item.icon
+            const itemId = item.id === 'dashboard' ? 'inicio' : item.id
+            const active = currentTab === itemId || (item.id === 'dashboard' && currentTab === 'inicio')
+            return (
+              <motion.button
+                key={item.id}
+                whileTap={{ scale: 0.88 }}
+                onClick={() => handleItemClick(item.id)}
+                style={{
+                  flex: 1, display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center', gap: 3,
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  position: 'relative', padding: '6px 2px',
+                }}
+              >
+                {active && (
+                  <motion.div
+                    layoutId="bottomNavIndicatorP"
+                    style={{
+                      position: 'absolute', top: 0, left: '20%', right: '20%',
+                      height: 2, borderRadius: '0 0 3px 3px',
+                      background: item.glowColor,
+                      boxShadow: `0 0 8px ${item.glowColor}`,
+                    }}
+                  />
+                )}
+                <div style={{
+                  padding: '5px 10px', borderRadius: 10,
+                  background: active ? `${item.glowColor}18` : 'transparent',
+                  transition: 'background 0.15s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon size={20} color={active ? item.glowColor : D.muted} />
+                </div>
+                <span style={{
+                  fontSize: 9, fontWeight: active ? 700 : 500,
+                  color: active ? item.glowColor : D.muted,
+                  lineHeight: 1, letterSpacing: '0.01em',
+                }}>
+                  {item.text}
+                </span>
+              </motion.button>
+            )
+          })}
+
+          <motion.button
+            whileTap={{ scale: 0.88 }}
+            onClick={() => setMoreOpen(true)}
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 3,
+              background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 2px',
+            }}
+          >
+            <div style={{ padding: '5px 10px', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MoreHorizontal size={20} color={D.muted} />
+            </div>
+            <span style={{ fontSize: 9, fontWeight: 500, color: D.muted, lineHeight: 1 }}>Más</span>
+          </motion.button>
+        </nav>
 
         <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 backdrop-blur-sm"
-              style={{ background: 'rgba(0,0,0,0.7)' }}
-              onClick={() => setIsMobileMenuOpen(false)} />
-          )}
-        </AnimatePresence>
+          {moreOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setMoreOpen(false)}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 55, backdropFilter: 'blur(4px)' }}
+              />
+              <motion.div
+                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                style={{
+                  position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 60,
+                  background: D.surface || 'rgba(14,26,46,0.99)',
+                  borderTop: `1px solid ${D.border}`,
+                  borderRadius: '20px 20px 0 0',
+                  paddingBottom: 'calc(62px + env(safe-area-inset-bottom))',
+                  boxShadow: '0 -8px 40px rgba(0,0,0,0.4)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+                  <div style={{ width: 36, height: 4, borderRadius: 2, background: D.border }} />
+                </div>
 
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div initial={{ x: -320, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -320, opacity: 0 }} transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="fixed left-0 top-0 bottom-0 w-72 z-50 flex flex-col min-h-screen shadow-2xl"
-              style={{ boxShadow: '4px 0 40px rgba(56,189,248,0.15)' }}>
-              <SidebarContent />
-            </motion.div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 20px 16px', borderBottom: `1px solid ${D.border}`,
+                }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%',
+                    background: 'linear-gradient(135deg,#0ea5e9,#14b8a6)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, fontWeight: 700, color: '#fff',
+                    boxShadow: '0 0 12px rgba(14,165,233,0.35)', flexShrink: 0,
+                  }}>
+                    {iniciales}
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: D.text, margin: 0 }}>{nombreCompleto}</p>
+                    <p style={{ fontSize: 11, color: D.primary, margin: 0, textTransform: 'capitalize' }}>{rol}</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '16px 16px 8px' }}>
+                  {moreMenuItems.map(item => {
+                    const Icon = item.icon
+                    const itemId = item.id === 'dashboard' ? 'inicio' : item.id
+                    const active = currentTab === itemId
+                    return (
+                      <motion.button
+                        key={item.id}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => { handleItemClick(item.id); setMoreOpen(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 12,
+                          padding: '12px 14px', borderRadius: 14,
+                          border: `1px solid ${active ? item.glowColor + '40' : D.border}`,
+                          background: active ? `${item.glowColor}12` : 'rgba(255,255,255,0.03)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <div style={{
+                          width: 34, height: 34, borderRadius: 9,
+                          background: `${item.glowColor}18`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          <Icon size={17} color={item.glowColor} />
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: active ? item.glowColor : D.text, textAlign: 'left' }}>
+                          {item.text}
+                        </span>
+                        {item.badge && (
+                          <span style={{
+                            marginLeft: 'auto', background: '#ef4444', color: '#fff',
+                            fontSize: 9, fontWeight: 700, borderRadius: '50%',
+                            width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>{item.badge}</span>
+                        )}
+                      </motion.button>
+                    )
+                  })}
+                </div>
+
+                <div style={{ padding: '4px 16px 8px' }}>
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => { setMoreOpen(false); handleLogout() }}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '14px 16px', borderRadius: 14,
+                      border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(239,68,68,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <LogOut size={18} color="#f87171" />
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#f87171' }}>Cerrar Sesión</span>
+                  </motion.button>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 

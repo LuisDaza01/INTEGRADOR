@@ -83,7 +83,7 @@ const DashboardConsumidor = () => {
         position: 'sticky', top: 0, zIndex: 30,
         boxShadow: isDark ? '0 2px 32px rgba(56,189,248,0.08)' : '0 2px 20px rgba(14,116,193,0.07)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px' }}>
 
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -310,7 +310,7 @@ const DashboardConsumidor = () => {
       {/* ── Main ────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', flex: 1 }}>
         <SidebarConsumidor currentTab={currentTab} />
-        <main style={{ flex: 1, overflowY: 'auto', background: D.bg }}>
+        <main className="dashboard-main" style={{ flex: 1, overflowY: 'auto', background: D.bg }}>
           <Outlet />
         </main>
       </div>

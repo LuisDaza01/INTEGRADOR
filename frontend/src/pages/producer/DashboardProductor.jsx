@@ -32,13 +32,14 @@ import {
 // Components
 import SidebarProductor from '../../components/layout/SidebarProductor';
 import SensorCard from '../../components/features/SensorCard';
-
-// Pages
+import ParticleBackground from '../../components/effects/ParticleBackground';
+import GlitchText from '../../components/effects/GlitchText';
 
 // Services
 import { useSensorData, TAMBAQUI_INFO } from '../../api/services/sensor.service';
 import api from '../../api/config/axios';
 import { useTheme } from '../../contexts/ThemeContext';
+import useCountUp from '../../hooks/useCountUp';
 
 // ============================================
 // SUB-COMPONENTES INLINE
@@ -48,12 +49,15 @@ import { useTheme } from '../../contexts/ThemeContext';
 const StatsCard = ({ title, value, unit, icon: Icon, trend, trendUp, color }) => {
   const { D } = useTheme();
   const palette = {
-    green:  { glow: '#4ade80', accent: '#22c55e' },
-    blue:   { glow: '#38bdf8', accent: '#0ea5e9' },
+    green:  { glow: '#4ade80', accent: '#22C55E' },
+    blue:   { glow: '#22C55E', accent: '#22C55E' },
     purple: { glow: '#c084fc', accent: '#a855f7' },
     orange: { glow: '#fb923c', accent: '#f97316' },
   };
-  const p = palette[color] || palette.blue;
+  const p = palette[color] || palette.green;
+  const numVal = parseFloat(String(value).replace(/[^0-9.]/g, ''))
+  const animated = useCountUp(isNaN(numVal) ? 0 : numVal, { duration: 1400, decimals: 0 })
+  const displayVal = isNaN(numVal) ? value : animated
 
   return (
     <motion.div
@@ -81,7 +85,7 @@ const StatsCard = ({ title, value, unit, icon: Icon, trend, trendUp, color }) =>
       </div>
       <p className="text-xs font-medium mb-1" style={{ color: D.muted }}>{title}</p>
       <p className="text-2xl font-bold" style={{ color: p.glow }}>
-        {value}
+        {displayVal}
         {unit ? <span className="text-base font-medium ml-1" style={{ color: D.muted }}>{unit}</span> : null}
       </p>
     </motion.div>
@@ -92,7 +96,7 @@ const StatsCard = ({ title, value, unit, icon: Icon, trend, trendUp, color }) =>
 const ActivityFeed = ({ activities = [] }) => {
   const { D, isDark } = useTheme();
   const typeIcons = {
-    order:   <ShoppingBag size={14} style={{ color: '#38bdf8' }} />,
+    order:   <ShoppingBag size={14} style={{ color: '#22C55E' }} />,
     alert:   <AlertTriangle size={14} style={{ color: '#f87171' }} />,
     success: <CheckCircle size={14} style={{ color: '#4ade80' }} />,
   };
@@ -104,21 +108,21 @@ const ActivityFeed = ({ activities = [] }) => {
       className="np-hover rounded-xl p-6 relative overflow-hidden"
       style={{
         background: isDark ? 'linear-gradient(145deg, rgba(15,23,42,0.97), rgba(9,15,30,0.99))' : D.surface,
-        border: `1px solid ${isDark ? 'rgba(56,189,248,0.1)' : D.border}`,
+        border: `1px solid ${isDark ? 'rgba(34,197,94,0.1)' : D.border}`,
         backdropFilter: isDark ? 'blur(12px)' : 'none',
         boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 2px 8px rgba(0,0,0,0.06)',
       }}
     >
-      <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent)' }} />
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)' }} />
       <h4 className="font-semibold mb-4 flex items-center gap-2" style={{ color: D.text }}>
-        <Clock className="h-5 w-5" style={{ color: '#38bdf8' }} />
+        <Clock className="h-5 w-5" style={{ color: '#22C55E' }} />
         Actividad Reciente
       </h4>
       <div className="space-y-4">
         {activities.map((a, i) => (
           <div key={i} className="flex items-start gap-3">
             <div className="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ background: a.type === 'alert' ? 'rgba(239,68,68,0.15)' : a.type === 'success' ? 'rgba(34,197,94,0.15)' : 'rgba(56,189,248,0.15)' }}>
+              style={{ background: a.type === 'alert' ? 'rgba(239,68,68,0.15)' : a.type === 'success' ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.15)' }}>
               {typeIcons[a.type] || typeIcons.order}
             </div>
             <div className="flex-1 min-w-0">
@@ -153,12 +157,12 @@ const ProgressRing = ({ title, percentage, color, subtitle }) => {
       className="np-hover rounded-xl p-6 flex flex-col items-center relative overflow-hidden"
       style={{
         background: isDark ? 'linear-gradient(145deg, rgba(15,23,42,0.97), rgba(9,15,30,0.99))' : D.surface,
-        border: `1px solid ${isDark ? 'rgba(56,189,248,0.1)' : D.border}`,
+        border: `1px solid ${isDark ? 'rgba(34,197,94,0.1)' : D.border}`,
         backdropFilter: isDark ? 'blur(12px)' : 'none',
         boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 2px 8px rgba(0,0,0,0.06)',
       }}
     >
-      <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(56,189,248,0.35), transparent)' }} />
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.35), transparent)' }} />
       <h4 className="font-semibold mb-4 self-start" style={{ color: D.text }}>{title}</h4>
       <div className="relative">
         <svg width="100" height="100" viewBox="0 0 100 100">
@@ -210,12 +214,12 @@ const TrendChart = ({ title, data = [], dataKey, type = 'line', color = '#3b82f6
       className="np-hover rounded-xl p-6 relative overflow-hidden"
       style={{
         background: isDark ? 'linear-gradient(145deg, rgba(15,23,42,0.97), rgba(9,15,30,0.99))' : D.surface,
-        border: `1px solid ${isDark ? 'rgba(56,189,248,0.1)' : D.border}`,
+        border: `1px solid ${isDark ? 'rgba(34,197,94,0.1)' : D.border}`,
         backdropFilter: isDark ? 'blur(12px)' : 'none',
         boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 2px 8px rgba(0,0,0,0.06)',
       }}
     >
-      <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(56,189,248,0.3), transparent)' }} />
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.3), transparent)' }} />
       <h4 className="font-semibold mb-4" style={{ color: D.text }}>{title}</h4>
       <svg viewBox={`0 0 ${w} ${h + 30}`} className="w-full" style={{ height }}>
         {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
@@ -337,10 +341,11 @@ const DashboardProductor = () => {
 
   return (
     <div className="np-orb-bg np-grid min-h-screen flex flex-col" style={{ background: D.bg }}>
+      <ParticleBackground />
       {/* ── Header ── */}
       <header className="glass sticky top-0 z-30" style={{
         borderBottom: `1px solid ${D.border}`,
-        boxShadow: isDark ? '0 4px 40px rgba(56,189,248,0.08)' : '0 2px 20px rgba(14,116,193,0.07)',
+        boxShadow: isDark ? '0 4px 40px rgba(34,197,94,0.08)' : '0 2px 20px rgba(14,116,193,0.07)',
       }}>
         {/* Top glow line */}
         <div className="h-px w-full" style={{ background: `linear-gradient(90deg, transparent, ${D.primary}, ${D.teal}, transparent)` }} />
@@ -350,18 +355,18 @@ const DashboardProductor = () => {
             {isMobile && (
               <button onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2 rounded-lg mr-3 lg:hidden transition-colors"
-                style={{ color: D.primary, background: isDark ? 'rgba(56,189,248,0.08)' : D.inputBg, border: `1px solid ${D.border}` }}>
+                style={{ color: D.primary, background: isDark ? 'rgba(34,197,94,0.08)' : D.inputBg, border: `1px solid ${D.border}` }}>
                 <Menu className="w-5 h-5" />
               </button>
             )}
             <div className="flex items-center gap-3">
               <motion.div whileHover={{ rotate: 15, scale: 1.1 }}
                 className="p-2 rounded-xl"
-                style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 16px rgba(14,165,233,0.4)' }}>
+                style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.4)' }}>
                 <Fish className="text-white w-5 h-5" />
               </motion.div>
               <div className="min-w-0">
-                <h1 className="text-lg font-bold truncate" style={{ color: D.text }}>NaturaPiscis</h1>
+                <GlitchText as="h1" className="text-lg font-bold truncate" style={{ color: D.text }} continuous>NaturaPiscis</GlitchText>
                 {!isMobile && <p className="text-xs truncate" style={{ color: D.primary }}>{getPageTitle()}</p>}
               </div>
             </div>
@@ -387,7 +392,7 @@ const DashboardProductor = () => {
 
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               onClick={refreshData} className="p-2 rounded-lg transition-colors"
-              style={{ background: isDark ? 'rgba(56,189,248,0.06)' : D.inputBg, border: `1px solid ${D.border}` }}>
+              style={{ background: isDark ? 'rgba(34,197,94,0.06)' : D.inputBg, border: `1px solid ${D.border}` }}>
               <motion.div animate={{ rotate: isConnected ? 360 : 0 }}
                 transition={{ duration: 3, repeat: isConnected ? Infinity : 0, ease: 'linear' }}>
                 <Fish className="w-4 h-4" style={{ color: D.primary }} />
@@ -396,7 +401,7 @@ const DashboardProductor = () => {
 
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               className="p-2 rounded-lg relative transition-colors"
-              style={{ background: isDark ? 'rgba(56,189,248,0.06)' : D.inputBg, border: `1px solid ${D.border}` }}>
+              style={{ background: isDark ? 'rgba(34,197,94,0.06)' : D.inputBg, border: `1px solid ${D.border}` }}>
               <Bell className="w-4 h-4" style={{ color: D.primary }} />
               {alerts.length > 0 && (
                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse"
@@ -474,25 +479,25 @@ const DashboardProductor = () => {
                     }}>
                     {/* Animated glow orbs */}
                     <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full blur-3xl opacity-20"
-                      style={{ background: 'radial-gradient(circle, #38bdf8, transparent)' }} />
+                      style={{ background: 'radial-gradient(circle, #22C55E, transparent)' }} />
                     <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full blur-3xl opacity-15"
-                      style={{ background: 'radial-gradient(circle, #14b8a6, transparent)' }} />
+                      style={{ background: 'radial-gradient(circle, #4ade80, transparent)' }} />
                     {/* Top glow line */}
-                    <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, #38bdf8, #14b8a6, transparent)' }} />
+                    <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, #22C55E, #4ade80, transparent)' }} />
 
                     <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <Zap size={14} style={{ color: '#38bdf8' }} />
-                          <span className="text-xs font-medium uppercase tracking-widest" style={{ color: '#38bdf8' }}>Sistema Activo</span>
+                          <Zap size={14} style={{ color: '#22C55E' }} />
+                          <span className="text-xs font-medium uppercase tracking-widest" style={{ color: '#22C55E' }}>Sistema Activo</span>
                         </div>
                         <h2 className="text-3xl font-bold mb-2" style={{ color: D.text }}>¡Bienvenido de vuelta!</h2>
                         <p className="text-lg mb-3" style={{ color: D.sub }}>
                           Monitorea tus estanques de tambaqui en tiempo real
                         </p>
                         <div className="flex items-center text-sm" style={{ color: D.muted }}>
-                          <Fish className="h-4 w-4 mr-2" style={{ color: '#14b8a6' }} />
-                          <span>Especie: <span className="font-medium" style={{ color: '#38bdf8' }}>{TAMBAQUI_INFO.nombreCientifico}</span></span>
+                          <Fish className="h-4 w-4 mr-2" style={{ color: '#22C55E' }} />
+                          <span>Especie: <span className="font-medium" style={{ color: '#22C55E' }}>{TAMBAQUI_INFO.nombreCientifico}</span></span>
                         </div>
                       </div>
                       <div className="mt-4 sm:mt-0">
@@ -580,7 +585,7 @@ const DashboardProductor = () => {
                             <p className="text-xs" style={{ color: '#64748b' }}>Lagunas activas</p>
                           </div>
                           <div>
-                            <p className="text-2xl font-bold" style={{ color: '#38bdf8' }}>{produccionStats.totalPeces.toLocaleString()}</p>
+                            <p className="text-2xl font-bold" style={{ color: '#22C55E' }}>{produccionStats.totalPeces.toLocaleString()}</p>
                             <p className="text-xs" style={{ color: '#64748b' }}>Peces</p>
                           </div>
                           <div>
@@ -669,9 +674,9 @@ const DashboardProductor = () => {
                           <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                             className="flex items-center p-4 rounded-xl border-l-4"
                             style={{
-                              background: alert.severity === 'high' ? 'rgba(239,68,68,0.08)' : alert.severity === 'medium' ? 'rgba(234,179,8,0.08)' : 'rgba(56,189,248,0.08)',
-                              borderLeftColor: alert.severity === 'high' ? '#f87171' : alert.severity === 'medium' ? '#facc15' : '#38bdf8',
-                              color: alert.severity === 'high' ? '#f87171' : alert.severity === 'medium' ? '#facc15' : '#38bdf8',
+                              background: alert.severity === 'high' ? 'rgba(239,68,68,0.08)' : alert.severity === 'medium' ? 'rgba(234,179,8,0.08)' : 'rgba(34,197,94,0.08)',
+                              borderLeftColor: alert.severity === 'high' ? '#f87171' : alert.severity === 'medium' ? '#facc15' : '#22C55E',
+                              color: alert.severity === 'high' ? '#f87171' : alert.severity === 'medium' ? '#facc15' : '#22C55E',
                             }}>
                             <AlertTriangle className="h-5 w-5 mr-3 flex-shrink-0" />
                             <div>
@@ -737,17 +742,17 @@ const DashboardProductor = () => {
                         className="np-hover rounded-xl p-5 relative overflow-hidden"
                         style={{
                           background: isDark ? 'linear-gradient(145deg, rgba(15,23,42,0.97), rgba(9,15,30,0.99))' : D.surface,
-                          border: `1px solid ${isDark ? 'rgba(56,189,248,0.1)' : D.border}`,
+                          border: `1px solid ${isDark ? 'rgba(34,197,94,0.1)' : D.border}`,
                           backdropFilter: isDark ? 'blur(12px)' : 'none',
                           boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 2px 8px rgba(0,0,0,0.06)',
                         }}>
-                        <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(56,189,248,0.3), transparent)' }} />
+                        <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.3), transparent)' }} />
                         <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: D.text }}>
                           <Clock className="h-4 w-4" style={{ color: D.primary }} /> Próximas Tareas
                         </h4>
                         <ul className="space-y-1.5 text-sm">
                           {[
-                            { color: '#38bdf8', text: 'Medición pH (16:00)' },
+                            { color: '#22C55E', text: 'Medición pH (16:00)' },
                             { color: '#fb923c', text: 'Recolecta muestras (18:00)' },
                             { color: '#4ade80', text: 'Revisión bomba (20:00)' },
                             { color: '#c084fc', text: 'Alimentación nocturna (21:00)' },
@@ -767,13 +772,13 @@ const DashboardProductor = () => {
 
                   {/* Info cultivo */}
                   <div className="rounded-xl p-6"
-                    style={{ background: 'linear-gradient(135deg, rgba(20,184,166,0.1), rgba(56,189,248,0.06))', border: '1px solid rgba(20,184,166,0.2)' }}>
+                    style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.06))', border: '1px solid rgba(34,197,94,0.2)' }}>
                     <div className="flex items-start">
-                      <div className="p-2 rounded-xl flex-shrink-0" style={{ background: 'rgba(20,184,166,0.15)', border: '1px solid rgba(20,184,166,0.3)' }}>
-                        <Fish className="h-6 w-6" style={{ color: '#14b8a6' }} />
+                      <div className="p-2 rounded-xl flex-shrink-0" style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}>
+                        <Fish className="h-6 w-6" style={{ color: '#22C55E' }} />
                       </div>
                       <div className="ml-4">
-                        <h3 className="text-base font-semibold mb-3" style={{ color: '#14b8a6' }}>
+                        <h3 className="text-base font-semibold mb-3" style={{ color: '#22C55E' }}>
                           Información del Cultivo — {TAMBAQUI_INFO.nombreComun}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm" style={{ color: D.muted }}>
@@ -798,11 +803,11 @@ const DashboardProductor = () => {
                   <div className="rounded-xl p-6 relative overflow-hidden"
                     style={{
                       background: isDark ? 'linear-gradient(145deg, rgba(15,23,42,0.97), rgba(9,15,30,0.99))' : D.surface,
-                      border: `1px solid ${isDark ? 'rgba(56,189,248,0.1)' : D.border}`,
+                      border: `1px solid ${isDark ? 'rgba(34,197,94,0.1)' : D.border}`,
                       backdropFilter: isDark ? 'blur(12px)' : 'none',
                       boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 2px 8px rgba(0,0,0,0.06)',
                     }}>
-                    <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(56,189,248,0.35), transparent)' }} />
+                    <div className="absolute top-0 inset-x-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.35), transparent)' }} />
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-semibold mb-1" style={{ color: D.text }}>Monitoreo Avanzado</h3>
@@ -810,10 +815,10 @@ const DashboardProductor = () => {
                           Dashboard completo con gráficos históricos y controles avanzados
                         </p>
                       </div>
-                      <motion.button whileHover={{ scale: 1.05, boxShadow: '0 0 24px rgba(56,189,248,0.4)' }} whileTap={{ scale: 0.95 }}
+                      <motion.button whileHover={{ scale: 1.05, boxShadow: '0 0 24px rgba(34,197,94,0.4)' }} whileTap={{ scale: 0.95 }}
                         onClick={() => navigate('/dashboard-productor/monitoring')}
                         className="px-6 py-3 text-white rounded-xl font-medium flex items-center gap-2 transition-all"
-                        style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 16px rgba(14,165,233,0.3)' }}>
+                        style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.3)' }}>
                         <Fish className="h-5 w-5" />
                         Ver Monitoreo
                       </motion.button>

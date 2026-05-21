@@ -13,6 +13,8 @@ import { useSensorData, TAMBAQUI_INFO } from "../../api/services/sensor.service"
 import PrediccionRiesgo from "./PrediccionRiesgo"
 import { getHistoricalData } from "../../api/config/firebase"
 import { useTheme } from "../../contexts/ThemeContext"
+import HUDGauge from "../../components/effects/HUDGauge"
+import ParticleBackground from "../../components/effects/ParticleBackground"
 
 // ─── Configuración de rangos óptimos ────────────────────────────────────────
 const SENSOR_CONFIG = {
@@ -220,9 +222,11 @@ const SensorChart = ({ sensorKey, data, timeRange }) => {
           label={{ value: `Max óptimo`, position: "left", fontSize: 9, fill: "#4ade80" }} />
         <Area
           type="monotone" dataKey="value"
-          stroke={cfg.chartColor} strokeWidth={2}
+          stroke={cfg.chartColor} strokeWidth={2.5}
           fill={`url(#grad-${sensorKey})`}
-          dot={false} activeDot={{ r: 4, fill: cfg.chartColor }}
+          dot={false}
+          activeDot={{ r: 5, fill: cfg.chartColor, stroke: `${cfg.chartColor}66`, strokeWidth: 4 }}
+          style={{ filter: `drop-shadow(0 0 4px ${cfg.chartColor}88)` }}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -382,10 +386,55 @@ const Monitoring = () => {
         </div>
       )}
 
+      {/* ── HUD Gauges panel ── */}
+      <div className="np-hud-frame" style={{
+        background: 'rgba(17,30,51,0.6)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(34,197,94,0.18)',
+        borderRadius: 16, padding: '24px 20px',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Scanline subtle overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+          background: 'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px)',
+          borderRadius: 16,
+        }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <div className="np-pulse-ring" style={{ '--pulse-color': '#22C55E' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 8px #22C55E' }} />
+            </div>
+            <span style={{ fontSize: 11, fontFamily: "'Fira Code', monospace", fontWeight: 700, color: '#22C55E', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              HUD · Parámetros en vivo
+            </span>
+            <span style={{ fontSize: 11, color: D.muted, marginLeft: 'auto', fontFamily: "'Fira Code', monospace" }}>
+              {isConnected ? '● LIVE' : '○ OFFLINE'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 24 }}>
+            {Object.entries(SENSOR_CONFIG).map(([key, cfg]) => {
+              const val = parseFloat(sensorsData?.[key]?.value ?? sensorsData?.[key]?.raw ?? ((cfg.min + cfg.max) / 2))
+              return (
+                <HUDGauge
+                  key={key}
+                  value={isConnected ? val : 0}
+                  min={cfg.min} max={cfg.max}
+                  optMin={cfg.optMin} optMax={cfg.optMax}
+                  label={cfg.label} unit={cfg.unit}
+                  color={cfg.color}
+                  size={150}
+                />
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* Tarjetas de sensores */}
       <div>
         <h3 style={{ fontSize: 11, fontWeight: 700, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
-          Valores en tiempo real
+          Detalle · Valores en tiempo real
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
           {Object.keys(SENSOR_CONFIG).map(key => (

@@ -342,6 +342,54 @@ class PedidoService {
     }
   }
 
+  // \u2500\u2500 Verificaci\u00f3n de pago por el productor \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  async verificarPago(pedidoId, productorId) {
+    const pedido = await pedidoRepository.verificarPago(pedidoId, productorId);
+    if (!pedido) throw new AppError('Pedido no encontrado o no te pertenece.', 404);
+
+    notifService.crear({
+      usuario_id: pedido.consumidor_id,
+      titulo: '\u2705 Pago verificado',
+      mensaje: `El productor confirm\u00f3 tu pago del pedido #${pedidoId}. \u00a1Est\u00e1 preparando tu pedido!`,
+      tipo: 'pedido',
+      data: { pedido_id: pedidoId, pago_verificado: true },
+    }).catch(() => {});
+
+    const token = await pedidoRepository.findConsumidorPushToken(pedidoId);
+    if (token) {
+      sendPushNotification(
+        token, '\u2705 Pago verificado',
+        `El productor confirm\u00f3 tu pago del pedido #${pedidoId}. \u00a1Est\u00e1 preparando tu pedido!`,
+        { type: 'pago_verificado', pedidoId, screen: 'MisPedidos' }
+      ).catch(() => {});
+    }
+    return pedido;
+  }
+
+  async rechazarPago(pedidoId, productorId, motivo) {
+    const pedido = await pedidoRepository.rechazarPago(pedidoId, productorId);
+    if (!pedido) throw new AppError('Pedido no encontrado o no te pertenece.', 404);
+
+    const detalle = motivo ? `: ${motivo}` : '';
+    notifService.crear({
+      usuario_id: pedido.consumidor_id,
+      titulo: '\u26a0\ufe0f Comprobante rechazado',
+      mensaje: `El productor no valid\u00f3 tu comprobante del pedido #${pedidoId}${detalle}. Por favor s\u00fabelo de nuevo.`,
+      tipo: 'pedido',
+      data: { pedido_id: pedidoId, pago_verificado: false },
+    }).catch(() => {});
+
+    const token = await pedidoRepository.findConsumidorPushToken(pedidoId);
+    if (token) {
+      sendPushNotification(
+        token, '\u26a0\ufe0f Comprobante rechazado',
+        `El productor no valid\u00f3 tu comprobante del pedido #${pedidoId}${detalle}. S\u00fabelo de nuevo.`,
+        { type: 'pago_rechazado', pedidoId, screen: 'MisPedidos' }
+      ).catch(() => {});
+    }
+    return pedido;
+  }
+
   async _descontarDeLaguna(pedidoId) {
     const pedido = await pedidoRepository.findById(pedidoId);
     if (!pedido?.items?.length) return;

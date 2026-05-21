@@ -64,6 +64,7 @@ class PedidoRepository {
         p.codigo_retiro, p.notas,
         p.cantidad_pescados, p.peso_real_kg, p.precio_final, p.precio_por_kg,
         p.confirmacion_expires_at,
+        p.comprobante_url, p.pago_verificado,
         p.consumidor_id,
         u.nombre as consumidor, u.email as consumidor_email,
         u.telefono as telefono,
@@ -782,6 +783,46 @@ class PedidoRepository {
       [pedidoId]
     );
     return rows[0]?.push_token || null;
+  }
+
+  async findConsumidorPushToken(pedidoId) {
+    const rows = await db.query(
+      `SELECT u.expo_push_token AS push_token
+       FROM pedidos p JOIN usuarios u ON u.id = p.consumidor_id
+       WHERE p.id = $1 AND u.expo_push_token IS NOT NULL`,
+      [pedidoId]
+    );
+    return rows[0]?.push_token || null;
+  }
+
+  // ── VERIFICACIÓN DE PAGO (productor) ───────────────────────────
+  // Verifica que el pedido tenga al menos un producto del productor antes de actualizar.
+  async verificarPago(pedidoId, productorId) {
+    const result = await db.query(
+      `UPDATE pedidos SET pago_verificado = true
+       WHERE id = $1
+         AND EXISTS (
+           SELECT 1 FROM detalles_pedido dp JOIN productos pr ON pr.id = dp.producto_id
+           WHERE dp.pedido_id = pedidos.id AND pr.productor_id = $2
+         )
+       RETURNING *`,
+      [pedidoId, productorId]
+    );
+    return result[0] || null;
+  }
+
+  async rechazarPago(pedidoId, productorId) {
+    const result = await db.query(
+      `UPDATE pedidos SET pago_verificado = false, comprobante_url = NULL
+       WHERE id = $1
+         AND EXISTS (
+           SELECT 1 FROM detalles_pedido dp JOIN productos pr ON pr.id = dp.producto_id
+           WHERE dp.pedido_id = pedidos.id AND pr.productor_id = $2
+         )
+       RETURNING *`,
+      [pedidoId, productorId]
+    );
+    return result[0] || null;
   }
 }
 

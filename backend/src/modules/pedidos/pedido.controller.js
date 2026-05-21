@@ -193,6 +193,28 @@ class PedidoController {
       return errorResponse(res, error.message, error.statusCode || 500);
     }
   }
+
+  async verificarPago(req, res) {
+    try {
+      const { id } = req.params;
+      const { id: productorId } = req.user;
+      const pedido = await pedidoService.verificarPago(parseInt(id), productorId);
+      return successResponse(res, pedido, 'Pago verificado. El consumidor fue notificado.');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
+
+  async rechazarPago(req, res) {
+    try {
+      const { id } = req.params;
+      const { id: productorId } = req.user;
+      const pedido = await pedidoService.rechazarPago(parseInt(id), productorId, req.body?.motivo);
+      return successResponse(res, pedido, 'Comprobante rechazado. El consumidor fue notificado.');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
 }
 
 module.exports = new PedidoController();

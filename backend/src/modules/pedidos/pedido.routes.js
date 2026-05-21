@@ -86,4 +86,20 @@ router.post(
   pedidoController.rechazarPrecio
 );
 
+// ── Verificación de pago (productor) ──────────────────────────
+// POST /api/pedidos/:id/verificar-pago    → confirma el comprobante
+// POST /api/pedidos/:id/rechazar-pago     → rechaza (body: { motivo? }); borra el comprobante
+router.post(
+  '/:id/verificar-pago',
+  isAuthenticated,
+  hasRole('productor'),
+  pedidoController.verificarPago
+);
+router.post(
+  '/:id/rechazar-pago',
+  isAuthenticated,
+  hasRole('productor'),
+  pedidoController.rechazarPago
+);
+
 module.exports = router;

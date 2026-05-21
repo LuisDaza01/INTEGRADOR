@@ -7,6 +7,7 @@ const logger = require('../utils/logger');
 const { sendPushNotification } = require('./pushNotifications');
 const pedidoRepository = require('../modules/pedidos/pedido.repository');
 const reservaService   = require('../modules/reservas/reserva.service');
+const notifService     = require('../modules/notificaciones/notificacion.service');
 
 // ── Helpers ───────────────────────────────────────────────────────
 const TIPOS_ALIMENTO = [
@@ -37,11 +38,11 @@ function calcAlimento(siembra) {
 async function getSiembrasActivas() {
   return db.query(`
     SELECT s.*, l.nombre AS laguna_nombre, l.productor_id,
-           u.push_token
+           u.expo_push_token AS push_token
     FROM siembras s
     JOIN lagunas l ON l.id = s.laguna_id
     JOIN usuarios u ON u.id = l.productor_id
-    WHERE s.estado = 'activa' AND u.push_token IS NOT NULL
+    WHERE s.estado = 'activa' AND u.expo_push_token IS NOT NULL
   `);
 }
 
@@ -153,9 +154,66 @@ async function expirarReservasVencidas() {
   }
 }
 
+// ── Tarea: recordatorios de reservas próximas ─────────────────────
+// Avisa al consumidor a falta de 7 / 3 / 1 días y el día mismo (0).
+// Usa reservas.ultimo_recordatorio_dias para no repetir el mismo umbral.
+const RECORDATORIO_UMBRALES = [7, 3, 1, 0];
+
+async function enviarRecordatoriosReservas() {
+  try {
+    const rows = await db.query(`
+      SELECT r.id, r.codigo, r.consumidor_id, r.ultimo_recordatorio_dias,
+             (r.fecha_reserva::date - CURRENT_DATE) AS dias_restantes,
+             u.expo_push_token AS push_token,
+             up.nombre AS productor_nombre
+      FROM reservas r
+      JOIN usuarios u  ON u.id = r.consumidor_id
+      LEFT JOIN usuarios up ON up.id = r.productor_id
+      WHERE r.estado = 'aceptada'
+        AND r.fecha_reserva::date >= CURRENT_DATE
+    `);
+    if (!rows.length) return;
+
+    let enviados = 0;
+    for (const r of rows) {
+      const d = Number(r.dias_restantes);
+      // Umbral actual = el menor T de [7,3,1,0] tal que d <= T
+      const T = RECORDATORIO_UMBRALES.filter(t => d <= t).sort((a, b) => a - b)[0];
+      if (T === undefined) continue;                       // aún faltan más de 7 días
+      const ultimo = r.ultimo_recordatorio_dias;
+      if (ultimo !== null && ultimo !== undefined && Number(ultimo) <= T) continue; // ya recordado en este umbral o más cercano
+
+      const esHoy   = T === 0;
+      const titulo  = esHoy ? '📅 ¡Hoy es tu reserva!' : '⏰ Tu reserva se acerca';
+      const codigoTxt = r.codigo ? ` (código ${r.codigo})` : '';
+      const mensaje = esHoy
+        ? `Hoy es tu reserva con ${r.productor_nombre || 'el productor'}. Pasa a recoger${codigoTxt}.`
+        : `Faltan ${T} día${T !== 1 ? 's' : ''} para tu reserva con ${r.productor_nombre || 'el productor'}${codigoTxt}.`;
+
+      notifService.crear({
+        usuario_id: r.consumidor_id, titulo, mensaje,
+        tipo: 'reserva', data: { reserva_id: r.id, recordatorio: T },
+      }).catch(() => {});
+
+      if (r.push_token) {
+        sendPushNotification(r.push_token, titulo, mensaje,
+          { type: 'reserva_recordatorio', reservaId: r.id, screen: 'Reservas' }
+        ).catch(() => {});
+      }
+
+      await db.query(`UPDATE reservas SET ultimo_recordatorio_dias = $1 WHERE id = $2`, [T, r.id]);
+      enviados++;
+    }
+    if (enviados > 0) logger.info(`[scheduler] Recordatorios de reserva enviados: ${enviados}`);
+  } catch (e) {
+    logger.error('[scheduler] Error recordatorios reservas:', e.message);
+  }
+}
+
 // ── Control de horario ────────────────────────────────────────────
 let lastFeedingHour  = -1;
 let lastAlertDay     = -1;
+let lastReminderDay  = -1;
 
 function tickLento() {
   const now    = new Date();
@@ -173,6 +231,12 @@ function tickLento() {
   if (hour === 7 && minute < 5 && lastAlertDay !== day) {
     lastAlertDay = day;
     verificarAlertas();
+  }
+
+  // Recordatorios de reservas: una vez al día a las 09:00
+  if (hour === 9 && minute < 5 && lastReminderDay !== day) {
+    lastReminderDay = day;
+    enviarRecordatoriosReservas();
   }
 }
 

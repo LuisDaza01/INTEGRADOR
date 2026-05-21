@@ -477,13 +477,16 @@ const PerfilProductorConsumidor = () => {
     })
   }
 
-  // Funciones de reserva — el modal reutiliza calDias/calCursor del sidebar (sin duplicar fetch)
-  const handleReservation = (producto) => {
-    setSelectedProduct(producto)
-    setReservationData({ mensaje: '', cantidad: '1', fecha: fechaPreseleccionada || '', hora: '', es_cocinado: false })
-    setReservationSuccess(false)
-    setReservaError(null)
-    setShowReservationModal(true)
+  // Flujo unificado: "Reservar" agrega el producto a la reserva (carrito) y lleva
+  // al flujo de reserva con calendario — un solo flujo, un solo código (igual que la app).
+  const handleReservation = async (producto) => {
+    try {
+      if ((producto.stock ?? 1) <= 0) { alert('Producto sin stock'); return }
+      await agregarAlCarrito(producto.id, 1)
+      navigate('/dashboard-consumidor/carrito')
+    } catch (e) {
+      alert('No se pudo agregar a la reserva')
+    }
   }
 
   const submitReservation = async () => {

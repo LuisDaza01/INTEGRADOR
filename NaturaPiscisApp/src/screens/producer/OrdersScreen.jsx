@@ -308,7 +308,7 @@ const ModalRegistrarPeso = ({ visible, pedido, onClose, onSuccess, colors }) => 
 };
 
 // ── Modal ver comprobante ─────────────────────────────────────
-const ModalComprobante = ({ visible, imageUrl, onClose, onConfirmar, colors }) => (
+const ModalComprobante = ({ visible, imageUrl, onClose, onConfirmar, onRechazar, colors }) => (
   <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
     <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center', alignItems: 'center' }}>
       <TouchableOpacity style={{ position: 'absolute', top: 48, right: 20, zIndex: 10, padding: 8 }} onPress={onClose}>
@@ -328,7 +328,14 @@ const ModalComprobante = ({ visible, imageUrl, onClose, onConfirmar, colors }) =
         onPress={onConfirmar}
       >
         <Ionicons name="checkmark-circle" size={22} color="#fff" />
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Confirmar pago y aceptar pedido</Text>
+        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Confirmar pago</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(239,68,68,0.6)' }}
+        onPress={onRechazar}
+      >
+        <Ionicons name="close-circle" size={20} color="#f87171" />
+        <Text style={{ color: '#f87171', fontSize: 14, fontWeight: '700' }}>Rechazar comprobante</Text>
       </TouchableOpacity>
     </View>
   </Modal>
@@ -410,6 +417,7 @@ const OrdersScreen = () => {
 
   const handleConfirmarPagoQR = () => {
     if (!pedidoComprobante) return;
+    const id = pedidoComprobante.id;
     Alert.alert(
       '¿Confirmar pago?',
       `Confirma que verificaste el comprobante de Bs. ${parseFloat(pedidoComprobante.total || 0).toFixed(2)} de ${pedidoComprobante.cliente?.nombre}.`,
@@ -418,9 +426,43 @@ const OrdersScreen = () => {
         {
           text: 'Confirmar pago',
           onPress: async () => {
-            setShowComprobante(false);
-            await handleCambiarEstado(pedidoComprobante.id, 'confirmado');
-            setPedidoComprobante(null);
+            try {
+              await api.post(`/pedidos/${id}/verificar-pago`);
+              setPedidos(prev => prev.map(p => p.id === id ? { ...p, pago_verificado: true } : p));
+              setShowComprobante(false);
+              setPedidoComprobante(null);
+              Alert.alert('✅ Pago verificado', 'El consumidor fue notificado. Ya puedes preparar el pedido.');
+              setTimeout(() => refresh(), 500);
+            } catch {
+              Alert.alert('Error', 'No se pudo verificar el pago');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleRechazarPagoQR = () => {
+    if (!pedidoComprobante) return;
+    const id = pedidoComprobante.id;
+    Alert.alert(
+      '¿Rechazar comprobante?',
+      'El comprobante se borrará y el consumidor deberá subirlo de nuevo.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Rechazar', style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.post(`/pedidos/${id}/rechazar-pago`, { motivo: 'El comprobante no es válido' });
+              setPedidos(prev => prev.map(p => p.id === id ? { ...p, pago_verificado: false, comprobante_url: null } : p));
+              setShowComprobante(false);
+              setPedidoComprobante(null);
+              Alert.alert('Comprobante rechazado', 'El consumidor fue notificado para reenviarlo.');
+              setTimeout(() => refresh(), 500);
+            } catch {
+              Alert.alert('Error', 'No se pudo rechazar el comprobante');
+            }
           },
         },
       ]
@@ -651,6 +693,7 @@ const OrdersScreen = () => {
         imageUrl={comprobanteUrl}
         onClose={() => setShowComprobante(false)}
         onConfirmar={handleConfirmarPagoQR}
+        onRechazar={handleRechazarPagoQR}
         colors={colors}
       />
     </SafeAreaView>
@@ -704,6 +747,22 @@ const OrderCard = ({ pedido, onPress, onConfirmar, onPesar, onChat, onVerComprob
               Bs. {parseFloat(pedido.total || 0).toFixed(2)}
             </Text>
           </View>
+
+          {/* ── Verificación de pago (comprobante llega tras el pesaje) ── */}
+          {pedido.comprobante_url && !pedido.pago_verificado && pedido.estado !== 'pendiente' && (
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: '#8b5cf6', marginBottom: 8 }]}
+              onPress={() => onVerComprobante?.(pedido)}>
+              <Ionicons name="receipt-outline" size={16} color="#fff" />
+              <Text style={styles.actionButtonText}>Ver comprobante y verificar pago</Text>
+            </TouchableOpacity>
+          )}
+          {pedido.pago_verificado && (
+            <View style={[styles.pesoInfoBadge, { backgroundColor: 'rgba(34,197,94,0.12)', marginBottom: 8 }]}>
+              <Ionicons name="checkmark-circle" size={14} color="#22c55e" />
+              <Text style={[styles.pesoInfoText, { color: '#22c55e' }]}>Pago verificado</Text>
+            </View>
+          )}
 
           {/* ── Acciones rápidas por estado ── */}
           {pedido.estado === 'pendiente' && (

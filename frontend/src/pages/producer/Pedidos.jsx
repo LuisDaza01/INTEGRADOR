@@ -156,7 +156,7 @@ const ModalRegistrarPeso = ({ pedido, onClose, onSuccess }) => {
 }
 
 // ── PedidoRow ────────────────────────────────────────────────
-const PedidoRow = ({ pedido, onConfirmar, onPesar }) => {
+const PedidoRow = ({ pedido, onConfirmar, onPesar, onRefresh }) => {
   const { D } = useTheme()
   const [expanded, setExpanded] = useState(false)
 
@@ -261,6 +261,31 @@ const PedidoRow = ({ pedido, onConfirmar, onPesar }) => {
                       style={{ fontSize: 12, color: '#a855f7', textDecoration: 'underline' }}>
                       Ver imagen completa ↗
                     </a>
+                    {pedido.pago_verificado ? (
+                      <div style={{ marginTop: 12, color: '#22c55e', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <CheckCircle size={15} /> Pago verificado
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                        <button
+                          onClick={async () => {
+                            try { await api.post(`/pedidos/${pedido.id}/verificar-pago`); onRefresh?.() }
+                            catch { alert('No se pudo verificar el pago') }
+                          }}
+                          style={{ flex: 1, padding: '9px 0', background: '#22c55e', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                          ✅ Confirmar pago
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (!window.confirm('¿Rechazar el comprobante? El consumidor deberá subirlo de nuevo.')) return
+                            try { await api.post(`/pedidos/${pedido.id}/rechazar-pago`, { motivo: 'El comprobante no es válido' }); onRefresh?.() }
+                            catch { alert('No se pudo rechazar el comprobante') }
+                          }}
+                          style={{ padding: '9px 14px', background: 'none', border: '1px solid rgba(248,113,113,0.5)', color: '#f87171', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                          Rechazar
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
                 {pedido.peso_real_kg && (

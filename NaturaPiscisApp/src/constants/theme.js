@@ -1,6 +1,8 @@
 // src/constants/theme.js
 // Estilos globales y tema de la aplicación
 
+import { Platform } from 'react-native';
+
 // Re-exportar COLORS para acceso directo
 export { COLORS, SENSOR_COLORS, DEVICE_COLORS, ORDER_STATUS_COLORS } from './colors';
 

@@ -51,6 +51,11 @@ const CarritoScreen = ({ navigation }) => {
   const [modos,   setModos]   = useState({});
   // peso en kg ingresado por el consumidor (solo cuando modo==='peso')
   const [pesosKg, setPesosKg] = useState({});
+  // Reserva: fecha elegida + fechas disponibles del productor + reservas creadas
+  const [fechaSel, setFechaSel]             = useState(null);
+  const [fechasDisp, setFechasDisp]         = useState([]);
+  const [cargandoFechas, setCargandoFechas] = useState(false);
+  const [reservasCreadas, setReservasCreadas] = useState(null); // [{ codigo, productor, total }]
 
   useEffect(() => {
     fetchCarrito();
@@ -137,11 +142,12 @@ const CarritoScreen = ({ navigation }) => {
 
   // Precio por item según modo
   const precioItem = (item) => {
+    const precioKg = parseFloat(item.precio) || PRECIO_KG;
     if (getModo(item.id) === 'peso') {
       const kg = parseFloat(pesosKg[item.id]) || 0;
-      return kg * PRECIO_KG;
+      return kg * precioKg;
     }
-    return PRECIO_KG * PESO_PROMEDIO_ESTIMADO * item.cantidad;
+    return precioKg * PESO_PROMEDIO_ESTIMADO * item.cantidad;
   };
 
   const subtotal = safeCarrito.reduce((sum, item) => sum + precioItem(item), 0);
@@ -150,12 +156,29 @@ const CarritoScreen = ({ navigation }) => {
   // ¿Hay algún item con precio a confirmar?
   const hayEstimado = safeCarrito.some(item => getModo(item.id) === 'cantidad');
 
-  const handleConfirmarPedido = async () => {
-    if (!paradaSeleccionada) {
-      Alert.alert('Error', 'Por favor selecciona una parada de entrega');
-      setStep(2);
-      return;
+  // Cargar fechas disponibles del productor (calendario público)
+  const cargarFechas = async () => {
+    const pids = [...new Set(safeCarrito.map(i => i.productor_id).filter(Boolean))];
+    if (pids.length === 0) { setFechasDisp([]); return; }
+    setCargandoFechas(true);
+    try {
+      const fmt = (d) => d.toISOString().slice(0, 10);
+      const hoy = new Date();
+      const hasta = new Date(); hasta.setDate(hasta.getDate() + 30);
+      // Negocio mono-productor en la práctica: usamos el calendario del primer productor
+      const res = await api.get(`/productores/${pids[0]}/calendario?desde=${fmt(hoy)}&hasta=${fmt(hasta)}`);
+      const dias = (res.data?.data || res.data || []).filter(d => d.disponible);
+      setFechasDisp(dias);
+    } catch {
+      setFechasDisp([]);
+    } finally {
+      setCargandoFechas(false);
     }
+  };
+
+  // Confirmar: crea una reserva por productor (sin pago — el precio se fija al pesar)
+  const handleConfirmarReserva = async () => {
+    if (!fechaSel) { setStep(2); return; }
 
     // Validar items por peso: mínimo 800g (= un pescado)
     for (const item of safeCarrito) {
@@ -169,64 +192,71 @@ const CarritoScreen = ({ navigation }) => {
       }
     }
 
-    const metodoPagoIds = { efectivo: 4, qr: 7, transferencia: 8 };
-    const metodoPagoId  = metodoPagoIds[metodoPago] || 4;
-
-    const pedidoData = {
-      items: safeCarrito.map(item => {
-        const modo = getModo(item.id);
-        return {
-          producto_id:       item.producto_id || item.id,
-          cantidad:          modo === 'peso'
-                               ? parseFloat(pesosKg[item.id])  // kg exactos
-                               : item.cantidad,                // # pescados
-          tipo_pedido:       modo,      // 'cantidad' | 'peso'
-          precio:            PRECIO_KG, // Bs/kg — referencia
-        };
-      }),
-      metodo_pago_id: metodoPagoId,
-      metodo_envio:   'parada',
-      subtotal,
-      costo_envio:    envio,
-      total,
-      notas: `Entrega en: ${paradaSeleccionada.nombre}`,
-      parada_id:      paradaSeleccionada.id,
-    };
-
-    if (metodoPago === 'qr') {
-      const primerItem = safeCarrito[0];
-      navigation.navigate('PagoQR', {
-        total,
-        pedidoData,
-        paradaSeleccionada,
-        qrPagoUrl:       primerItem?.productor_qr_pago_url || null,
-        productorNombre: primerItem?.productor_nombre || null,
-      });
-      return;
-    }
-
     setProcesando(true);
     try {
-      await api.post('/pedidos', pedidoData);
-      Alert.alert(
-        '¡Pedido confirmado! 🎉',
-        `Tu pedido será entregado en:\n${paradaSeleccionada.nombre}`,
-        [{ text: 'OK', onPress: () => { setCarrito([]); setCount(0); setStep(1); navigation.navigate('MisPedidos'); } }]
-      );
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo procesar el pedido');
+      // Agrupar por productor → una reserva por productor
+      const grupos = {};
+      for (const item of safeCarrito) {
+        const pid = item.productor_id;
+        (grupos[pid] = grupos[pid] || []).push(item);
+      }
+
+      const creadas = [];
+      for (const [pid, items] of Object.entries(grupos)) {
+        const payload = {
+          productor_id: Number(pid),
+          fecha_reserva: fechaSel,
+          items: items.map(it => {
+            const modo = getModo(it.id);
+            if (modo === 'peso') {
+              return { producto_id: it.producto_id || it.id, modo: 'peso', peso_solicitado_kg: parseFloat(pesosKg[it.id]) || 0 };
+            }
+            return { producto_id: it.producto_id || it.id, modo: 'cantidad', cantidad: it.cantidad };
+          }),
+        };
+        const res = await api.post('/reservas', payload);
+        const r = res.data?.data || res.data;
+        creadas.push({
+          codigo: r.codigo,
+          productor: items[0].productor_nombre || 'Productor',
+          total: r.precio_estimado,
+        });
+      }
+
+      // Vaciar carrito (best-effort, ítem por ítem)
+      await Promise.allSettled(safeCarrito.map(it => api.delete(`/carrito/${it.id}`)));
+      setCarrito([]); setCount(0);
+      setReservasCreadas(creadas);
+    } catch (e) {
+      Alert.alert('No se pudo reservar', e?.response?.data?.message || 'Intenta de nuevo en un momento.');
     } finally {
       setProcesando(false);
     }
   };
 
   const handleNextStep = () => {
-    if (step === 2 && !paradaSeleccionada) {
-      Alert.alert('Selecciona una parada', 'Debes elegir una parada de entrega para continuar.');
-      return;
+    if (step === 1) {
+      // Validar pesos antes de avanzar
+      for (const item of safeCarrito) {
+        if (getModo(item.id) === 'peso') {
+          const kg = parseFloat(pesosKg[item.id]) || 0;
+          if (kg < PESO_MIN_KG) {
+            Alert.alert('Peso mínimo', `El mínimo es 0.8 kg (un pescado).\nRevisa "${item.nombre}".`);
+            return;
+          }
+        }
+      }
+      cargarFechas();
+      setStep(2);
+    } else if (step === 2) {
+      if (!fechaSel) {
+        Alert.alert('Elige una fecha', 'Selecciona el día de tu reserva para continuar.');
+        return;
+      }
+      setStep(3);
+    } else {
+      handleConfirmarReserva();
     }
-    if (step < 3) setStep(step + 1);
-    else handleConfirmarPedido();
   };
 
   const renderStepIndicator = () => (
@@ -240,7 +270,7 @@ const CarritoScreen = ({ navigation }) => {
         </React.Fragment>
       ))}
       <View style={styles.stepLabels}>
-        {['Carrito', 'Parada', 'Pago'].map((label, i) => (
+        {['Carrito', 'Fecha', 'Confirmar'].map((label, i) => (
           <Text key={i} style={[styles.stepLabel, { color: step >= i + 1 ? colors.primary : colors.textMuted }]}>{label}</Text>
         ))}
       </View>
@@ -422,151 +452,143 @@ const CarritoScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderSeleccionParada = () => {
-    const initialRegion = paradas.length > 0 ? {
-      latitude: (parseFloat(paradas[0].lat) + parseFloat(paradas[paradas.length - 1].lat)) / 2,
-      longitude: (parseFloat(paradas[0].lng) + parseFloat(paradas[paradas.length - 1].lng)) / 2,
-      latitudeDelta: 1.5,
-      longitudeDelta: 1.5,
-    } : { latitude: -17.0, longitude: -66.0, latitudeDelta: 2, longitudeDelta: 2 };
-
-    return (
-      <View style={styles.stepContent}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Selecciona tu parada</Text>
-        <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-          Elige la parada donde recibirás tu pedido
-        </Text>
-
-        {MapView !== null ? (
-          <View style={styles.mapContainer}>
-            <MapView style={styles.map} provider={PROVIDER_GOOGLE} initialRegion={initialRegion}>
-              {paradas.map((parada) => (
-                <Marker
-                  key={parada.id}
-                  coordinate={{ latitude: parseFloat(parada.lat), longitude: parseFloat(parada.lng) }}
-                  title={parada.nombre}
-                  description={parada.descripcion}
-                  onPress={() => setParadaSeleccionada(parada)}
-                >
-                  <View style={[styles.paradaMarker, paradaSeleccionada?.id === parada.id && styles.paradaMarkerSelected]}>
-                    <Ionicons name="bus" size={18} color="#fff" />
-                  </View>
-                </Marker>
-              ))}
-            </MapView>
-          </View>
-        ) : (
-          <View style={[styles.mapPlaceholder, { backgroundColor: colors.surfaceVariant }]}>
-            <Ionicons name="map-outline" size={48} color={colors.textMuted} />
-            <Text style={[styles.mapPlaceholderText, { color: colors.textSecondary }]}>
-              Selecciona una parada de la lista
-            </Text>
-          </View>
-        )}
-
-        <Text style={[styles.paradasTitle, { color: colors.text }]}>Paradas disponibles</Text>
-        {paradas.map((parada) => (
-          <TouchableOpacity
-            key={parada.id}
-            style={[
-              styles.paradaCard,
-              { backgroundColor: colors.surface, borderColor: paradaSeleccionada?.id === parada.id ? colors.primary : colors.border },
-              paradaSeleccionada?.id === parada.id && { backgroundColor: colors.primary + '10' }
-            ]}
-            onPress={() => setParadaSeleccionada(parada)}
-          >
-            <View style={[styles.paradaIcon, { backgroundColor: paradaSeleccionada?.id === parada.id ? colors.primary : colors.surfaceVariant }]}>
-              <Ionicons name="bus" size={22} color={paradaSeleccionada?.id === parada.id ? '#fff' : colors.textSecondary} />
-            </View>
-            <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={[styles.paradaNombre, { color: colors.text }]}>{parada.nombre}</Text>
-              {parada.descripcion && (
-                <Text style={[styles.paradaDesc, { color: colors.textSecondary }]}>{parada.descripcion}</Text>
-              )}
-            </View>
-            {paradaSeleccionada?.id === parada.id && (
-              <Ionicons name="checkmark-circle" size={24} color={colors.primary} />
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
+  const fmtFechaCorta = (ymd) => {
+    const [y, m, d] = ymd.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('es-BO', { weekday: 'short', day: 'numeric', month: 'short' });
   };
 
-  const renderPago = () => (
+  const renderFecha = () => (
     <View style={styles.stepContent}>
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Método de Pago</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>¿Para qué día?</Text>
+      <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+        Elige un día de venta del productor. Te recordaremos cuando se acerque.
+      </Text>
 
-      {paradaSeleccionada && (
-        <View style={[styles.paradaResumen, { backgroundColor: '#EFF6FF', borderColor: colors.primary }]}>
-          <Ionicons name="bus" size={20} color={colors.primary} />
+      {cargandoFechas ? (
+        <View style={{ paddingVertical: 30, alignItems: 'center' }}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : fechasDisp.length === 0 ? (
+        <View style={[styles.emptyState, { backgroundColor: colors.surface }]}>
+          <Ionicons name="calendar-outline" size={48} color={colors.textMuted} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Sin fechas disponibles</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            Este productor no tiene días de venta próximos configurados.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.fechasGrid}>
+          {fechasDisp.map((d) => {
+            const sel = fechaSel === d.fecha;
+            return (
+              <TouchableOpacity
+                key={d.fecha}
+                style={[styles.fechaChip, { backgroundColor: sel ? colors.primary : colors.surface, borderColor: sel ? colors.primary : colors.border }]}
+                onPress={() => setFechaSel(d.fecha)}
+              >
+                <Text style={[styles.fechaChipText, { color: sel ? '#fff' : colors.text }]}>{fmtFechaCorta(d.fecha)}</Text>
+                {d.cupo_restante != null && (
+                  <Text style={[styles.fechaCupo, { color: sel ? 'rgba(255,255,255,0.85)' : colors.textMuted }]}>{d.cupo_restante} cupos</Text>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </View>
+  );
+
+  const renderConfirmar = () => {
+    const fmtLargo = (ymd) => {
+      if (!ymd) return '';
+      const [y, m, d] = ymd.split('-').map(Number);
+      return new Date(y, m - 1, d).toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' });
+    };
+    return (
+      <View style={styles.stepContent}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Confirmar reserva</Text>
+
+        {/* Fecha elegida */}
+        <View style={[styles.paradaResumen, { backgroundColor: colors.primary + '12', borderColor: colors.primary }]}>
+          <Ionicons name="calendar" size={20} color={colors.primary} />
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text style={{ fontSize: 13, color: colors.textSecondary }}>Entrega en parada:</Text>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.primary }}>{paradaSeleccionada.nombre}</Text>
+            <Text style={{ fontSize: 13, color: colors.textSecondary }}>Reservas para:</Text>
+            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.primary, textTransform: 'capitalize' }}>{fmtLargo(fechaSel)}</Text>
           </View>
           <TouchableOpacity onPress={() => setStep(2)}>
             <Text style={{ fontSize: 12, color: colors.primary }}>Cambiar</Text>
           </TouchableOpacity>
         </View>
-      )}
 
-
-      <View style={[styles.formCard, { backgroundColor: colors.surface }]}>
-        {['efectivo', 'transferencia', 'qr'].map((metodo) => (
-          <TouchableOpacity
-            key={metodo}
-            style={[
-              styles.paymentOption,
-              { borderColor: metodoPago === metodo ? colors.primary : colors.border },
-              metodoPago === metodo && { backgroundColor: '#EFF6FF' }
-            ]}
-            onPress={() => setMetodoPago(metodo)}
-          >
-            <Ionicons
-              name={metodo === 'efectivo' ? 'cash-outline' : metodo === 'transferencia' ? 'card-outline' : 'qr-code-outline'}
-              size={24}
-              color={metodoPago === metodo ? colors.primary : colors.textSecondary}
-            />
-            <Text style={[styles.paymentOptionText, { color: metodoPago === metodo ? colors.primary : colors.text }]}>
-              {metodo === 'efectivo' ? 'Efectivo' : metodo === 'transferencia' ? 'Transferencia' : 'QR BCP'}
+        {/* Aviso del flujo */}
+        <View style={[styles.pesoInfoBanner, { backgroundColor: colors.infoBg, borderColor: colors.info + '40' }]}>
+          <Ionicons name="information-circle-outline" size={20} color={colors.info} />
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <Text style={[styles.pesoInfoTitle, { color: colors.text }]}>Sin pago por ahora</Text>
+            <Text style={[styles.pesoInfoText, { color: colors.textSecondary }]}>
+              El día de la venta el productor pesa tu pedido y te avisa el precio final. Recién ahí pagas por QR.
             </Text>
-            {metodoPago === metodo && <Ionicons name="checkmark-circle" size={20} color={colors.primary} />}
-          </TouchableOpacity>
-        ))}
-      </View>
+          </View>
+        </View>
 
-      <View style={[styles.summaryCard, { backgroundColor: colors.surface }]}>
-        <Text style={[styles.summaryTitle, { color: colors.text }]}>Resumen del Pedido</Text>
-        <View style={styles.summaryRow}>
-          <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Subtotal estimado</Text>
-          <Text style={[styles.summaryValue, { color: colors.text }]}>Bs {subtotal.toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Envío</Text>
-          <Text style={[styles.summaryValue, { color: envio === 0 ? colors.success : colors.text }]}>
-            {envio === 0 ? 'Gratis' : `Bs ${envio.toFixed(2)}`}
-          </Text>
-        </View>
-        <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.summaryRow}>
-          <Text style={[styles.totalLabel, { color: colors.text }]}>
-            {hayEstimado ? 'Total estimado' : 'Total'}
-          </Text>
-          <Text style={styles.totalValue}>Bs {total.toFixed(2)}</Text>
-        </View>
-        {hayEstimado && (
+        {/* Resumen estimado */}
+        <View style={[styles.summaryCard, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.summaryTitle, { color: colors.text }]}>Resumen estimado</Text>
+          {safeCarrito.map((it) => (
+            <View key={it.id} style={styles.summaryRow}>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]} numberOfLines={1}>
+                {it.nombre} · {getModo(it.id) === 'peso' ? `${parseFloat(pesosKg[it.id]) || 0} kg` : `${it.cantidad} 🐟`}
+              </Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>Bs {precioItem(it).toFixed(2)}</Text>
+            </View>
+          ))}
+          <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.summaryRow}>
+            <Text style={[styles.totalLabel, { color: colors.text }]}>Total estimado</Text>
+            <Text style={styles.totalValue}>Bs {subtotal.toFixed(2)}</Text>
+          </View>
           <Text style={[styles.estimadoNote, { color: colors.textSecondary }]}>
-            * Precio final confirmado tras el pesaje del productor
+            * Estimado con 0.9 kg por pescado. El precio final se calcula al pesar.
           </Text>
-        )}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  // Pantalla de éxito con el código de reserva
+  if (reservasCreadas) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', padding: 24 }]}>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+            <Ionicons name="checkmark-circle" size={56} color={colors.primary} />
+          </View>
+          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text, marginBottom: 6 }}>¡Reserva creada!</Text>
+          <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', marginBottom: 20 }}>
+            Guarda tu código: identifica tu reserva y lo muestras al recoger.
+          </Text>
+          {reservasCreadas.map((r, i) => (
+            <View key={i} style={{ width: '100%', backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 12, alignItems: 'center' }}>
+              <Text style={{ fontSize: 12, color: colors.textMuted }}>{r.productor}</Text>
+              <Text style={{ fontSize: 30, fontWeight: '900', color: colors.primary, letterSpacing: 2, marginVertical: 4 }}>{r.codigo}</Text>
+              {r.total != null && <Text style={{ fontSize: 13, color: colors.textSecondary }}>≈ Bs {Number(r.total).toFixed(2)} (estimado)</Text>}
+            </View>
+          ))}
+          <TouchableOpacity
+            style={{ backgroundColor: colors.primary, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 28, marginTop: 8, width: '100%', alignItems: 'center' }}
+            onPress={() => { setReservasCreadas(null); setStep(1); setFechaSel(null); navigation.navigate('Reservas'); }}
+          >
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>Ver mis reservas</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -580,8 +602,8 @@ const CarritoScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {step === 1 && renderCarrito()}
-        {step === 2 && renderSeleccionParada()}
-        {step === 3 && renderPago()}
+        {step === 2 && renderFecha()}
+        {step === 3 && renderConfirmar()}
         <View style={{ height: 100 }} />
       </ScrollView>
 
@@ -607,7 +629,7 @@ const CarritoScreen = ({ navigation }) => {
               ) : (
                 <>
                   <Text style={styles.nextButtonText}>
-                    {step === 1 ? 'Elegir Parada' : step === 2 ? 'Continuar al Pago' : 'Confirmar Pedido'}
+                    {step === 1 ? 'Elegir Fecha' : step === 2 ? 'Continuar' : 'Confirmar Reserva'}
                   </Text>
                   <Ionicons name={step < 3 ? 'arrow-forward' : 'checkmark'} size={20} color="#FFF" />
                 </>
@@ -630,6 +652,10 @@ const styles = StyleSheet.create({
   stepLine: { flex: 1, height: 2, backgroundColor: '#E5E7EB', marginHorizontal: 8 },
   stepLabels: { position: 'absolute', bottom: -8, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 },
   stepLabel: { fontSize: 11, fontWeight: '500' },
+  fechasGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
+  fechaChip: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, alignItems: 'center', minWidth: 96 },
+  fechaChipText: { fontSize: 13, fontWeight: '700', textTransform: 'capitalize' },
+  fechaCupo: { fontSize: 10, marginTop: 2 },
   content: { flex: 1 },
   stepContent: { padding: 16 },
   sectionTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },

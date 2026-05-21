@@ -120,14 +120,31 @@ export default function MisReservasScreen() {
                   <Text style={{ color: conf.color, fontSize: 11, fontWeight: '700' }}>{conf.label}</Text>
                 </View>
               </View>
+              {r.codigo && (
+                <View style={{ marginBottom: 10, padding: 10, backgroundColor: C.primary + '12', borderColor: C.primary + '40', borderWidth: 1, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Ionicons name="pricetag" size={16} color={C.primary} />
+                  <View>
+                    <Text style={{ color: C.textSecondary, fontSize: 10 }}>Código de reserva</Text>
+                    <Text style={{ color: C.primary, fontWeight: '900', fontSize: 18, letterSpacing: 2 }}>{r.codigo}</Text>
+                  </View>
+                </View>
+              )}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: C.textSecondary, fontSize: 12 }}>
                     Productor: <Text style={{ color: C.text, fontWeight: '700' }}>{r.productor_nombre || '—'}</Text>
                   </Text>
-                  <Text style={{ color: C.text, fontSize: 14, fontWeight: '700', marginTop: 4 }}>
-                    {r.cantidad} × {r.producto_nombre || 'producto'}
-                  </Text>
+                  {r.items && r.items.length > 0 ? (
+                    r.items.map((it, idx) => (
+                      <Text key={idx} style={{ color: C.text, fontSize: 14, fontWeight: '700', marginTop: idx === 0 ? 4 : 2 }}>
+                        {it.modo === 'peso' ? `${Number(it.peso_solicitado_kg)} kg` : `${Number(it.cantidad)} 🐟`} · {it.producto_nombre}
+                      </Text>
+                    ))
+                  ) : (
+                    <Text style={{ color: C.text, fontSize: 14, fontWeight: '700', marginTop: 4 }}>
+                      {r.cantidad} × {r.producto_nombre || 'producto'}
+                    </Text>
+                  )}
                   <Text style={{ color: C.textSecondary, fontSize: 12, marginTop: 2, textTransform: 'capitalize' }}>
                     Para: {fmtFecha(r.fecha_reserva)}
                     {r.hora_reserva ? ` · ${String(r.hora_reserva).slice(0, 5)}` : ''}

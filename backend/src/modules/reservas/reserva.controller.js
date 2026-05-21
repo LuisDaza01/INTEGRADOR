@@ -13,6 +13,7 @@ const crear = async (req, res) => {
       productor_id:  req.body.productor_id,
       producto_id:   req.body.producto_id,
       cantidad:      req.body.cantidad,
+      items:         req.body.items,        // [{ producto_id, modo, cantidad, peso_solicitado_kg }]
       fecha_reserva: req.body.fecha_reserva,
       hora_reserva:  req.body.hora_reserva,
       es_cocinado:   req.body.es_cocinado,

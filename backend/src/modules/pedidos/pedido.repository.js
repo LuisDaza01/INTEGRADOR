@@ -221,17 +221,6 @@ class PedidoRepository {
       );
       if (existeRows.length > 0) return existeRows[0];
 
-      if (!reserva.producto_id) {
-        throw new Error('Reserva sin producto_id; no se puede crear pedido');
-      }
-
-      const productoRows = await tx.query(
-        `SELECT id, productor_id, precio FROM productos WHERE id = $1`,
-        [reserva.producto_id]
-      );
-      if (productoRows.length === 0) throw new Error('Producto no existe');
-      const producto = productoRows[0];
-
       // Dirección y método de pago placeholder (consumidor los puede actualizar después)
       const dirRes = await tx.query(
         `INSERT INTO direcciones (usuario_id, nombre, direccion, ciudad, codigo_postal, telefono, predeterminada)
@@ -248,9 +237,46 @@ class PedidoRepository {
       );
       const metodo_pago_id = pagoRes[0].id;
 
-      const cantidad = parseFloat(reserva.cantidad);
-      const precioKg = parseFloat(producto.precio);
-      const subtotal = parseFloat((cantidad * precioKg).toFixed(2));
+      const PESO_PROMEDIO_KG = 0.9; // estimación; el peso real se registra al pesar
+
+      // Líneas del pedido: desde reserva_items (multi-ítem) o desde el producto único (compat)
+      const itemRows = await tx.query(
+        `SELECT ri.*, p.productor_id, p.precio
+         FROM reserva_items ri JOIN productos p ON p.id = ri.producto_id
+         WHERE ri.reserva_id = $1`,
+        [reservaId]
+      );
+
+      let lineas = [];
+      if (itemRows.length > 0) {
+        lineas = itemRows.map((it) => {
+          const precioKg = parseFloat(it.precio) || 0;
+          const esPeso = it.modo === 'peso';
+          const cant = esPeso
+            ? Math.max(1, Math.ceil((parseFloat(it.peso_solicitado_kg) || 0) / PESO_PROMEDIO_KG))
+            : Math.max(1, Math.ceil(parseFloat(it.cantidad) || 0));
+          const sub = it.precio_estimado != null
+            ? parseFloat(parseFloat(it.precio_estimado).toFixed(2))
+            : parseFloat(((esPeso ? (parseFloat(it.peso_solicitado_kg) || 0) : cant * PESO_PROMEDIO_KG) * precioKg).toFixed(2));
+          return { producto_id: it.producto_id, productor_id: it.productor_id, cantidad: cant, precio_unitario: precioKg, subtotal: sub };
+        });
+      } else {
+        if (!reserva.producto_id) throw new Error('Reserva sin ítems ni producto');
+        const productoRows = await tx.query(
+          `SELECT id, productor_id, precio FROM productos WHERE id = $1`,
+          [reserva.producto_id]
+        );
+        if (productoRows.length === 0) throw new Error('Producto no existe');
+        const prod = productoRows[0];
+        const cant = Math.max(1, Math.ceil(parseFloat(reserva.cantidad) || 0));
+        const precioKg = parseFloat(prod.precio) || 0;
+        const sub = parseFloat((cant * PESO_PROMEDIO_KG * precioKg).toFixed(2));
+        lineas = [{ producto_id: prod.id, productor_id: prod.productor_id, cantidad: cant, precio_unitario: precioKg, subtotal: sub }];
+      }
+
+      const subtotal = parseFloat(lineas.reduce((s, l) => s + l.subtotal, 0).toFixed(2));
+      const cantidadPescados = lineas.reduce((s, l) => s + l.cantidad, 0);
+      const precioKgRef = lineas[0]?.precio_unitario || 0;
       const costo_envio = 5.00;
       const total = parseFloat((subtotal + costo_envio).toFixed(2));
 
@@ -265,38 +291,45 @@ class PedidoRepository {
           reserva.consumidor_id, direccion_id, metodo_pago_id,
           subtotal, costo_envio, total,
           reserva.notas || `Pedido desde reserva #${reservaId}`,
-          Math.ceil(cantidad), precioKg, reservaId,
+          cantidadPescados, precioKgRef, reservaId,
         ]
       );
       const pedido_id = pedido[0].id;
 
-      // Detalle único (un producto por reserva)
-      await tx.query(
-        `INSERT INTO detalles_pedido
-           (pedido_id, producto_id, cantidad, precio_unitario, subtotal, preferencia_corte)
-         VALUES ($1, $2, $3, $4, $5, 'sin_preferencia')`,
-        [pedido_id, producto.id, Math.ceil(cantidad), precioKg, subtotal]
-      );
+      // Detalles (uno por línea)
+      for (const l of lineas) {
+        await tx.query(
+          `INSERT INTO detalles_pedido
+             (pedido_id, producto_id, cantidad, precio_unitario, subtotal, preferencia_corte)
+           VALUES ($1, $2, $3, $4, $5, 'sin_preferencia')`,
+          [pedido_id, l.producto_id, l.cantidad, l.precio_unitario, l.subtotal]
+        );
+      }
 
-      // Generar código de retiro único
-      let codigo = generarCodigoRetiro();
-      for (let i = 0; i < 5; i++) {
-        const exists = await tx.query(`SELECT id FROM pedidos WHERE codigo_retiro = $1`, [codigo]);
-        if (exists.length === 0) break;
+      // Un solo código de extremo a extremo: el código de la reserva ES el código de retiro
+      let codigo = reserva.codigo;
+      if (!codigo) {
         codigo = generarCodigoRetiro();
+        for (let i = 0; i < 5; i++) {
+          const exists = await tx.query(`SELECT id FROM pedidos WHERE codigo_retiro = $1`, [codigo]);
+          if (exists.length === 0) break;
+          codigo = generarCodigoRetiro();
+        }
       }
       await tx.query(`UPDATE pedidos SET codigo_retiro = $1 WHERE id = $2`, [codigo, pedido_id]);
 
-      // Descuento de stock (venta_online)
-      await inventarioRepo.crearMovimiento({
-        producto_id:  producto.id,
-        productor_id: producto.productor_id,
-        tipo:         'venta_online',
-        cantidad:     Math.ceil(cantidad),
-        pedido_id,
-        descripcion:  `Pedido #${pedido_id} (desde reserva #${reservaId})`,
-        tx,
-      });
+      // Descuento de stock por línea (venta_online)
+      for (const l of lineas) {
+        await inventarioRepo.crearMovimiento({
+          producto_id:  l.producto_id,
+          productor_id: l.productor_id,
+          tipo:         'venta_online',
+          cantidad:     l.cantidad,
+          pedido_id,
+          descripcion:  `Pedido #${pedido_id} (desde reserva #${reservaId})`,
+          tx,
+        });
+      }
 
       const final = await tx.query(`SELECT * FROM pedidos WHERE id = $1`, [pedido_id]);
       return final[0];

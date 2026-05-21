@@ -18,3 +18,7 @@ node_modules/
 # Large/compiled files
 *.zip
 *.tar.gz
+
+# Database dumps / backups (no versionar datos reales)
+*.sql.bak
+backend/backup.sql

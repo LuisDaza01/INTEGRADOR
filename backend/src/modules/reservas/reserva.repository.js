@@ -5,25 +5,101 @@ const ESTADOS = ['pendiente', 'aceptada', 'rechazada', 'expirada', 'cancelada'];
 // Tiempo por defecto que tiene el productor para aceptar/rechazar
 const HORAS_VIGENCIA_DEFAULT = 24;
 
+// Código de reserva tipo BoA: NP- + 5 caracteres (sin 0/O/1/I para evitar confusión)
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const generarCodigoReserva = () => {
+  let s = '';
+  for (let i = 0; i < 5; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+  return `NP-${s}`;
+};
+
 class ReservaRepository {
 
   async create({
     consumidor_id, productor_id, producto_id, cantidad,
     fecha_reserva, hora_reserva, es_cocinado, notas,
-    precio_estimado, expires_at,
+    precio_estimado, expires_at, codigo,
   }) {
     const rows = await db.query(
       `INSERT INTO reservas (
          consumidor_id, productor_id, producto_id, cantidad,
          fecha_reserva, hora_reserva, es_cocinado, notas,
-         precio_estimado, expires_at, estado
-       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'pendiente')
+         precio_estimado, expires_at, codigo, estado
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'pendiente')
        RETURNING *`,
       [consumidor_id, productor_id, producto_id || null, cantidad,
        fecha_reserva, hora_reserva || null, !!es_cocinado, notas || null,
-       precio_estimado || null, expires_at]
+       precio_estimado || null, expires_at, codigo || null]
     );
     return rows[0];
+  }
+
+  // Genera un código único (reintenta ante colisión)
+  async generarCodigoUnico(tx = null) {
+    const q = tx || db;
+    let codigo = generarCodigoReserva();
+    for (let i = 0; i < 6; i++) {
+      const exists = await q.query(`SELECT id FROM reservas WHERE codigo = $1`, [codigo]);
+      if (exists.length === 0) return codigo;
+      codigo = generarCodigoReserva();
+    }
+    return codigo;
+  }
+
+  // Crea una reserva multi-ítem (cabecera + reserva_items) en una transacción
+  async createConItems({
+    consumidor_id, productor_id, fecha_reserva, hora_reserva,
+    es_cocinado, notas, precio_estimado, expires_at, items,
+  }) {
+    return db.transaction(async (tx) => {
+      const codigo = await this.generarCodigoUnico(tx);
+      const resRows = await tx.query(
+        `INSERT INTO reservas (
+           consumidor_id, productor_id, producto_id, cantidad,
+           fecha_reserva, hora_reserva, es_cocinado, notas,
+           precio_estimado, expires_at, codigo, estado
+         ) VALUES ($1,$2,NULL,NULL,$3,$4,$5,$6,$7,$8,$9,'pendiente')
+         RETURNING *`,
+        [consumidor_id, productor_id, fecha_reserva, hora_reserva || null,
+         !!es_cocinado, notas || null, precio_estimado || null, expires_at, codigo]
+      );
+      const reserva = resRows[0];
+      for (const it of items) {
+        await tx.query(
+          `INSERT INTO reserva_items
+             (reserva_id, producto_id, modo, cantidad, peso_solicitado_kg, precio_estimado)
+           VALUES ($1,$2,$3,$4,$5,$6)`,
+          [reserva.id, it.producto_id, it.modo || 'cantidad',
+           it.cantidad || 0, it.peso_solicitado_kg || null, it.precio_estimado || null]
+        );
+      }
+      return reserva;
+    });
+  }
+
+  // Ítems de una reserva (con datos del producto)
+  async getItems(reservaId) {
+    return db.query(
+      `SELECT ri.*, p.nombre AS producto_nombre, p.imagen AS producto_imagen, p.precio AS producto_precio
+       FROM reserva_items ri
+       JOIN productos p ON p.id = ri.producto_id
+       WHERE ri.reserva_id = $1
+       ORDER BY ri.id`,
+      [reservaId]
+    );
+  }
+
+  // Ítems de varias reservas (batch, evita N+1)
+  async getItemsForReservas(ids) {
+    if (!ids || ids.length === 0) return [];
+    return db.query(
+      `SELECT ri.*, p.nombre AS producto_nombre, p.imagen AS producto_imagen, p.precio AS producto_precio
+       FROM reserva_items ri
+       JOIN productos p ON p.id = ri.producto_id
+       WHERE ri.reserva_id = ANY($1::int[])
+       ORDER BY ri.id`,
+      [ids]
+    );
   }
 
   async findById(id) {
@@ -165,3 +241,4 @@ class ReservaRepository {
 module.exports = new ReservaRepository();
 module.exports.ESTADOS = ESTADOS;
 module.exports.HORAS_VIGENCIA_DEFAULT = HORAS_VIGENCIA_DEFAULT;
+module.exports.generarCodigoReserva = generarCodigoReserva;

@@ -16,11 +16,14 @@ const getPushToken = async (usuarioId) => {
 
 const HORAS_VIGENCIA = repo.HORAS_VIGENCIA_DEFAULT;
 
+// Peso promedio por pescado para estimar (modo 'cantidad'). Sincronizado con la app.
+const PESO_PROMEDIO_KG = 0.9;
+const PESO_MIN_KG = 0.8;
+
 class ReservaService {
 
-  async crear({ consumidor_id, productor_id, producto_id, cantidad, fecha_reserva, hora_reserva, es_cocinado, notas }) {
+  async crear({ consumidor_id, productor_id, producto_id, cantidad, items, fecha_reserva, hora_reserva, es_cocinado, notas }) {
     if (!productor_id) throw new AppError('productor_id requerido', 400);
-    if (!cantidad || parseFloat(cantidad) <= 0) throw new AppError('cantidad inválida', 400);
     if (!fecha_reserva) throw new AppError('fecha_reserva requerida (YYYY-MM-DD)', 400);
 
     // Validar fecha futura (o hoy)
@@ -32,21 +35,35 @@ class ReservaService {
     const disponible = await disponibilidadService.puedeReservarFecha(productor_id, fecha_reserva);
     if (!disponible) throw new AppError('El productor no acepta reservas para esa fecha', 400);
 
+    const expires_at = new Date(Date.now() + HORAS_VIGENCIA * 60 * 60 * 1000);
+
+    // ── NUEVO: reserva multi-ítem (desde el carrito) ──────────────────
+    if (Array.isArray(items) && items.length > 0) {
+      const reserva = await this._crearConItems({
+        consumidor_id, productor_id, fecha_reserva, hora_reserva,
+        es_cocinado, notas, expires_at, items,
+      });
+      this._notificarNueva(reserva, productor_id, consumidor_id, fecha_reserva, items.length);
+      return { ...reserva, items: await repo.getItems(reserva.id) };
+    }
+
+    // ── Compat: reserva de un solo producto ──────────────────────────
+    if (!cantidad || parseFloat(cantidad) <= 0) throw new AppError('cantidad inválida', 400);
+
     // Calcular precio estimado si hay producto
     let precio_estimado = null;
     if (producto_id) {
       const prod = await db.query(`SELECT precio FROM productos WHERE id = $1 AND productor_id = $2`,
         [producto_id, productor_id]);
       if (prod.length === 0) throw new AppError('Producto no pertenece al productor', 400);
-      precio_estimado = parseFloat((parseFloat(prod[0].precio) * parseFloat(cantidad)).toFixed(2));
+      precio_estimado = parseFloat((parseFloat(prod[0].precio) * parseFloat(cantidad) * PESO_PROMEDIO_KG).toFixed(2));
     }
 
-    const expires_at = new Date(Date.now() + HORAS_VIGENCIA * 60 * 60 * 1000);
-
+    const codigo = await repo.generarCodigoUnico();
     const reserva = await repo.create({
       consumidor_id, productor_id, producto_id, cantidad,
       fecha_reserva, hora_reserva, es_cocinado, notas,
-      precio_estimado, expires_at,
+      precio_estimado, expires_at, codigo,
     });
 
     // Notif in-app (registro en BD)
@@ -83,16 +100,80 @@ class ReservaService {
     return reserva;
   }
 
-  async listarMisReservas(usuario) {
-    if (usuario.rol === 'productor') {
-      return repo.findByProductor(usuario.id);
+  // Valida productos, calcula estimados y crea reserva multi-ítem
+  async _crearConItems({ consumidor_id, productor_id, fecha_reserva, hora_reserva, es_cocinado, notas, expires_at, items }) {
+    const norm = [];
+    let total = 0;
+    for (const it of items) {
+      const pid = it.producto_id;
+      if (!pid) throw new AppError('Ítem sin producto_id', 400);
+      const prod = await db.query(`SELECT precio FROM productos WHERE id = $1 AND productor_id = $2`, [pid, productor_id]);
+      if (prod.length === 0) throw new AppError(`El producto ${pid} no pertenece a este productor`, 400);
+      const precioKg = parseFloat(prod[0].precio) || 0;
+      const modo = it.modo === 'peso' ? 'peso' : 'cantidad';
+      let estimado = 0, cantidad = 0, peso = null;
+      if (modo === 'peso') {
+        peso = parseFloat(it.peso_solicitado_kg) || 0;
+        if (peso < PESO_MIN_KG) throw new AppError(`El mínimo es ${PESO_MIN_KG} kg por producto (un pescado)`, 400);
+        estimado = peso * precioKg;
+      } else {
+        cantidad = Math.max(1, Math.ceil(parseFloat(it.cantidad) || 0));
+        estimado = cantidad * PESO_PROMEDIO_KG * precioKg;
+      }
+      estimado = parseFloat(estimado.toFixed(2));
+      total += estimado;
+      norm.push({ producto_id: pid, modo, cantidad, peso_solicitado_kg: peso, precio_estimado: estimado });
     }
-    return repo.findByConsumidor(usuario.id);
+    total = parseFloat(total.toFixed(2));
+    return repo.createConItems({
+      consumidor_id, productor_id, fecha_reserva, hora_reserva,
+      es_cocinado, notas, precio_estimado: total, expires_at, items: norm,
+    });
+  }
+
+  // Notificación in-app + push al productor por nueva reserva
+  _notificarNueva(reserva, productor_id, consumidor_id, fecha_reserva, numItems) {
+    notifService.crear({
+      usuario_id: productor_id,
+      titulo: 'Nueva reserva',
+      mensaje: `Tienes una nueva reserva (${numItems} producto${numItems !== 1 ? 's' : ''}) para el ${fecha_reserva}`,
+      tipo: 'reserva',
+      data: { reserva_id: reserva.id, codigo: reserva.codigo },
+    }).catch(e => logger.warn('Notif reserva error', { error: e.message }));
+
+    (async () => {
+      try {
+        const token = await getPushToken(productor_id);
+        if (!token) return;
+        const datos = await db.query(`SELECT nombre AS consumidor_nombre FROM usuarios WHERE id = $1`, [consumidor_id]);
+        await push.notificarNuevaReserva(token, reserva.id, datos[0]?.consumidor_nombre || 'Un cliente', numItems, null, fecha_reserva);
+      } catch (e) { logger.warn('Push reserva error', { error: e.message }); }
+    })();
+  }
+
+  // Adjunta los reserva_items a cada reserva de la lista (batch)
+  async _attachItems(reservas) {
+    const ids = reservas.map(r => r.id);
+    const items = await repo.getItemsForReservas(ids);
+    const porReserva = {};
+    for (const it of items) {
+      (porReserva[it.reserva_id] = porReserva[it.reserva_id] || []).push(it);
+    }
+    return reservas.map(r => ({ ...r, items: porReserva[r.id] || [] }));
+  }
+
+  async listarMisReservas(usuario) {
+    const data = usuario.rol === 'productor'
+      ? await repo.findByProductor(usuario.id)
+      : await repo.findByConsumidor(usuario.id);
+    return this._attachItems(data);
   }
 
   async listarPorEstado(usuario, estado) {
-    if (usuario.rol === 'productor') return repo.findByProductor(usuario.id, { estado });
-    return repo.findByConsumidor(usuario.id, { estado });
+    const data = usuario.rol === 'productor'
+      ? await repo.findByProductor(usuario.id, { estado })
+      : await repo.findByConsumidor(usuario.id, { estado });
+    return this._attachItems(data);
   }
 
   async detalle(id, usuario) {
@@ -103,6 +184,7 @@ class ReservaService {
         r.productor_id  !== usuario.id) {
       throw new AppError('Sin permisos para ver esta reserva', 403);
     }
+    r.items = await repo.getItems(id);
     return r;
   }
 

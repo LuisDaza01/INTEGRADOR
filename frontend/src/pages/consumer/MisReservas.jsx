@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   CalendarCheck, Clock, CheckCircle, XCircle, Package, X,
-  AlertCircle, RefreshCw, User, MessageSquare, Hourglass,
+  AlertCircle, RefreshCw, User, MessageSquare, Hourglass, Tag,
 } from "lucide-react"
 import api from "../../api/config/axios"
 import { useTheme } from "../../contexts/ThemeContext"
@@ -103,18 +103,40 @@ export default function MisReservas() {
                         <StatusIcon size={11} /> {conf?.label}
                       </span>
                     </div>
+                    {r.codigo && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, padding: "8px 12px", background: `${D.primary}14`, border: `1px solid ${D.primary}40`, borderRadius: 10, width: "fit-content" }}>
+                        <Tag size={15} style={{ color: D.primary }} />
+                        <div>
+                          <div style={{ fontSize: 10, color: D.muted }}>Código de reserva</div>
+                          <div style={{ fontSize: 18, fontWeight: 900, color: D.primary, letterSpacing: "0.08em" }}>{r.codigo}</div>
+                        </div>
+                      </div>
+                    )}
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                       <User size={14} style={{ color: D.muted }} />
                       <span style={{ color: D.muted, fontSize: 13 }}>
                         Productor: <b style={{ color: D.text }}>{r.productor_nombre || "—"}</b>
                       </span>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <Package size={14} style={{ color: D.primary }} />
-                      <span style={{ color: D.text, fontSize: 14 }}>
-                        <b>{r.cantidad}</b> × {r.producto_nombre || "producto"}
-                      </span>
-                    </div>
+                    {r.items && r.items.length > 0 ? (
+                      <div style={{ marginBottom: 4 }}>
+                        {r.items.map((it, idx) => (
+                          <div key={idx} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: idx === 0 ? 0 : 2 }}>
+                            <Package size={14} style={{ color: D.primary }} />
+                            <span style={{ color: D.text, fontSize: 14 }}>
+                              <b>{it.modo === "peso" ? `${Number(it.peso_solicitado_kg)} kg` : `${Number(it.cantidad)} 🐟`}</b> · {it.producto_nombre}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <Package size={14} style={{ color: D.primary }} />
+                        <span style={{ color: D.text, fontSize: 14 }}>
+                          <b>{r.cantidad}</b> × {r.producto_nombre || "producto"}
+                        </span>
+                      </div>
+                    )}
                     <p style={{ margin: "4px 0", color: D.muted, fontSize: 13, textTransform: "capitalize" }}>
                       Para: <b style={{ color: D.text }}>{fmtFecha(r.fecha_reserva)}</b>
                       {r.hora_reserva && <span> · {String(r.hora_reserva).slice(0, 5)}</span>}

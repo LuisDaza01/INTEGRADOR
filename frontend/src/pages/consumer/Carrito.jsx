@@ -1,17 +1,18 @@
 // ============================================================
 // src/pages/consumer/Carrito.jsx
 // Flujo de 3 pasos — igual que la app mobile:
-//   Paso 1: Carrito + modo pedido (pescados / kilos)
-//   Paso 2: Selección de parada de entrega (con mapa Leaflet)
-//   Paso 3: Pago QR BCP — el pedido se crea AL CONFIRMAR PAGO
+//   Paso 1: Reserva (carrito) + modo pedido (pescados / kilos)
+//   Paso 2: Elegir fecha de venta del productor (calendario)
+//   Paso 3: Confirmar — crea una reserva por productor (sin pago;
+//           el precio final se fija al pesar). Devuelve código NP-XXXXX
 // ============================================================
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingBag, Check, RefreshCw, ArrowLeft, ArrowRight,
-  MapPin, Fish, Trash2, Plus, Minus, Package, QrCode,
-  CheckCircle, AlertCircle, CreditCard, Info, Scale, Upload,
+  Calendar, Fish, Trash2, Plus, Minus, Package,
+  CheckCircle, AlertCircle, Info, Scale, Tag,
 } from 'lucide-react'
 import {
   obtenerCarrito,
@@ -20,21 +21,15 @@ import {
 } from '../../api/services/carrito.service'
 import api from '../../api/config/axios'
 import { useTheme } from '../../contexts/ThemeContext'
-import CuponInput from '../../components/features/CuponInput'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://naturapiscis-backend-production.up.railway.app/api'
-
-const TITULAR              = 'Luis Gustavo Daza Jimenez'
-const CUENTA               = '201-51679466-3-61'
-const BANCO                = 'BCP Bolivia'
-const PRECIO_KG            = 35
-const PESO_PROMEDIO        = 0.9   // kg estimado por pescado
-const PESO_MIN_KG          = 0.8   // mínimo por pedido
+const PRECIO_KG_REF        = 35     // Bs/kg — referencia si el item no trae precio
+const PESO_PROMEDIO        = 0.9    // kg estimado por pescado
+const PESO_MIN_KG          = 0.8    // mínimo por pedido (un pescado)
 
 // ── Indicador de pasos ────────────────────────────────────────
 const StepIndicator = ({ step }) => {
   const { D } = useTheme()
-  const steps = ['Carrito', 'Parada', 'Pago']
+  const steps = ['Reserva', 'Fecha', 'Confirmar']
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 28 }}>
       {steps.map((label, i) => {
@@ -48,7 +43,7 @@ const StepIndicator = ({ step }) => {
                 width: 36, height: 36, borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 13, fontWeight: 700,
-                background: done ? D.teal : current ? 'transparent' : 'transparent',
+                background: done ? D.teal : 'transparent',
                 border: `2px solid ${done ? D.teal : current ? D.primary : D.dim}`,
                 color: done ? '#fff' : current ? D.primary : D.dim,
                 boxShadow: current ? `0 0 14px rgba(56,189,248,0.4)` : 'none',
@@ -110,11 +105,12 @@ const ModoToggle = ({ modo, onModo }) => {
 // ── Item del carrito ──────────────────────────────────────────
 const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemove }) => {
   const { D } = useTheme()
-  const kgNum     = parseFloat(pesoKg) || 0
+  const precioKg   = parseFloat(item.precio) || PRECIO_KG_REF
+  const kgNum      = parseFloat(pesoKg) || 0
   const pesoValido = kgNum >= PESO_MIN_KG
   const precioEst  = modo === 'peso'
-    ? (pesoValido ? kgNum * PRECIO_KG : null)
-    : PRECIO_KG * PESO_PROMEDIO * item.cantidad
+    ? (pesoValido ? kgNum * precioKg : null)
+    : precioKg * PESO_PROMEDIO * item.cantidad
 
   return (
     <div style={{
@@ -150,7 +146,7 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
             </button>
           </div>
           <p style={{ color: D.muted, fontSize: 12, margin: '3px 0 0' }}>
-            Bs. {PRECIO_KG}/kg · referencial
+            Bs. {precioKg}/kg · {item.productor_nombre || 'productor'}
           </p>
         </div>
       </div>
@@ -162,7 +158,6 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
       <div style={{ marginTop: 12 }}>
         {modo === 'cantidad' ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Selector cantidad */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 10,
               background: 'rgba(56,189,248,0.06)', borderRadius: 10, padding: '6px 12px',
@@ -184,7 +179,6 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
                 <Plus size={15} />
               </button>
             </div>
-            {/* Info estimado */}
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: D.primary, margin: 0 }}>
                 ~Bs. {precioEst.toFixed(2)} estimado
@@ -196,7 +190,6 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
           </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            {/* Input kg */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               border: `1.5px solid ${pesoKg && !pesoValido ? D.red : D.border}`,
@@ -217,7 +210,6 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
               />
               <span style={{ fontSize: 13, color: D.muted, fontWeight: 600 }}>kg</span>
             </div>
-            {/* Info precio */}
             <div style={{ flex: 1, paddingTop: 4 }}>
               {!pesoKg && (
                 <p style={{ fontSize: 12, color: D.dim, margin: 0 }}>Mínimo 0.8 kg</p>
@@ -233,7 +225,7 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
                     Bs. {precioEst.toFixed(2)}
                   </p>
                   <p style={{ fontSize: 11, color: D.dim, margin: '2px 0 0' }}>
-                    {kgNum.toFixed(2)} kg × Bs. {PRECIO_KG}/kg
+                    {kgNum.toFixed(2)} kg × Bs. {precioKg}/kg
                   </p>
                 </>
               )}
@@ -245,89 +237,38 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
   )
 }
 
-// ── Mapa Leaflet para paradas ─────────────────────────────────
-const MapaParadas = ({ paradas, onSelect }) => {
-  const { D } = useTheme()
-  const mapRef = useRef(null)
-  const mapObj = useRef(null)
-
-  useEffect(() => {
-    if (mapObj.current || !paradas.length) return
-
-    const loadLeaflet = () => new Promise(resolve => {
-      if (window.L) { resolve(window.L); return }
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      document.head.appendChild(link)
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.onload = () => resolve(window.L)
-      document.head.appendChild(script)
-    })
-
-    loadLeaflet().then(L => {
-      if (!mapRef.current || mapObj.current) return
-      const primera = paradas[0]
-      mapObj.current = L.map(mapRef.current).setView([primera.lat, primera.lng], 8)
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap',
-      }).addTo(mapObj.current)
-
-      paradas.forEach(parada => {
-        const icon = L.divIcon({
-          html: `<div style="background:#14b8a6;width:30px;height:30px;border-radius:50%;border:3px solid #0f172a;box-shadow:0 0 12px rgba(20,184,166,0.5);display:flex;align-items:center;justify-content:center;font-size:13px;">📍</div>`,
-          iconSize: [30, 30], iconAnchor: [15, 15], className: '',
-        })
-        L.marker([parada.lat, parada.lng], { icon })
-          .addTo(mapObj.current)
-          .bindPopup(`<strong>${parada.nombre}</strong><br>${parada.descripcion || ''}`)
-          .on('click', () => onSelect(parada))
-      })
-
-      const bounds = L.latLngBounds(paradas.map(p => [p.lat, p.lng]))
-      mapObj.current.fitBounds(bounds, { padding: [40, 40] })
-    })
-
-    return () => { if (mapObj.current) { mapObj.current.remove(); mapObj.current = null } }
-  }, [paradas])
-
-  if (!paradas.length) return null
-  return (
-    <div ref={mapRef} style={{
-      height: 200, borderRadius: 14, overflow: 'hidden',
-      border: `1px solid ${D.border}`, marginBottom: 16,
-    }} />
-  )
-}
+const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+const fmtFechaCorta = (s) => new Date(`${s}T00:00:00`).toLocaleDateString('es-BO', { weekday: 'short', day: 'numeric', month: 'short' })
+const fmtFechaLarga = (s) => new Date(`${s}T00:00:00`).toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' })
 
 // ── Componente principal ──────────────────────────────────────
 const Carrito = () => {
   const navigate = useNavigate()
   const { D } = useTheme()
 
-  const [step, setStep]                             = useState(1)
-  const [carrito, setCarrito]                       = useState([])
-  const [paradas, setParadas]                       = useState([])
-  const [paradaSeleccionada, setParadaSeleccionada] = useState(null)
-  const [modos, setModos]                           = useState({})
-  const [pesosKg, setPesosKg]                       = useState({})
-  const [loading, setLoading]                       = useState(true)
-  const [procesando, setProcesando]                 = useState(false)
-  const [pedidoCreado, setPedidoCreado]             = useState(null)
-  const [error, setError]                           = useState(null)
-  const [pedidoData, setPedidoData]                 = useState(null)
-  const [subiendoComp, setSubiendoComp]             = useState(false)
-  const [comprobanteSubido, setComprobanteSubido]   = useState(false)
+  const [step, setStep]               = useState(1)
+  const [carrito, setCarrito]         = useState([])
+  const [modos, setModos]             = useState({})
+  const [pesosKg, setPesosKg]         = useState({})
+  const [loading, setLoading]         = useState(true)
+  const [procesando, setProcesando]   = useState(false)
+  const [error, setError]             = useState(null)
+
+  // Reserva
+  const [fechaSel, setFechaSel]           = useState(null)
+  const [fechasDisp, setFechasDisp]       = useState([])
+  const [cargandoFechas, setCargandoFechas] = useState(false)
+  const [reservasCreadas, setReservasCreadas] = useState(null) // [{ codigo, productor, total }]
 
   const getModo = id => modos[id] || 'cantidad'
 
   const precioItem = item => {
+    const precioKg = parseFloat(item.precio) || PRECIO_KG_REF
     if (getModo(item.id) === 'peso') {
       const kg = parseFloat(pesosKg[item.id]) || 0
-      return kg * PRECIO_KG
+      return kg * precioKg
     }
-    return PRECIO_KG * PESO_PROMEDIO * item.cantidad
+    return precioKg * PESO_PROMEDIO * item.cantidad
   }
 
   const fetchCarrito = useCallback(async () => {
@@ -339,17 +280,7 @@ const Carrito = () => {
     finally { setLoading(false) }
   }, [])
 
-  const fetchParadas = useCallback(async () => {
-    try {
-      const res = await api.get(`${API_BASE}/paradas`)
-      const data = res.data.data || res.data || []
-      setParadas(Array.isArray(data) && data.length ? data : PARADAS_FALLBACK)
-    } catch {
-      setParadas(PARADAS_FALLBACK)
-    }
-  }, [])
-
-  useEffect(() => { fetchCarrito(); fetchParadas() }, [])
+  useEffect(() => { fetchCarrito() }, [fetchCarrito])
 
   const updateQuantity = async (id, qty) => {
     if (qty < 1) return
@@ -358,26 +289,18 @@ const Carrito = () => {
   }
 
   const removeItem = async (id) => {
-    if (!window.confirm('¿Eliminar este producto del carrito?')) return
+    if (!window.confirm('¿Eliminar este producto de la reserva?')) return
     await eliminarDelCarrito(id)
     setCarrito(prev => prev.filter(i => i.id !== id))
     setModos(prev => { const n = { ...prev }; delete n[id]; return n })
     setPesosKg(prev => { const n = { ...prev }; delete n[id]; return n })
   }
 
-  const [cuponAplicado, setCuponAplicado] = useState(null) // { cupon, descuento, total }
-
   const subtotal    = carrito.reduce((s, i) => s + precioItem(i), 0)
-  const costoEnvio  = subtotal > 100 ? 0 : 15
-  const descuento   = cuponAplicado?.descuento ?? 0
-  const total       = subtotal + costoEnvio - descuento
   const hayEstimado = carrito.some(i => getModo(i.id) === 'cantidad')
 
-  const productorQR     = carrito[0]?.productor_qr_pago_url || null
-  const productorNombre = carrito[0]?.productor_nombre || TITULAR
-
-  // ── Paso 1 → 2 ───────────────────────────────────────────────
-  const handleIrAParada = () => {
+  // ── Paso 1 → 2: validar pesos y cargar fechas del productor ──
+  const handleIrAFecha = async () => {
     for (const item of carrito) {
       if (getModo(item.id) === 'peso') {
         const kg = parseFloat(pesosKg[item.id]) || 0
@@ -389,78 +312,75 @@ const Carrito = () => {
     }
     setError(null)
     setStep(2)
+    cargarFechas()
   }
 
-  // ── Paso 2 → 3: prepara pedidoData SIN crearlo todavía ───────
-  const handleIrAPago = () => {
-    if (!paradaSeleccionada) {
-      setError('Por favor selecciona una parada de entrega')
-      return
+  // Carga las fechas disponibles del calendario público del productor
+  const cargarFechas = async () => {
+    const pids = [...new Set(carrito.map(i => i.productor_id).filter(Boolean))]
+    if (pids.length === 0) { setFechasDisp([]); return }
+    setCargandoFechas(true)
+    try {
+      const hoy = new Date()
+      const hasta = new Date(); hasta.setDate(hasta.getDate() + 30)
+      // Negocio mono-productor en la práctica: usamos el calendario del primer productor
+      const res = await api.get(`/productores/${pids[0]}/calendario`, {
+        params: { desde: ymd(hoy), hasta: ymd(hasta) },
+      })
+      const dias = (res.data?.data || res.data || []).filter(d => d.disponible)
+      setFechasDisp(dias)
+    } catch {
+      setFechasDisp([])
+    } finally {
+      setCargandoFechas(false)
     }
-    setError(null)
-    const data = {
-      items: carrito.map(i => {
-        const modo = getModo(i.id)
-        return {
-          producto_id:  i.producto_id || i.id,
-          cantidad:     modo === 'peso' ? parseFloat(pesosKg[i.id]) : i.cantidad,
-          tipo_pedido:  modo,
-          precio:       PRECIO_KG,
-        }
-      }),
-      metodo_envio:   'parada',
-      subtotal,
-      costo_envio:    costoEnvio,
-      total,
-      notas:          `Entrega en: ${paradaSeleccionada.nombre}`,
-      parada_id:      paradaSeleccionada.id,
-      metodo_pago_id: 7,
-      direccion: {
-        nombre:        paradaSeleccionada.nombre,
-        direccion:     paradaSeleccionada.descripcion || paradaSeleccionada.nombre,
-        ciudad:        'Cochabamba',
-        codigo_postal: '0000',
-        telefono:      '',
-      },
-    }
-    setPedidoData(data)
-    setStep(3)
   }
 
-  // ── Confirmar pago → crear pedido ─────────────────────────────
-  const handleConfirmarPago = async () => {
-    if (procesando || pedidoCreado) return
-    if (!window.confirm(
-      `¿Confirmas que transferiste al productor ${productorNombre}?\n\nRecuerda: el monto final será determinado después de que el productor pese tu pedido.`
-    )) return
+  // ── Paso 3: confirmar → crea una reserva por productor ───────
+  const handleConfirmarReserva = async () => {
+    if (procesando || reservasCreadas) return
+    if (!fechaSel) { setError('Elige una fecha para tu reserva'); setStep(2); return }
 
     setProcesando(true)
     setError(null)
     try {
-      const res = await api.post(`${API_BASE}/pedidos`, pedidoData)
-      setPedidoCreado(res.data.data || res.data)
+      // Agrupar por productor → una reserva por productor
+      const grupos = {}
+      for (const item of carrito) {
+        const pid = item.productor_id
+        ;(grupos[pid] = grupos[pid] || []).push(item)
+      }
+
+      const creadas = []
+      for (const [pid, items] of Object.entries(grupos)) {
+        const payload = {
+          productor_id: Number(pid),
+          fecha_reserva: fechaSel,
+          items: items.map(it => {
+            const modo = getModo(it.id)
+            if (modo === 'peso') {
+              return { producto_id: it.producto_id || it.id, modo: 'peso', peso_solicitado_kg: parseFloat(pesosKg[it.id]) || 0 }
+            }
+            return { producto_id: it.producto_id || it.id, modo: 'cantidad', cantidad: it.cantidad }
+          }),
+        }
+        const res = await api.post('/reservas', payload)
+        const r = res.data?.data || res.data
+        creadas.push({
+          codigo: r.codigo,
+          productor: items[0].productor_nombre || 'Productor',
+          total: r.precio_estimado,
+        })
+      }
+
+      // Vaciar carrito (best-effort)
+      await Promise.allSettled(carrito.map(it => eliminarDelCarrito(it.id)))
+      setCarrito([])
+      setReservasCreadas(creadas)
     } catch (e) {
-      setError(e.response?.data?.message || 'Error al confirmar el pedido. Intenta de nuevo.')
+      setError(e.response?.data?.message || 'No se pudo crear la reserva. Intenta de nuevo.')
     } finally {
       setProcesando(false)
-    }
-  }
-
-  // ── Subir comprobante de pago ─────────────────────────────────
-  const handleSubirComprobante = async (e) => {
-    const file = e.target.files[0]
-    e.target.value = ''
-    if (!file || !pedidoCreado?.id) return
-    setSubiendoComp(true)
-    try {
-      const fd = new FormData()
-      fd.append('comprobante', file)
-      await api.post(`${API_BASE}/pedidos/${pedidoCreado.id}/comprobante`, fd)
-      setComprobanteSubido(true)
-    } catch (e) {
-      alert(e.response?.data?.message || 'No se pudo subir el comprobante.')
-    } finally {
-      setSubiendoComp(false)
     }
   }
 
@@ -475,45 +395,17 @@ const Carrito = () => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ color: D.muted }}>{carrito.length} producto{carrito.length !== 1 ? 's' : ''}</span>
-          <span style={{ color: D.dim, fontStyle: 'italic' }}>
-            {hayEstimado ? 'Al pesar' : `Bs. ${subtotal.toFixed(2)}`}
-          </span>
+          <span style={{ color: D.dim, fontStyle: 'italic' }}>Bs. {subtotal.toFixed(2)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: D.muted }}>Costo de envío</span>
-          {costoEnvio === 0
-            ? <span style={{ color: D.green, fontWeight: 600 }}>Gratis</span>
-            : <span style={{ color: D.text }}>Bs. {costoEnvio.toFixed(2)}</span>
-          }
-        </div>
-        {descuento > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#34d399' }}>
-            <span>Descuento ({cuponAplicado.cupon.codigo})</span>
-            <span style={{ fontWeight: 600 }}>−Bs. {descuento.toFixed(2)}</span>
-          </div>
-        )}
         <div style={{ borderTop: `1px solid ${D.border}`, paddingTop: 10, marginTop: 4,
           display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
-          <span style={{ color: D.text }}>{hayEstimado ? 'Total estimado' : 'Total'}</span>
-          <span style={{ color: D.primary }}>Bs. {total.toFixed(2)}{hayEstimado ? '*' : ''}</span>
+          <span style={{ color: D.text }}>Total estimado</span>
+          <span style={{ color: D.primary }}>Bs. {subtotal.toFixed(2)}*</span>
         </div>
-        {hayEstimado && (
-          <p style={{ fontSize: 11, color: D.dim, fontStyle: 'italic', margin: 0 }}>
-            *El monto exacto se confirma tras el pesaje
-          </p>
-        )}
+        <p style={{ fontSize: 11, color: D.dim, fontStyle: 'italic', margin: 0 }}>
+          *Estimado con {PESO_PROMEDIO} kg/pescado. El precio final se confirma tras el pesaje.
+        </p>
       </div>
-      {/* Coupon input — only show in step 1 */}
-      {step === 1 && (
-        <div style={{ marginTop: 14 }}>
-          <p style={{ fontSize: 12, color: D.muted, margin: '0 0 8px' }}>¿Tienes un cupón?</p>
-          <CuponInput
-            subtotal={subtotal + costoEnvio}
-            onApply={data => setCuponAplicado(data)}
-            onRemove={() => setCuponAplicado(null)}
-          />
-        </div>
-      )}
       <button onClick={onCta} disabled={ctaDisabled} style={{
         width: '100%', marginTop: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         background: ctaDisabled ? D.dim : `linear-gradient(135deg, ${D.teal}, ${D.primary})`,
@@ -528,11 +420,11 @@ const Carrito = () => {
     </div>
   )
 
-  // ── PASO 1: Carrito ───────────────────────────────────────────
+  // ── PASO 1: Carrito / Reserva ─────────────────────────────────
   const renderPaso1 = () => (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>Mi carrito</h2>
+        <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>Mi reserva</h2>
         <button onClick={fetchCarrito} style={{
           background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`,
           borderRadius: 10, padding: '7px 10px', cursor: 'pointer', color: D.muted,
@@ -551,7 +443,7 @@ const Carrito = () => {
             border: `3px solid transparent`, borderTopColor: D.primary,
             animation: 'spin 0.8s linear infinite', margin: '0 auto 12px',
           }} />
-          <p style={{ color: D.muted, margin: 0 }}>Cargando carrito...</p>
+          <p style={{ color: D.muted, margin: 0 }}>Cargando reserva...</p>
         </div>
       ) : carrito.length === 0 ? (
         <div style={{
@@ -559,8 +451,8 @@ const Carrito = () => {
           padding: 48, textAlign: 'center',
         }}>
           <ShoppingBag size={52} color={D.dim} style={{ margin: '0 auto 14px', display: 'block' }} />
-          <p style={{ color: D.text, fontWeight: 700, fontSize: 17, margin: '0 0 6px' }}>Tu carrito está vacío</p>
-          <p style={{ color: D.muted, fontSize: 13, margin: '0 0 20px' }}>Agrega productos desde la tienda</p>
+          <p style={{ color: D.text, fontWeight: 700, fontSize: 17, margin: '0 0 6px' }}>Tu reserva está vacía</p>
+          <p style={{ color: D.muted, fontSize: 13, margin: '0 0 20px' }}>Agrega productos desde la tienda para reservar</p>
           <button onClick={() => navigate('/dashboard-consumidor/tienda')} style={{
             background: `linear-gradient(135deg, ${D.teal}, ${D.primary})`,
             color: '#fff', border: 'none', borderRadius: 10, padding: '10px 24px',
@@ -571,7 +463,6 @@ const Carrito = () => {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
-          {/* Items */}
           <div>
             {/* Banner info */}
             <div style={{
@@ -581,9 +472,9 @@ const Carrito = () => {
             }}>
               <Info size={16} color={D.primary} style={{ flexShrink: 0, marginTop: 1 }} />
               <span>
-                El precio final se calcula según el peso real. Elige <strong style={{ color: D.primary }}>Por pescados</strong> para
-                estimado por unidad, o <strong style={{ color: D.teal }}>Por kilos</strong> si sabes exactamente cuánto quieres.
-                Bs. {PRECIO_KG}/kg.
+                Reservas una fecha de venta. El precio es <strong style={{ color: D.primary }}>estimado</strong>;
+                el productor pesa tu pedido el día de la venta y confirma el monto final.
+                Elige <strong style={{ color: D.primary }}>Por pescados</strong> o <strong style={{ color: D.teal }}>Por kilos</strong>.
               </span>
             </div>
 
@@ -611,64 +502,72 @@ const Carrito = () => {
             )}
           </div>
 
-          {/* Sidebar */}
           <ResumenCard
-            ctaLabel="Elegir parada"
+            ctaLabel="Elegir fecha"
             ctaIcon={<ArrowRight size={16} />}
-            onCta={handleIrAParada}
+            onCta={handleIrAFecha}
           />
         </div>
       )}
     </div>
   )
 
-  // ── PASO 2: Selección de parada ───────────────────────────────
+  // ── PASO 2: Elegir fecha ──────────────────────────────────────
   const renderPaso2 = () => (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+    <div style={{ maxWidth: 720, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
         <button onClick={() => setStep(1)} style={{
           background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`,
           borderRadius: 10, padding: '8px 10px', cursor: 'pointer', color: D.muted,
         }}>
           <ArrowLeft size={18} />
         </button>
-        <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>Elige tu parada de entrega</h2>
+        <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>¿Para qué día?</h2>
       </div>
+      <p style={{ color: D.muted, fontSize: 14, margin: '0 0 20px', paddingLeft: 44 }}>
+        Elige un día de venta del productor. Te recordaremos cuando se acerque.
+      </p>
 
-      <MapaParadas paradas={paradas} onSelect={p => { setParadaSeleccionada(p); setError(null) }} />
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-        {paradas.map(parada => {
-          const sel = paradaSeleccionada?.id === parada.id
-          return (
-            <button key={parada.id}
-              onClick={() => { setParadaSeleccionada(parada); setError(null) }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 14, padding: 16,
-                borderRadius: 14, border: `2px solid ${sel ? D.teal : D.border}`,
-                background: sel ? 'rgba(20,184,166,0.08)' : D.card,
-                cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
-                boxShadow: sel ? `0 0 16px rgba(20,184,166,0.2)` : 'none',
-              }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-                background: sel ? D.teal : 'rgba(56,189,248,0.08)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: sel ? `0 0 12px rgba(20,184,166,0.4)` : 'none',
-              }}>
-                <MapPin size={20} color={sel ? '#fff' : D.muted} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontWeight: 700, color: sel ? D.teal : D.text, margin: '0 0 3px', fontSize: 15 }}>
-                  {parada.nombre}
-                </p>
-                <p style={{ fontSize: 13, color: D.muted, margin: 0 }}>{parada.descripcion}</p>
-              </div>
-              {sel && <CheckCircle size={20} color={D.teal} />}
-            </button>
-          )
-        })}
-      </div>
+      {cargandoFechas ? (
+        <div style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: '50%',
+            border: `3px solid transparent`, borderTopColor: D.primary,
+            animation: 'spin 0.8s linear infinite', margin: '0 auto',
+          }} />
+        </div>
+      ) : fechasDisp.length === 0 ? (
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 40, textAlign: 'center' }}>
+          <Calendar size={42} color={D.dim} style={{ margin: '0 auto 12px', display: 'block' }} />
+          <p style={{ color: D.text, fontWeight: 700, fontSize: 16, margin: '0 0 6px' }}>Sin fechas disponibles</p>
+          <p style={{ color: D.muted, fontSize: 13, margin: 0 }}>
+            Este productor no tiene días de venta próximos configurados.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
+          {fechasDisp.map(d => {
+            const sel = fechaSel === d.fecha
+            return (
+              <button key={d.fecha} onClick={() => { setFechaSel(d.fecha); setError(null) }}
+                style={{
+                  minWidth: 120, padding: '12px 16px', borderRadius: 12, cursor: 'pointer',
+                  border: `2px solid ${sel ? D.primary : D.border}`,
+                  background: sel ? D.primary : D.card,
+                  color: sel ? '#fff' : D.text, textAlign: 'center', transition: 'all 0.2s',
+                  textTransform: 'capitalize', fontWeight: 700, fontSize: 13,
+                }}>
+                {fmtFechaCorta(d.fecha)}
+                {d.cupo_restante != null && (
+                  <div style={{ fontSize: 10, fontWeight: 500, marginTop: 3, color: sel ? 'rgba(255,255,255,0.85)' : D.muted }}>
+                    {d.cupo_restante} cupos
+                  </div>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {error && (
         <div style={{
@@ -680,29 +579,28 @@ const Carrito = () => {
         </div>
       )}
 
-      <button onClick={handleIrAPago} disabled={!paradaSeleccionada} style={{
-        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-        background: paradaSeleccionada
-          ? `linear-gradient(135deg, ${D.teal}, ${D.primary})`
-          : D.dim,
-        color: '#fff', border: 'none', borderRadius: 14, padding: '14px 0',
-        fontSize: 16, fontWeight: 700, cursor: paradaSeleccionada ? 'pointer' : 'not-allowed',
-        boxShadow: paradaSeleccionada ? `0 0 24px rgba(56,189,248,0.3)` : 'none',
-        transition: 'all 0.2s',
-      }}>
-        <QrCode size={20} /> Ver QR de pago
+      <button onClick={() => fechaSel ? setStep(3) : setError('Selecciona un día para continuar')}
+        disabled={!fechaSel}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          background: fechaSel ? `linear-gradient(135deg, ${D.teal}, ${D.primary})` : D.dim,
+          color: '#fff', border: 'none', borderRadius: 14, padding: '14px 0',
+          fontSize: 16, fontWeight: 700, cursor: fechaSel ? 'pointer' : 'not-allowed',
+          boxShadow: fechaSel ? `0 0 24px rgba(56,189,248,0.3)` : 'none', transition: 'all 0.2s',
+        }}>
+        Continuar <ArrowRight size={20} />
       </button>
     </div>
   )
 
-  // ── PASO 3: QR de pago ────────────────────────────────────────
+  // ── PASO 3: Confirmar ─────────────────────────────────────────
   const renderPaso3 = () => {
-    if (pedidoCreado) {
+    if (reservasCreadas) {
       return (
-        <div style={{ maxWidth: 440, margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: 460, margin: '0 auto', textAlign: 'center' }}>
           <div style={{
             background: D.card, borderRadius: 24,
-            border: `1px solid rgba(34,197,94,0.3)`, padding: 40,
+            border: `1px solid rgba(34,197,94,0.3)`, padding: 36,
             boxShadow: '0 0 40px rgba(34,197,94,0.15)',
           }}>
             <div style={{
@@ -713,59 +611,35 @@ const Carrito = () => {
             }}>
               <CheckCircle size={42} color={D.green} />
             </div>
-            <h2 style={{ color: D.text, fontWeight: 800, fontSize: 24, margin: '0 0 10px' }}>¡Pedido confirmado!</h2>
-            <p style={{ color: D.muted, fontSize: 14, lineHeight: 1.6, margin: '0 0 18px' }}>
-              Tu pedido fue registrado. El productor lo preparará y pesará tus pescados.
-              Recibirás una notificación con el precio exacto para confirmar.
+            <h2 style={{ color: D.text, fontWeight: 800, fontSize: 24, margin: '0 0 8px' }}>¡Reserva creada!</h2>
+            <p style={{ color: D.muted, fontSize: 14, lineHeight: 1.6, margin: '0 0 22px' }}>
+              Guarda tu código: identifica tu reserva y lo muestras al recoger.
             </p>
-            {paradaSeleccionada && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center',
-                background: 'rgba(56,189,248,0.08)', borderRadius: 10, padding: '10px 16px',
-                marginBottom: 14, fontSize: 13, color: D.primary,
-                border: `1px solid rgba(56,189,248,0.2)`,
-              }}>
-                <MapPin size={15} />
-                Entrega en: <strong style={{ marginLeft: 4 }}>{paradaSeleccionada.nombre}</strong>
-              </div>
-            )}
-            {pedidoCreado?.id && (
-              <p style={{ fontSize: 12, color: D.dim, margin: '0 0 20px' }}>
-                N° Pedido: PED-{pedidoCreado.id}
-              </p>
-            )}
 
-            {/* Comprobante */}
-            {!comprobanteSubido ? (
-              <label style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                background: 'rgba(139,92,246,0.15)', border: `1px solid rgba(139,92,246,0.3)`,
-                color: '#c084fc', borderRadius: 12, padding: '13px 0',
-                fontSize: 15, fontWeight: 700, cursor: subiendoComp ? 'not-allowed' : 'pointer',
-                marginBottom: 12, opacity: subiendoComp ? 0.7 : 1, boxSizing: 'border-box',
+            {reservasCreadas.map((r, i) => (
+              <div key={i} style={{
+                background: 'rgba(56,189,248,0.06)', border: `1px solid ${D.border}`,
+                borderRadius: 16, padding: 16, marginBottom: 12,
               }}>
-                {subiendoComp
-                  ? <><div style={{ width: 16, height: 16, border: '2px solid #c084fc', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /> Subiendo…</>
-                  : <><Upload size={18} /> Subir comprobante de pago</>}
-                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSubirComprobante} disabled={subiendoComp} />
-              </label>
-            ) : (
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                color: D.green, fontSize: 14, fontWeight: 600, marginBottom: 12, padding: '10px 0',
-              }}>
-                <CheckCircle size={18} /> Comprobante enviado al productor
+                <div style={{ fontSize: 12, color: D.muted, marginBottom: 4 }}>{r.productor}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Tag size={18} color={D.primary} />
+                  <span style={{ fontSize: 28, fontWeight: 900, color: D.primary, letterSpacing: '0.08em' }}>{r.codigo}</span>
+                </div>
+                {r.total != null && (
+                  <div style={{ fontSize: 13, color: D.muted, marginTop: 4 }}>≈ Bs. {Number(r.total).toFixed(2)} (estimado)</div>
+                )}
               </div>
-            )}
+            ))}
 
-            <button onClick={() => navigate('/dashboard-consumidor/mis-pedidos')} style={{
-              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            <button onClick={() => navigate('/dashboard-consumidor/mis-reservas')} style={{
+              width: '100%', marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               background: `linear-gradient(135deg, ${D.teal}, ${D.primary})`,
               color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0',
               fontSize: 15, fontWeight: 700, cursor: 'pointer',
               boxShadow: `0 0 20px rgba(56,189,248,0.3)`,
             }}>
-              <Package size={18} /> Ver mis pedidos
+              <Package size={18} /> Ver mis reservas
             </button>
           </div>
         </div>
@@ -773,7 +647,7 @@ const Carrito = () => {
     }
 
     return (
-      <div style={{ maxWidth: 440, margin: '0 auto' }}>
+      <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <button onClick={() => setStep(2)} style={{
             background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`,
@@ -781,112 +655,55 @@ const Carrito = () => {
           }}>
             <ArrowLeft size={18} />
           </button>
-          <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>Pago con QR</h2>
+          <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>Confirmar reserva</h2>
         </div>
 
-        {/* Card monto */}
+        {/* Fecha elegida */}
         <div style={{
-          background: `linear-gradient(135deg, #1e3a5f, #0f2a4a)`,
-          borderRadius: 20, padding: 24, textAlign: 'center', marginBottom: 16,
-          border: `1px solid rgba(56,189,248,0.25)`,
-          boxShadow: `0 0 32px rgba(56,189,248,0.15)`,
+          display: 'flex', alignItems: 'center', gap: 12, padding: 16,
+          background: 'rgba(56,189,248,0.08)', border: `1px solid rgba(56,189,248,0.25)`,
+          borderRadius: 14, marginBottom: 14,
         }}>
-          <p style={{ color: 'rgba(148,163,184,0.9)', fontSize: 13, margin: '0 0 6px' }}>
-            Monto de reserva estimado
-          </p>
-          <p style={{ color: '#fff', fontSize: 42, fontWeight: 800, margin: '0 0 6px',
-            textShadow: `0 0 20px rgba(56,189,248,0.5)` }}>
-            Bs. {total.toFixed(2)}
-          </p>
-          <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: 12, margin: 0 }}>
-            El monto exacto se determina tras el pesaje (Bs. {PRECIO_KG}/kg)
-          </p>
+          <Calendar size={20} color={D.primary} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, color: D.muted }}>Reservas para:</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: D.primary, textTransform: 'capitalize' }}>{fmtFechaLarga(fechaSel)}</div>
+          </div>
+          <button onClick={() => setStep(2)} style={{ background: 'none', border: 'none', color: D.primary, fontSize: 13, cursor: 'pointer' }}>
+            Cambiar
+          </button>
         </div>
 
-        {/* QR de pago del productor */}
+        {/* Aviso del flujo */}
         <div style={{
-          background: D.card, borderRadius: 20,
-          border: `1px solid ${D.border}`, padding: 24, marginBottom: 14, textAlign: 'center',
+          display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px',
+          background: 'rgba(245,158,11,0.08)', border: `1px solid rgba(245,158,11,0.25)`,
+          borderRadius: 12, marginBottom: 14, fontSize: 13, color: '#fbbf24',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
-            <CreditCard size={20} color={D.primary} />
-            <span style={{ fontWeight: 800, color: D.text, fontSize: 18 }}>QR de Pago</span>
-          </div>
-          <div style={{
-            display: 'inline-block', padding: 12,
-            border: `2px solid ${D.border}`, borderRadius: 16,
-            background: 'rgba(56,189,248,0.04)',
-            boxShadow: `0 0 24px rgba(56,189,248,0.1)`,
-          }}>
-            {productorQR ? (
-              <img
-                src={productorQR}
-                alt={`QR de ${productorNombre}`}
-                style={{ width: 192, height: 192, objectFit: 'contain', display: 'block', borderRadius: 8 }}
-              />
-            ) : (
-              <div style={{
-                width: 192, height: 192, background: 'rgba(56,189,248,0.05)', borderRadius: 8,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}>
-                <QrCode size={48} color={D.dim} />
-                <p style={{ color: D.muted, fontSize: 12, textAlign: 'center', margin: 0 }}>
-                  El productor aún no<br />ha configurado su QR
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div style={{
-            background: 'rgba(56,189,248,0.04)', borderRadius: 12, padding: 14,
-            fontSize: 13, marginTop: 16, textAlign: 'left',
-            border: `1px solid ${D.border}`,
-          }}>
-            {[
-              ['Productor', productorNombre],
-              ['Parada', paradaSeleccionada?.nombre || '—'],
-            ].map(([k, v]) => (
-              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0',
-                borderBottom: `1px solid ${D.border}` }}>
-                <span style={{ color: D.muted }}>{k}</span>
-                <span style={{ color: D.text, fontWeight: 600 }}>{v}</span>
-              </div>
-            ))}
-          </div>
+          <Info size={16} style={{ flexShrink: 0, marginTop: 1 }} />
+          <span>
+            <strong>Sin pago por ahora.</strong> El día de la venta el productor pesa tu pedido y te avisa el precio final. Recién ahí pagas por QR.
+          </span>
         </div>
 
-        {/* Instrucciones */}
-        <div style={{
-          background: D.card, borderRadius: 16,
-          border: `1px solid ${D.border}`, padding: 18, marginBottom: 14,
-        }}>
-          <p style={{ fontWeight: 700, color: D.text, margin: '0 0 14px', fontSize: 14 }}>¿Cómo pagar?</p>
-          {[
-            'Abre tu app bancaria o billetera digital',
-            `Escanea el código QR del ${BANCO}`,
-            `Ingresa el monto: Bs. ${total.toFixed(2)}`,
-            'Confirma la transferencia',
-            'Vuelve aquí y presiona "Ya realicé el pago"',
-          ].map((paso, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%',
-                background: 'rgba(56,189,248,0.12)', border: `1px solid ${D.border}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              }}>
-                <span style={{ color: D.primary, fontSize: 12, fontWeight: 700 }}>{i + 1}</span>
-              </div>
-              <span style={{ fontSize: 13, color: D.muted }}>{paso}</span>
+        {/* Resumen estimado */}
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 18, marginBottom: 16 }}>
+          <h3 style={{ color: D.text, fontWeight: 700, margin: '0 0 12px', fontSize: 15 }}>Resumen estimado</h3>
+          {carrito.map(it => (
+            <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 14 }}>
+              <span style={{ color: D.muted }}>
+                {it.nombre || it.producto_nombre} · {getModo(it.id) === 'peso' ? `${parseFloat(pesosKg[it.id]) || 0} kg` : `${it.cantidad} 🐟`}
+              </span>
+              <span style={{ color: D.text, fontWeight: 600 }}>Bs. {precioItem(it).toFixed(2)}</span>
             </div>
           ))}
-        </div>
-
-        {/* Aviso */}
-        <div style={{
-          background: 'rgba(245,158,11,0.08)', border: `1px solid rgba(245,158,11,0.25)`,
-          borderRadius: 12, padding: '10px 14px', fontSize: 12, color: '#fbbf24', marginBottom: 18,
-        }}>
-          El productor confirmará tu pago y pesará los pescados. Recibirás una notificación con el precio final para que apruebes antes de proceder.
+          <div style={{ borderTop: `1px solid ${D.border}`, marginTop: 8, paddingTop: 10, display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+            <span style={{ color: D.text }}>Total estimado</span>
+            <span style={{ color: D.primary }}>Bs. {subtotal.toFixed(2)}</span>
+          </div>
+          <p style={{ fontSize: 11, color: D.dim, fontStyle: 'italic', margin: '8px 0 0' }}>
+            *Estimado con {PESO_PROMEDIO} kg por pescado. El precio final se calcula al pesar.
+          </p>
         </div>
 
         {error && (
@@ -899,18 +716,17 @@ const Carrito = () => {
           </div>
         )}
 
-        <button onClick={handleConfirmarPago} disabled={procesando} style={{
+        <button onClick={handleConfirmarReserva} disabled={procesando} style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           background: procesando ? D.dim : `linear-gradient(135deg, #16a34a, ${D.green})`,
           color: '#fff', border: 'none', borderRadius: 14, padding: '16px 0',
           fontSize: 16, fontWeight: 700, cursor: procesando ? 'not-allowed' : 'pointer',
-          boxShadow: procesando ? 'none' : `0 0 28px rgba(34,197,94,0.35)`,
-          transition: 'all 0.2s',
+          boxShadow: procesando ? 'none' : `0 0 28px rgba(34,197,94,0.35)`, transition: 'all 0.2s',
         }}>
           {procesando ? (
-            <><RefreshCw size={18} style={{ animation: 'spin 0.8s linear infinite' }} /> Procesando...</>
+            <><RefreshCw size={18} style={{ animation: 'spin 0.8s linear infinite' }} /> Creando reserva...</>
           ) : (
-            <><CheckCircle size={20} /> Ya realicé el pago</>
+            <><CheckCircle size={20} /> Confirmar reserva</>
           )}
         </button>
       </div>
@@ -956,10 +772,5 @@ const Carrito = () => {
     </div>
   )
 }
-
-const PARADAS_FALLBACK = [
-  { id: 1, nombre: 'Parada Villa Tunari',  descripcion: 'Parada principal del Chapare', lat: -16.677077,  lng: -65.627742  },
-  { id: 2, nombre: 'Terminal Cochabamba', descripcion: 'Terminal de buses Cochabamba', lat: -17.4005875, lng: -66.1478935 },
-]
 
 export default Carrito

@@ -168,12 +168,16 @@ const findDestacados = async (limit) => {
       u.foto_perfil as productor_imagen,
       u.ubicacion as productor_ubicacion,
       u.rating as productor_rating,
-      0 as promedio_valoracion,
-      0 as total_valoraciones
+      COALESCE(op.promedio, 0) as promedio_valoracion,
+      COALESCE(op.total, 0)    as total_valoraciones
     FROM productos p
     LEFT JOIN categorias c ON p.categoria_id = c.id
     LEFT JOIN usuarios u ON p.productor_id = u.id
-    WHERE p.destacado = true 
+    LEFT JOIN (
+      SELECT producto_id, AVG(calificacion)::numeric(3,2) as promedio, COUNT(*) as total
+      FROM opiniones GROUP BY producto_id
+    ) op ON op.producto_id = p.id
+    WHERE p.destacado = true
       AND p.disponible = true
       AND p.deleted_at IS NULL
       AND u.rol_id = 2
@@ -212,11 +216,15 @@ const search = async (searchTerm, page, limit) => {
       c.nombre as categoria_nombre,
       p.productor_id,
       u.nombre_empresa as productor_nombre,
-      0 as promedio_valoracion,
-      0 as total_valoraciones
+      COALESCE(op.promedio, 0) as promedio_valoracion,
+      COALESCE(op.total, 0)    as total_valoraciones
     FROM productos p
     LEFT JOIN categorias c ON p.categoria_id = c.id
     LEFT JOIN usuarios u ON p.productor_id = u.id AND u.rol_id = 2
+    LEFT JOIN (
+      SELECT producto_id, AVG(calificacion)::numeric(3,2) as promedio, COUNT(*) as total
+      FROM opiniones GROUP BY producto_id
+    ) op ON op.producto_id = p.id
     WHERE p.deleted_at IS NULL
       AND (
         p.nombre ILIKE $1

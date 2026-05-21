@@ -7,14 +7,17 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image as ExpoImage } from 'expo-image';
+
+const BLURHASH = { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' };
 import api from '../../api/axios.config';
 import { SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { useTheme } from '../../contexts/ThemeContext';
 
 // Per-producer gradient pairs
 const GRADIENTS = [
-  ['#0ea5e9', '#0369a1'],
-  ['#14b8a6', '#0f766e'],
+  ['#16a34a', '#15803d'],
+  ['#10b981', '#0f766e'],
   ['#8b5cf6', '#6d28d9'],
   ['#f97316', '#c2410c'],
   ['#ec4899', '#be185d'],
@@ -31,8 +34,8 @@ const ProductoresScreen = ({ navigation }) => {
     text:    colors.text,
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
-    primary: colors.secondary,
-    teal:    '#14b8a6',
+    primary: colors.primary,
+    teal:    '#10b981',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -100,7 +103,7 @@ const ProductoresScreen = ({ navigation }) => {
         {/* ── Header ── */}
         <View style={styles.headerBlock}>
           <LinearGradient
-            colors={['rgba(56,189,248,0.12)', 'transparent']}
+            colors={['rgba(34,197,94,0.12)', 'transparent']}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
@@ -186,7 +189,7 @@ const ProductoresScreen = ({ navigation }) => {
                     {/* Avatar */}
                     <View style={styles.bandContent}>
                       {productor.foto_perfil ? (
-                        <Image source={{ uri: productor.foto_perfil }} style={styles.avatar} />
+                        <ExpoImage source={{ uri: productor.foto_perfil }} style={styles.avatar} contentFit="cover" transition={250} placeholder={BLURHASH} />
                       ) : (
                         <View style={[styles.avatarFallback, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
                           <Text style={styles.avatarText}>{ini}</Text>
@@ -279,11 +282,11 @@ const makeStyles = (C) => StyleSheet.create({
   headerBlock:   {
     paddingHorizontal: SPACING.lg, paddingTop: SPACING.md, paddingBottom: SPACING.md,
     overflow: 'hidden', position: 'relative',
-    borderBottomWidth: 1, borderBottomColor: 'rgba(56,189,248,0.1)',
+    borderBottomWidth: 1, borderBottomColor: 'rgba(34,197,94,0.1)',
   },
   headerTopLine: {
     position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-    backgroundColor: 'rgba(56,189,248,0.3)',
+    backgroundColor: 'rgba(34,197,94,0.3)',
   },
   headerTitle:   { fontSize: 26, fontWeight: 'bold', color: C.text, marginBottom: 2 },
   headerSub:     { fontSize: 13, color: C.sub, marginBottom: 14 },
@@ -295,7 +298,7 @@ const makeStyles = (C) => StyleSheet.create({
     borderWidth: 1, borderColor: C.border,
   },
   searchInput:   { flex: 1, fontSize: 14, color: C.text },
-  mapaBtn:       { width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(56,189,248,0.08)', borderWidth: 1, borderColor: 'rgba(56,189,248,0.25)', justifyContent: 'center', alignItems: 'center' },
+  mapaBtn:       { width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(34,197,94,0.08)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.25)', justifyContent: 'center', alignItems: 'center' },
 
   // Stats
   statsScroll:   { maxHeight: 100, flexShrink: 0 },
@@ -321,9 +324,9 @@ const makeStyles = (C) => StyleSheet.create({
   // Card
   card:          {
     marginBottom: 16, borderRadius: 18, overflow: 'hidden',
-    borderWidth: 1, borderColor: 'rgba(56,189,248,0.15)',
+    borderWidth: 1, borderColor: 'rgba(34,197,94,0.15)',
     backgroundColor: C.surface,
-    shadowColor: '#38bdf8', shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#22C55E', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1, shadowRadius: 12, elevation: 6,
   },
   cardBand:      { paddingHorizontal: 16, paddingVertical: 14 },
@@ -357,7 +360,7 @@ const makeStyles = (C) => StyleSheet.create({
 
   ctaRow:        {
     flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6,
-    paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(56,189,248,0.08)',
+    paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(34,197,94,0.08)',
   },
   ctaText:       { fontSize: 13, fontWeight: '700' },
 });

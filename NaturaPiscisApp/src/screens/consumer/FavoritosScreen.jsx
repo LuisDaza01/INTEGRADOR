@@ -6,38 +6,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Image as ExpoImage } from 'expo-image';
 import api from '../../api/axios.config';
+
+const BLURHASH = { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' };
 import { useTheme } from '../../contexts/ThemeContext';
+import { useFavoritos } from '../../contexts/FavoritosContext';
 import { SPACING, BORDER_RADIUS } from '../../constants/theme';
-
-const STORAGE_KEY = 'favoritos_ids';
-
-// Hook global para favoritos — exportar para usarlo en TiendaScreen también
-export const useFavoritos = () => {
-  const [ids, setIds] = useState([]);
-
-  useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then(v => v && setIds(JSON.parse(v)))
-      .catch(() => {});
-  }, []);
-
-  const toggle = async (productoId) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const nuevo = ids.includes(productoId)
-      ? ids.filter(i => i !== productoId)
-      : [...ids, productoId];
-    setIds(nuevo);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(nuevo));
-    return !ids.includes(productoId);
-  };
-
-  const isFavorito = (productoId) => ids.includes(productoId);
-
-  return { ids, toggle, isFavorito };
-};
 
 const ProductoFavCard = ({ producto, onRemove, onPress, colors }) => (
   <TouchableOpacity
@@ -46,7 +21,7 @@ const ProductoFavCard = ({ producto, onRemove, onPress, colors }) => (
     activeOpacity={0.85}
   >
     {producto.imagen ? (
-      <Image source={{ uri: producto.imagen }} style={styles.cardImg} />
+      <ExpoImage source={{ uri: producto.imagen }} style={styles.cardImg} contentFit="cover" transition={250} placeholder={BLURHASH} />
     ) : (
       <View style={[styles.cardImgPlaceholder, { backgroundColor: colors.primaryLight + '20' }]}>
         <Ionicons name="fish-outline" size={28} color={colors.primary} />

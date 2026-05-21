@@ -9,9 +9,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video, ResizeMode } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image as ExpoImage } from 'expo-image';
+
+const BLURHASH = { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' };
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/axios.config';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useCarrito } from '../../contexts/CarritoContext';
 import { producerService } from '../../api/services/producer.service';
 
 const { width } = Dimensions.get('window');
@@ -37,6 +41,7 @@ const FAVS_KEY = 'consumer_product_favs';
 
 const DetalleProductorScreen = ({ navigation, route }) => {
   const { colors } = useTheme();
+  const { refresh: refreshCarrito } = useCarrito();
   const C = {
     bg:      colors.background,
     surface: colors.surface,
@@ -45,8 +50,8 @@ const DetalleProductorScreen = ({ navigation, route }) => {
     text:    colors.text,
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
-    primary: colors.secondary,
-    teal:    '#14b8a6',
+    primary: colors.primary,
+    teal:    '#10b981',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -169,6 +174,7 @@ const DetalleProductorScreen = ({ navigation, route }) => {
     try {
       await api.post('/carrito', { producto_id: producto.id, cantidad: qty });
       setCartCount(prev => prev + qty);
+      refreshCarrito();
       Alert.alert('✅ Agregado', `${producto.nombre} agregado al carrito`);
     } catch {
       Alert.alert('Error', 'No se pudo agregar al carrito');
@@ -297,9 +303,9 @@ const DetalleProductorScreen = ({ navigation, route }) => {
           <View style={styles.profileSection}>
             <View style={styles.avatarRing}>
               {productor.foto_perfil ? (
-                <Image source={{ uri: productor.foto_perfil }} style={styles.avatarImg} />
+                <ExpoImage source={{ uri: productor.foto_perfil }} style={styles.avatarImg} contentFit="cover" transition={250} placeholder={BLURHASH} />
               ) : (
-                <LinearGradient colors={['rgba(56,189,248,0.3)', 'rgba(20,184,166,0.2)']} style={styles.avatarFallback}>
+                <LinearGradient colors={['rgba(34,197,94,0.3)', 'rgba(74,222,128,0.2)']} style={styles.avatarFallback}>
                   <Text style={styles.avatarInitials}>{initials}</Text>
                 </LinearGradient>
               )}
@@ -403,7 +409,7 @@ const DetalleProductorScreen = ({ navigation, route }) => {
                   <TouchableOpacity
                     key={cat.id}
                     onPress={() => setGaleriaTab(cat.id)}
-                    style={[styles.galeriaTab, galeriaTab === cat.id && { backgroundColor: 'rgba(56,189,248,0.18)', borderColor: C.primary }]}
+                    style={[styles.galeriaTab, galeriaTab === cat.id && { backgroundColor: 'rgba(34,197,94,0.18)', borderColor: C.primary }]}
                   >
                     <Text style={styles.galeriaTabIcono}>{cat.icono}</Text>
                     <Text style={[styles.galeriaTabLabel, { color: galeriaTab === cat.id ? C.primary : C.muted }]}>{cat.label}</Text>
@@ -739,7 +745,7 @@ const DetalleProductorScreen = ({ navigation, route }) => {
                         {/* imagen cuadrada */}
                         <View style={styles.productImageBox}>
                           {imgUri
-                            ? <Image source={{ uri: imgUri }} style={styles.productImg} />
+                            ? <ExpoImage source={{ uri: imgUri }} style={styles.productImg} contentFit="cover" transition={250} placeholder={BLURHASH} />
                             : <View style={styles.productImgPlaceholder}>
                                 <Ionicons name="fish-outline" size={28} color={C.dim} />
                               </View>
@@ -801,11 +807,11 @@ const DetalleProductorScreen = ({ navigation, route }) => {
               const esPorKg = ['kg','Kg','KG'].includes(detailProduct.unidad);
               return (
                 <>
-                  <View style={{ height: 240, backgroundColor: 'rgba(56,189,248,0.05)', position: 'relative' }}>
+                  <View style={{ height: 240, backgroundColor: 'rgba(34,197,94,0.05)', position: 'relative' }}>
                     {imgUri
-                      ? <Image source={{ uri: imgUri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                      ? <ExpoImage source={{ uri: imgUri }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={250} placeholder={BLURHASH} />
                       : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                          <Ionicons name="fish-outline" size={64} color="rgba(56,189,248,0.2)" />
+                          <Ionicons name="fish-outline" size={64} color="rgba(34,197,94,0.2)" />
                         </View>
                     }
                     {agotado && (
@@ -921,35 +927,35 @@ const makeStyles = (C, W) => StyleSheet.create({
   heroWrapper:  { position: 'relative', minHeight: 340 },
   heroBg:       { ...StyleSheet.absoluteFillObject },
   heroGradient: { ...StyleSheet.absoluteFillObject },
-  glowOrb1:     { position: 'absolute', top: -30, right: -30, width: 180, height: 180, borderRadius: 90, backgroundColor: 'rgba(56,189,248,0.08)' },
-  glowOrb2:     { position: 'absolute', bottom: 0, left: -20, width: 140, height: 140, borderRadius: 70, backgroundColor: 'rgba(20,184,166,0.06)' },
+  glowOrb1:     { position: 'absolute', top: -30, right: -30, width: 180, height: 180, borderRadius: 90, backgroundColor: 'rgba(34,197,94,0.08)' },
+  glowOrb2:     { position: 'absolute', bottom: 0, left: -20, width: 140, height: 140, borderRadius: 70, backgroundColor: 'rgba(74,222,128,0.06)' },
   accentLine:   { position: 'absolute', top: 0, left: 0, right: 0, height: 2 },
 
   topBar:       { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 8 },
-  iconBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(15,23,42,0.7)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(56,189,248,0.2)' },
+  iconBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(15,23,42,0.7)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)' },
 
   profileSection:  { alignItems: 'center', paddingHorizontal: 16, marginTop: 12, paddingBottom: 8 },
-  avatarRing:      { width: 92, height: 92, borderRadius: 46, padding: 2, borderWidth: 2.5, borderColor: '#38bdf8', marginBottom: 10, position: 'relative', shadowColor: '#38bdf8', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 12, elevation: 8 },
+  avatarRing:      { width: 92, height: 92, borderRadius: 46, padding: 2, borderWidth: 2.5, borderColor: '#22C55E', marginBottom: 10, position: 'relative', shadowColor: '#22C55E', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 12, elevation: 8 },
   avatarImg:       { width: '100%', height: '100%', borderRadius: 44, resizeMode: 'cover' },
   avatarFallback:  { width: '100%', height: '100%', borderRadius: 44, justifyContent: 'center', alignItems: 'center' },
-  avatarInitials:  { fontSize: 28, fontWeight: 'bold', color: '#38bdf8' },
+  avatarInitials:  { fontSize: 28, fontWeight: 'bold', color: '#22C55E' },
   onlineDot:       { position: 'absolute', bottom: 2, right: 2, width: 16, height: 16, borderRadius: 8, backgroundColor: '#4ade80', borderWidth: 2, borderColor: '#0a0f1e' },
 
   verificadoBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, backgroundColor: 'rgba(74,222,128,0.12)', borderWidth: 1, borderColor: 'rgba(74,222,128,0.35)', marginBottom: 8 },
   verificadoText:  { fontSize: 12, fontWeight: '600', color: '#4ade80' },
 
   producerName: { fontSize: 22, fontWeight: 'bold', color: '#f1f5f9', textAlign: 'center' },
-  empresaText:  { fontSize: 14, color: '#38bdf8', marginTop: 2 },
+  empresaText:  { fontSize: 14, color: '#22C55E', marginTop: 2 },
 
   chipsRow:     { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8, justifyContent: 'center' },
-  chip:         { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 4, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(56,189,248,0.3)', backgroundColor: 'rgba(56,189,248,0.07)' },
+  chip:         { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 4, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(34,197,94,0.3)', backgroundColor: 'rgba(34,197,94,0.07)' },
   chipText:     { fontSize: 11, fontWeight: '600' },
 
-  statsBar:     { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: 16, marginTop: 16, marginBottom: 4, backgroundColor: 'rgba(56,189,248,0.06)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(56,189,248,0.12)' },
+  statsBar:     { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: 16, marginTop: 16, marginBottom: 4, backgroundColor: 'rgba(34,197,94,0.06)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(34,197,94,0.12)' },
   statItem:     { flexDirection: 'row', alignItems: 'center', gap: 5 },
   statValue:    { fontSize: 14, fontWeight: '700', color: '#f1f5f9' },
   statLabel:    { fontSize: 11, color: C.muted },
-  statDivider:  { width: 1, height: 18, backgroundColor: 'rgba(56,189,248,0.15)', marginHorizontal: 12 },
+  statDivider:  { width: 1, height: 18, backgroundColor: 'rgba(34,197,94,0.15)', marginHorizontal: 12 },
 
   // Content
   content:      { paddingHorizontal: 14, paddingTop: 14 },
@@ -981,7 +987,7 @@ const makeStyles = (C, W) => StyleSheet.create({
   infoText:     { fontSize: 14, fontWeight: '600' },
   daysRow:      { flexDirection: 'row', gap: 7 },
   dayBadge:     { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', backgroundColor: C.surface, borderWidth: 1, borderColor: C.border },
-  dayBadgeActive: { backgroundColor: 'rgba(56,189,248,0.18)', borderColor: 'rgba(56,189,248,0.4)' },
+  dayBadgeActive: { backgroundColor: 'rgba(34,197,94,0.18)', borderColor: 'rgba(34,197,94,0.4)' },
   dayText:      { fontSize: 12, fontWeight: '700' },
 
   // Chips de próximas fechas disponibles
@@ -1011,8 +1017,8 @@ const makeStyles = (C, W) => StyleSheet.create({
 
   // Productos
   productsGrid:    { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  productCard:     { width: (W - 56) / 2, borderRadius: 14, overflow: 'hidden', backgroundColor: C.surface, borderWidth: 1, borderColor: 'rgba(56,189,248,0.1)' },
-  productImageBox: { width: '100%', aspectRatio: 1, justifyContent: 'center', alignItems: 'center', position: 'relative', backgroundColor: 'rgba(56,189,248,0.05)' },
+  productCard:     { width: (W - 70) / 2, borderRadius: 14, overflow: 'hidden', backgroundColor: C.surface, borderWidth: 1, borderColor: 'rgba(34,197,94,0.1)' },
+  productImageBox: { width: '100%', aspectRatio: 1, justifyContent: 'center', alignItems: 'center', position: 'relative', backgroundColor: 'rgba(34,197,94,0.05)' },
   productImg:      { width: '100%', height: '100%', resizeMode: 'cover' },
   productImgPlaceholder: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
   porKiloBadge:    { position: 'absolute', bottom: 6, left: 6, paddingHorizontal: 5, paddingVertical: 3, borderRadius: 6, backgroundColor: 'rgba(251,146,60,0.18)', borderWidth: 1, borderColor: 'rgba(251,146,60,0.35)' },

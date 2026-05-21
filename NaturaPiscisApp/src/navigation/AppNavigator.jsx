@@ -8,7 +8,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
+import { useCarrito } from '../contexts/CarritoContext';
 
 // ── Tab bar frosted-glass background ──────────────────────────
 const TabBarBackground = ({ customColors }) => {
@@ -26,7 +28,7 @@ const TabBarBackground = ({ customColors }) => {
       />
       {/* Top shimmer line */}
       <LinearGradient
-        colors={['transparent', 'rgba(56,189,248,0.25)', 'rgba(20,184,166,0.18)', 'transparent']}
+        colors={['transparent', 'rgba(34,197,94,0.25)', 'rgba(74,222,128,0.18)', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{ position: 'absolute', top: 0, left: 20, right: 20, height: 1 }}
@@ -35,11 +37,14 @@ const TabBarBackground = ({ customColors }) => {
   );
 };
 
-// ── Animated tab icon with spring scale + glowing pill ────────
+// ── Animated tab icon with spring scale + glowing pill + ripple ──
 const AnimatedTabIcon = ({ name, size, color, focused, glowColor }) => {
-  const scaleAnim   = useRef(new Animated.Value(focused ? 1.2  : 1)).current;
-  const pillScale   = useRef(new Animated.Value(focused ? 1    : 0.2)).current;
-  const pillOpacity = useRef(new Animated.Value(focused ? 1    : 0)).current;
+  const scaleAnim     = useRef(new Animated.Value(focused ? 1.2  : 1)).current;
+  const pillScale     = useRef(new Animated.Value(focused ? 1    : 0.2)).current;
+  const pillOpacity   = useRef(new Animated.Value(focused ? 1    : 0)).current;
+  const rippleScale   = useRef(new Animated.Value(0)).current;
+  const rippleOpacity = useRef(new Animated.Value(0)).current;
+  const prevFocused   = useRef(focused);
 
   useEffect(() => {
     Animated.parallel([
@@ -61,12 +66,33 @@ const AnimatedTabIcon = ({ name, size, color, focused, glowColor }) => {
         useNativeDriver: true,
       }),
     ]).start();
+
+    // Ripple + haptic solo al activarse (no en el render inicial)
+    if (focused && !prevFocused.current) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      rippleScale.setValue(0);
+      rippleOpacity.setValue(0.45);
+      Animated.parallel([
+        Animated.timing(rippleScale,   { toValue: 1.6, duration: 450, useNativeDriver: true }),
+        Animated.timing(rippleOpacity, { toValue: 0,   duration: 450, useNativeDriver: true }),
+      ]).start();
+    }
+    prevFocused.current = focused;
   }, [focused]);
 
   const gc = glowColor || color;
 
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }], alignItems: 'center', justifyContent: 'center', width: 48, height: 38 }}>
+      {/* Ripple ink effect */}
+      <Animated.View style={{
+        position: 'absolute',
+        width: 46, height: 36,
+        borderRadius: 18,
+        backgroundColor: gc,
+        transform: [{ scale: rippleScale }],
+        opacity: rippleOpacity,
+      }} />
       {/* Glowing pill background */}
       <Animated.View style={{
         position: 'absolute',
@@ -161,10 +187,10 @@ const ProducerTabs = () => {
   const pendientes = stats?.pendientes || 0;
 
   const iconMap = {
-    Home:       { active: 'home',          inactive: 'home-outline',          glow: '#38bdf8' },
+    Home:       { active: 'home',          inactive: 'home-outline',          glow: '#22C55E' },
     Orders:     { active: 'receipt',       inactive: 'receipt-outline',       glow: '#fb923c' },
     Inventario: { active: 'cube',          inactive: 'cube-outline',          glow: '#4ade80' },
-    Devices:    { active: 'hardware-chip', inactive: 'hardware-chip-outline', glow: '#14b8a6' },
+    Devices:    { active: 'hardware-chip', inactive: 'hardware-chip-outline', glow: '#10b981' },
     Profile:    { active: 'person',        inactive: 'person-outline',        glow: '#c084fc' },
   };
 
@@ -181,12 +207,12 @@ const ProducerTabs = () => {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: isDarkMode ? 'rgba(56,189,248,0.18)' : colors.border,
+          borderColor: isDarkMode ? 'rgba(34,197,94,0.18)' : colors.border,
           borderRadius: 28,
           height: 72,
           paddingBottom: 12,
           paddingTop: 8,
-          shadowColor: isDarkMode ? '#38bdf8' : '#000',
+          shadowColor: isDarkMode ? '#22C55E' : '#000',
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: isDarkMode ? 0.2 : 0.08,
           shadowRadius: 20,
@@ -196,7 +222,7 @@ const ProducerTabs = () => {
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIcon: ({ focused, color }) => {
-          const cfg   = iconMap[route.name] || { active: 'ellipse', inactive: 'ellipse', glow: '#38bdf8' };
+          const cfg   = iconMap[route.name] || { active: 'ellipse', inactive: 'ellipse', glow: '#22C55E' };
           const icon  = focused ? cfg.active : cfg.inactive;
           const badge = route.name === 'Orders' ? pendientes : 0;
           return (
@@ -226,8 +252,9 @@ const ProducerTabs = () => {
 // ============================================================
 const ConsumerTabs = () => {
   const { colors, isDarkMode } = useTheme();
+  const { count: cartCount } = useCarrito();
   const iconMap = {
-    Inicio:      { active: 'home',       inactive: 'home-outline',       glow: '#38bdf8' },
+    Inicio:      { active: 'home',       inactive: 'home-outline',       glow: '#22C55E' },
     Tienda:      { active: 'storefront', inactive: 'storefront-outline', glow: '#4ade80' },
     Reservas:    { active: 'calendar',   inactive: 'calendar-outline',   glow: '#4ade80' },
     Carrito:     { active: 'cart',       inactive: 'cart-outline',       glow: '#fb923c' },
@@ -247,12 +274,12 @@ const ConsumerTabs = () => {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: isDarkMode ? 'rgba(56,189,248,0.15)' : colors.border,
+          borderColor: isDarkMode ? 'rgba(34,197,94,0.15)' : colors.border,
           borderRadius: 28,
           height: 72,
           paddingBottom: 12,
           paddingTop: 8,
-          shadowColor: isDarkMode ? '#38bdf8' : '#000',
+          shadowColor: isDarkMode ? '#22C55E' : '#000',
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: isDarkMode ? 0.18 : 0.08,
           shadowRadius: 20,
@@ -262,9 +289,19 @@ const ConsumerTabs = () => {
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIcon: ({ focused, color }) => {
-          const cfg  = iconMap[route.name] || { active: 'ellipse', inactive: 'ellipse', glow: '#38bdf8' };
+          const cfg  = iconMap[route.name] || { active: 'ellipse', inactive: 'ellipse', glow: '#22C55E' };
           const icon = focused ? cfg.active : cfg.inactive;
-          return <AnimatedTabIcon name={icon} size={23} color={color} focused={focused} glowColor={cfg.glow} />;
+          const badge = route.name === 'Carrito' ? cartCount : 0;
+          return (
+            <View>
+              <AnimatedTabIcon name={icon} size={23} color={color} focused={focused} glowColor={cfg.glow} />
+              {badge > 0 && (
+                <View style={[styles.tabBadge, styles.tabBadgeOrders]}>
+                  <Text style={styles.tabBadgeText}>{badge > 9 ? '9+' : badge}</Text>
+                </View>
+              )}
+            </View>
+          );
         },
       })}
     >
@@ -295,12 +332,12 @@ const RepartidorTabs = () => {
         backgroundColor: 'transparent',
         borderTopWidth: 0,
         borderWidth: 1,
-        borderColor: isDarkMode ? 'rgba(56,189,248,0.15)' : colors.border,
+        borderColor: isDarkMode ? 'rgba(34,197,94,0.15)' : colors.border,
         borderRadius: 28,
         height: 72,
         paddingBottom: 12,
         paddingTop: 8,
-        shadowColor: isDarkMode ? '#38bdf8' : '#000',
+        shadowColor: isDarkMode ? '#22C55E' : '#000',
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: isDarkMode ? 0.18 : 0.08,
         shadowRadius: 20,
@@ -310,7 +347,7 @@ const RepartidorTabs = () => {
       tabBarInactiveTintColor: colors.textMuted,
       tabBarLabelStyle: styles.tabBarLabel,
       tabBarIcon: ({ focused, color }) => (
-        <AnimatedTabIcon name={focused ? 'bicycle' : 'bicycle-outline'} size={23} color={color} focused={focused} glowColor="#38bdf8" />
+        <AnimatedTabIcon name={focused ? 'bicycle' : 'bicycle-outline'} size={23} color={color} focused={focused} glowColor="#22C55E" />
       ),
     })}
   >

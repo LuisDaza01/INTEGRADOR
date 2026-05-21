@@ -7,11 +7,16 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image as ExpoImage } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import api from '../../api/axios.config';
+
+const BLURHASH = { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' };
 import { FishIndicator } from '../../components/ui/FishRefreshControl';
 import { SkeletonProductorCard, SkeletonProductCard } from '../../components/ui/Skeleton';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useFavoritos } from '../../contexts/FavoritosContext';
 
 const { width } = Dimensions.get('window');
 const cardW = (width - 48) / 2;
@@ -26,6 +31,7 @@ const SORT_PROD = [
 
 const TiendaScreen = ({ navigation }) => {
   const { colors, isDarkMode } = useTheme();
+  const { isFavorito, toggle } = useFavoritos();
   const C = {
     bg:      colors.background,
     surface: colors.surface,
@@ -34,8 +40,8 @@ const TiendaScreen = ({ navigation }) => {
     text:    colors.text,
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
-    primary: colors.secondary,
-    teal:    '#14b8a6',
+    primary: colors.primary,
+    teal:    '#10b981',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -155,47 +161,96 @@ const TiendaScreen = ({ navigation }) => {
     ? pFilters.verificado
     : (qFilters.precio_min || qFilters.precio_max || qFilters.order !== 'fecha_desc');
 
-  const gradients = [['#0ea5e9','#14b8a6'],['#4ade80','#0d9488'],['#c084fc','#8b5cf6'],['#fb923c','#f59e0b']];
+  const gradients = [['#16a34a','#22C55E'],['#0d9488','#4ade80'],['#c084fc','#8b5cf6'],['#fb923c','#f59e0b']];
 
-  const renderProductor = ({ item, index }) => (
-    <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('DetalleProductor', { id: item.id })} activeOpacity={0.85}>
-      <LinearGradient colors={gradients[index % gradients.length]} style={styles.cardTop}>
-        {item.foto_perfil
-          ? <Image source={{ uri: item.foto_perfil }} style={styles.cardAvatar} />
-          : <View style={styles.cardAvatarFallback}>
-              <Text style={styles.cardAvatarText}>{item.nombre?.slice(0,2).toUpperCase() || 'P'}</Text>
-            </View>}
-        {item.verificado && (
-          <View style={styles.veriBadge}>
-            <Ionicons name="checkmark-circle" size={14} color="#4ade80" />
+  const goProductor = (id) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); navigation.navigate('DetalleProductor', { id }); };
+  const goProducto  = (id) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); navigation.navigate('DetalleProducto', { id }); };
+
+  const renderProductor = ({ item, index }) => {
+    const grad = gradients[index % gradients.length];
+    return (
+      <TouchableOpacity style={styles.card} onPress={() => goProductor(item.id)} activeOpacity={0.9}>
+        <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.cardTop}>
+          {/* decorative blobs */}
+          <View style={styles.cardBlobA} />
+          <View style={styles.cardBlobB} />
+          {item.verificado && (
+            <View style={styles.veriBadge}>
+              <Ionicons name="shield-checkmark" size={11} color="#fff" />
+              <Text style={styles.veriText}>Verificado</Text>
+            </View>
+          )}
+          {/* Avatar con anillo */}
+          <View style={styles.avatarRing}>
+            {item.foto_perfil
+              ? <ExpoImage source={{ uri: item.foto_perfil }} style={styles.cardAvatar} contentFit="cover" transition={250} placeholder={BLURHASH} />
+              : <View style={styles.cardAvatarFallback}>
+                  <Text style={styles.cardAvatarText}>{item.nombre?.slice(0,2).toUpperCase() || 'P'}</Text>
+                </View>}
           </View>
-        )}
-      </LinearGradient>
-      <View style={styles.cardInfo}>
-        <Text style={styles.cardName} numberOfLines={1}>{item.nombre}</Text>
-        <Text style={styles.cardLoc} numberOfLines={1}>
-          <Ionicons name="location-outline" size={11} color={C.primary} /> {item.ubicacion || 'Bolivia'}
-        </Text>
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
-          <Text style={styles.stat}>⭐ {item.calificacion_promedio ? Number(item.calificacion_promedio).toFixed(1) : '—'}</Text>
-          <Text style={styles.stat}>📦 {item.total_productos || 0}</Text>
+        </LinearGradient>
+        <View style={styles.cardInfo}>
+          <Text style={styles.cardName} numberOfLines={1}>{item.nombre}</Text>
+          <View style={styles.cardLocRow}>
+            <Ionicons name="location" size={11} color={C.primary} />
+            <Text style={styles.cardLoc} numberOfLines={1}>{item.ubicacion || 'Bolivia'}</Text>
+          </View>
+          <View style={styles.cardStatsRow}>
+            <View style={styles.statPill}>
+              <Ionicons name="star" size={11} color="#fbbf24" />
+              <Text style={styles.statPillText}>{item.calificacion_promedio ? Number(item.calificacion_promedio).toFixed(1) : '—'}</Text>
+            </View>
+            <View style={styles.statPill}>
+              <Ionicons name="cube" size={11} color={C.green} />
+              <Text style={styles.statPillText}>{item.total_productos || 0}</Text>
+            </View>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const renderProducto = ({ item }) => (
-    <TouchableOpacity style={styles.productCard} onPress={() => navigation.navigate('DetalleProducto', { id: item.id })} activeOpacity={0.85}>
+    <TouchableOpacity style={styles.productCard} onPress={() => goProducto(item.id)} activeOpacity={0.9}>
       <View style={styles.productImg}>
         {item.imagen_url
-          ? <Image source={{ uri: item.imagen_url }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
-          : <Ionicons name="fish-outline" size={32} color={C.hint} />}
-        <LinearGradient colors={['transparent', 'rgba(6,13,31,0.75)']} style={StyleSheet.absoluteFill} />
+          ? <ExpoImage source={{ uri: item.imagen_url }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={250} placeholder={BLURHASH} />
+          : <Ionicons name="fish-outline" size={34} color={C.hint} />}
+        <LinearGradient colors={['transparent', 'rgba(6,13,31,0.55)']} style={StyleSheet.absoluteFill} />
+        {/* Category chip */}
+        <View style={styles.prodCatChip}>
+          <Ionicons name="pricetag" size={9} color={C.green} />
+          <Text style={styles.prodCatChipText} numberOfLines={1}>{item.categoria || item.categoria_nombre || 'Fresco'}</Text>
+        </View>
+        {/* Fav */}
+        <TouchableOpacity style={styles.prodFav} hitSlop={8} onPress={() => toggle(item.id)}>
+          <Ionicons name={isFavorito(item.id) ? 'heart' : 'heart-outline'} size={14} color={isFavorito(item.id) ? '#ef4444' : '#fff'} />
+        </TouchableOpacity>
       </View>
-      <View style={{ padding: 10 }}>
+      <View style={styles.productInfo}>
         <Text style={styles.productName} numberOfLines={1}>{item.nombre}</Text>
-        <Text style={styles.productCat}>{item.categoria || item.categoria_nombre || 'Pescado Fresco'}</Text>
-        <Text style={styles.productPrice}>Bs {parseFloat(item.precio || 0).toFixed(2)}</Text>
+        <View style={styles.prodRatingRow}>
+          {Number(item.total_valoraciones) > 0 ? (
+            <>
+              <Ionicons name="star" size={11} color="#fbbf24" />
+              <Text style={styles.prodRatingText}>{Number(item.promedio_valoracion).toFixed(1)}</Text>
+              <Text style={styles.prodRatingCount}>({item.total_valoraciones})</Text>
+            </>
+          ) : (
+            <Text style={styles.prodNuevo}>Nuevo</Text>
+          )}
+        </View>
+        <View style={styles.productFooter}>
+          <View>
+            <Text style={styles.prodPriceLabel}>Precio</Text>
+            <Text style={styles.productPrice}>Bs {parseFloat(item.precio || 0).toFixed(2)}</Text>
+          </View>
+          <TouchableOpacity style={styles.prodAddBtn} onPress={() => goProducto(item.id)} hitSlop={6}>
+            <LinearGradient colors={['#16a34a', '#22C55E']} style={styles.prodAddGrad}>
+              <Ionicons name="add" size={18} color="#fff" />
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -323,7 +378,7 @@ const TiendaScreen = ({ navigation }) => {
                     <Switch
                       value={draft.verificado || false}
                       onValueChange={v => setDraft(d => ({ ...d, verificado: v }))}
-                      trackColor={{ false: C.surface, true: 'rgba(56,189,248,0.4)' }}
+                      trackColor={{ false: C.surface, true: 'rgba(34,197,94,0.4)' }}
                       thumbColor={draft.verificado ? C.primary : C.hint}
                     />
                   </View>
@@ -385,7 +440,7 @@ const TiendaScreen = ({ navigation }) => {
                 <Text style={{ color: C.hint, fontSize: 14 }}>Limpiar</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={applyFilter} style={styles.applyBtn}>
-                <LinearGradient colors={['#0ea5e9', '#14b8a6']} style={styles.applyGrad}>
+                <LinearGradient colors={['#16a34a', '#22C55E']} style={styles.applyGrad}>
                   <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>Aplicar</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -403,34 +458,52 @@ const makeStyles = (C) => StyleSheet.create({
   headerLine: { height: 1, position: 'absolute', top: 0, left: 0, right: 0 },
   title:      { fontSize: 22, fontWeight: 'bold', color: C.text },
   filterBtn:  { width: 36, height: 36, borderRadius: 10, backgroundColor: C.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.border },
-  filterBtnActive: { backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.3)' },
+  filterBtnActive: { backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)' },
   filterDot:  { position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: 4, backgroundColor: C.primary },
   searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.surface, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: C.border, marginBottom: 10 },
   searchInput:{ flex: 1, color: C.text, fontSize: 14 },
   tabs:       { flexDirection: 'row', gap: 10 },
   tabBtn:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: C.border },
-  tabBtnActive:{ backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.3)' },
+  tabBtnActive:{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)' },
   tabText:    { fontSize: 13, fontWeight: '600' },
   list:       { paddingHorizontal: 14, paddingTop: 12, paddingBottom: 100 },
   skeletonGrid:{ padding: 14 },
   empty:      { alignItems: 'center', paddingVertical: 60 },
   // Productor card
-  card:       { flex: 1, borderRadius: 16, overflow: 'hidden', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, marginBottom: 12 },
-  cardTop:    { height: 90, justifyContent: 'center', alignItems: 'center', position: 'relative' },
-  cardAvatar: { width: 54, height: 54, borderRadius: 27, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)' },
-  cardAvatarFallback: { width: 54, height: 54, borderRadius: 27, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
+  card:       { flex: 1, borderRadius: 18, overflow: 'hidden', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  cardTop:    { height: 96, justifyContent: 'center', alignItems: 'center', position: 'relative', overflow: 'hidden' },
+  cardBlobA:  { position: 'absolute', top: -24, right: -16, width: 70, height: 70, borderRadius: 35, backgroundColor: 'rgba(255,255,255,0.16)' },
+  cardBlobB:  { position: 'absolute', bottom: -28, left: -18, width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255,255,255,0.10)' },
+  avatarRing: { width: 60, height: 60, borderRadius: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.22)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.55)' },
+  cardAvatar: { width: 52, height: 52, borderRadius: 26 },
+  cardAvatarFallback: { width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(255,255,255,0.25)', justifyContent: 'center', alignItems: 'center' },
   cardAvatarText: { fontSize: 18, fontWeight: 'bold', color: '#fff' },
-  veriBadge:  { position: 'absolute', top: 8, right: 8, backgroundColor: 'rgba(9,15,30,0.8)', borderRadius: 10, padding: 2 },
-  cardInfo:   { padding: 10 },
-  cardName:   { fontSize: 13, fontWeight: '700', color: C.text, marginBottom: 3 },
-  cardLoc:    { fontSize: 11, color: C.hint },
-  stat:       { fontSize: 11, color: C.sub },
+  veriBadge:  { position: 'absolute', top: 8, right: 8, flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(9,15,30,0.55)', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 3 },
+  veriText:   { fontSize: 8.5, fontWeight: '700', color: '#fff', letterSpacing: 0.2 },
+  cardInfo:   { padding: 11 },
+  cardName:   { fontSize: 13.5, fontWeight: '700', color: C.text, marginBottom: 5 },
+  cardLocRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  cardLoc:    { fontSize: 11, color: C.hint, flex: 1 },
+  cardStatsRow:{ flexDirection: 'row', gap: 6, marginTop: 9 },
+  statPill:   { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: C.surface, borderWidth: 1, borderColor: C.border, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3 },
+  statPillText:{ fontSize: 11, fontWeight: '600', color: C.sub },
   // Producto card
-  productCard:{ flex: 1, borderRadius: 16, overflow: 'hidden', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, marginBottom: 12 },
-  productImg: { height: 110, backgroundColor: 'rgba(255,255,255,0.03)', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
-  productName:{ fontSize: 13, fontWeight: '600', color: C.text, marginBottom: 3 },
-  productCat: { fontSize: 11, color: C.hint, marginBottom: 6 },
-  productPrice:{ fontSize: 15, fontWeight: 'bold', color: C.primary },
+  productCard:{ flex: 1, borderRadius: 18, overflow: 'hidden', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  productImg: { height: 120, backgroundColor: 'rgba(255,255,255,0.03)', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', position: 'relative' },
+  prodCatChip:{ position: 'absolute', bottom: 8, left: 8, flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(9,15,30,0.7)', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, maxWidth: '75%' },
+  prodCatChipText:{ fontSize: 9.5, fontWeight: '600', color: '#fff' },
+  prodFav:    { position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(9,15,30,0.5)', justifyContent: 'center', alignItems: 'center' },
+  productInfo:{ padding: 11 },
+  productName:{ fontSize: 13.5, fontWeight: '600', color: C.text, marginBottom: 4 },
+  prodRatingRow:{ flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 8, minHeight: 14 },
+  prodRatingText:{ fontSize: 11, fontWeight: '700', color: C.text },
+  prodRatingCount:{ fontSize: 10, color: C.hint },
+  prodNuevo:{ fontSize: 10, fontWeight: '600', color: C.green },
+  productFooter:{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
+  prodPriceLabel:{ fontSize: 9, color: C.hint, marginBottom: 1, textTransform: 'uppercase', letterSpacing: 0.4 },
+  productPrice:{ fontSize: 16, fontWeight: 'bold', color: C.primary },
+  prodAddBtn: { borderRadius: 12, overflow: 'hidden' },
+  prodAddGrad:{ width: 34, height: 34, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   // Modal
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
   modalSheet:   { backgroundColor: C.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 0, maxHeight: '85%', borderWidth: 1, borderColor: C.border },

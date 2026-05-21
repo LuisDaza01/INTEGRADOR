@@ -1,8 +1,8 @@
 // src/constants/config.js
 // Configuración general de la aplicación
 
-//export const API_BASE_URL = 'https://naturapiscis-backend-production.up.railway.app/api';
-export const API_BASE_URL = 'http://192.168.137.33:3001/api';
+export const API_BASE_URL = 'https://integrador-production-8f83.up.railway.app/api';
+
 
 // Configuración de Firebase (para sensores en tiempo real)
 export const FIREBASE_CONFIG = {

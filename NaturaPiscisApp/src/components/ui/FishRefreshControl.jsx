@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, Animated, RefreshControl, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const FishRefreshControl = ({ refreshing, onRefresh, tintColor = '#38bdf8' }) => {
+const FishRefreshControl = ({ refreshing, onRefresh, tintColor = '#22C55E' }) => {
   const swimX  = useRef(new Animated.Value(0)).current;
   const swimY  = useRef(new Animated.Value(0)).current;
   const rotate = useRef(new Animated.Value(0)).current;
@@ -61,7 +61,7 @@ const FishRefreshControl = ({ refreshing, onRefresh, tintColor = '#38bdf8' }) =>
 };
 
 // Animated fish indicator — rendered inline at the top of the scroll view
-export const FishIndicator = ({ visible, color = '#38bdf8' }) => {
+export const FishIndicator = ({ visible, color = '#22C55E' }) => {
   const swimX  = useRef(new Animated.Value(0)).current;
   const swimY  = useRef(new Animated.Value(0)).current;
   const scale  = useRef(new Animated.Value(visible ? 1 : 0)).current;

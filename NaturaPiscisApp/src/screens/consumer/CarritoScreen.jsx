@@ -5,8 +5,12 @@ import {
   Image, RefreshControl, Alert, ActivityIndicator, Dimensions, Platform, TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image as ExpoImage } from 'expo-image';
 import Constants from 'expo-constants';
 import { useTheme } from '../../contexts/ThemeContext';
+
+const BLURHASH = { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' };
+import { useCarrito } from '../../contexts/CarritoContext';
 import api from '../../api/axios.config';
 
 // ✅ Solo cargar mapa en build nativo (no en Expo Go)
@@ -33,6 +37,7 @@ const PESO_MIN_KG          = 0.8;  // mínimo por pedido (un pescado mínimo = 8
 
 const CarritoScreen = ({ navigation }) => {
   const { colors } = useTheme();
+  const { refresh: refreshCarrito, setCount } = useCarrito();
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -58,7 +63,9 @@ const CarritoScreen = ({ navigation }) => {
       const response = await api.get('/carrito');
       const raw = response.data;
       const items = raw?.items ?? raw?.data?.items ?? raw?.data ?? [];
-      setCarrito(Array.isArray(items) ? items : []);
+      const arr = Array.isArray(items) ? items : [];
+      setCarrito(arr);
+      setCount(arr.reduce((t, it) => t + (it.cantidad || 0), 0));
     } catch (error) {
       console.error('Error al cargar carrito:', error);
       setCarrito([]);
@@ -91,9 +98,11 @@ const CarritoScreen = ({ navigation }) => {
     if (newQuantity < 1) return;
     try {
       await api.put(`/carrito/${id}`, { cantidad: newQuantity });
-      setCarrito(prev => prev.map(item =>
-        item.id === id ? { ...item, cantidad: newQuantity } : item
-      ));
+      setCarrito(prev => {
+        const next = prev.map(item => item.id === id ? { ...item, cantidad: newQuantity } : item);
+        setCount(next.reduce((t, it) => t + (it.cantidad || 0), 0));
+        return next;
+      });
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar la cantidad');
     }
@@ -107,7 +116,11 @@ const CarritoScreen = ({ navigation }) => {
         onPress: async () => {
           try {
             await api.delete(`/carrito/${id}`);
-            setCarrito(prev => prev.filter(item => item.id !== id));
+            setCarrito(prev => {
+              const next = prev.filter(item => item.id !== id);
+              setCount(next.reduce((t, it) => t + (it.cantidad || 0), 0));
+              return next;
+            });
             setModos(prev   => { const n = { ...prev }; delete n[id]; return n; });
             setPesosKg(prev => { const n = { ...prev }; delete n[id]; return n; });
           } catch (error) {
@@ -198,7 +211,7 @@ const CarritoScreen = ({ navigation }) => {
       Alert.alert(
         '¡Pedido confirmado! 🎉',
         `Tu pedido será entregado en:\n${paradaSeleccionada.nombre}`,
-        [{ text: 'OK', onPress: () => { setCarrito([]); setStep(1); navigation.navigate('MisPedidos'); } }]
+        [{ text: 'OK', onPress: () => { setCarrito([]); setCount(0); setStep(1); navigation.navigate('MisPedidos'); } }]
       );
     } catch (error) {
       Alert.alert('Error', 'No se pudo procesar el pedido');
@@ -363,7 +376,7 @@ const CarritoScreen = ({ navigation }) => {
               <View style={styles.cartItemTop}>
                 <View style={[styles.cartItemImage, { backgroundColor: colors.surfaceVariant }]}>
                   {item.imagen_url
-                    ? <Image source={{ uri: item.imagen_url }} style={styles.itemImg} />
+                    ? <ExpoImage source={{ uri: item.imagen_url }} style={styles.itemImg} contentFit="cover" transition={250} placeholder={BLURHASH} />
                     : <Ionicons name="fish-outline" size={30} color={colors.textMuted} />
                   }
                 </View>

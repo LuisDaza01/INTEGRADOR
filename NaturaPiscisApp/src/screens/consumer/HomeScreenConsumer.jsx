@@ -14,8 +14,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image as ExpoImage } from 'expo-image';
+import * as Haptics from 'expo-haptics';
+
+const BLURHASH = { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' };
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useFavoritos } from '../../contexts/FavoritosContext';
 import api from '../../api/axios.config';
 import { SkeletonProductCard, SkeletonOrderCard, SkeletonStatCard } from '../../components/ui/Skeleton';
 import { FishIndicator } from '../../components/ui/FishRefreshControl';
@@ -25,6 +30,7 @@ const { width } = Dimensions.get('window');
 const HomeScreenConsumer = ({ navigation }) => {
   const { user }        = useAuth();
   const { colors, isDarkMode } = useTheme();
+  const { isFavorito, toggle } = useFavoritos();
   const C = {
     bg:      colors.background,
     surface: colors.surface,
@@ -33,8 +39,8 @@ const HomeScreenConsumer = ({ navigation }) => {
     text:    colors.text,
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
-    primary: colors.secondary,
-    teal:    '#14b8a6',
+    primary: colors.primary,
+    teal:    '#10b981',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -49,6 +55,8 @@ const HomeScreenConsumer = ({ navigation }) => {
   const wave1 = useRef(new Animated.Value(0)).current;
   const wave2 = useRef(new Animated.Value(0)).current;
   const wave3 = useRef(new Animated.Value(0)).current;
+  // Parallax scroll
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const makeWave = (val, duration, delay) =>
@@ -78,6 +86,7 @@ const HomeScreenConsumer = ({ navigation }) => {
   };
 
   const onRefresh = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     setRefreshing(true);
     await fetchData();
     setRefreshing(false);
@@ -122,12 +131,15 @@ const HomeScreenConsumer = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={styles.root}
+    <Animated.ScrollView style={styles.root}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="transparent" colors={['transparent']} progressBackgroundColor="transparent" />}
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+      onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+      scrollEventThrottle={16}>
       <FishIndicator visible={refreshing} />
 
-      {/* ── Hero ── */}
+      {/* ── Hero (parallax) ── */}
+      <Animated.View style={{ transform: [{ translateY: Animated.multiply(scrollY, 0.4) }] }}>
       <LinearGradient
         colors={isDarkMode ? ['#071228', '#0a1835', '#060f22', '#030b18'] : ['#e0f2fe', '#f0f9ff', '#f9fafb', '#e0fdfa']}
         start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
@@ -178,8 +190,8 @@ const HomeScreenConsumer = ({ navigation }) => {
         </View>
 
         {/* CTA button */}
-        <TouchableOpacity onPress={() => navigation.navigate('Tienda')} style={styles.heroCta} activeOpacity={0.85}>
-          <LinearGradient colors={['#0ea5e9', '#14b8a6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+        <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {}); navigation.navigate('Tienda'); }} style={styles.heroCta} activeOpacity={0.85}>
+          <LinearGradient colors={['#16a34a', '#22C55E']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.heroCtaGrad}>
             <Ionicons name="storefront-outline" size={16} color="#fff" />
             <Text style={styles.heroCtaText}>Explorar productores</Text>
@@ -187,6 +199,7 @@ const HomeScreenConsumer = ({ navigation }) => {
           </LinearGradient>
         </TouchableOpacity>
       </LinearGradient>
+      </Animated.View>
 
       {/* ── Banner pedido en camino ── */}
       {pedidoEnCamino && (
@@ -265,7 +278,7 @@ const HomeScreenConsumer = ({ navigation }) => {
               {/* Image */}
               <View style={styles.productImgWrap}>
                 {p.imagen_url ? (
-                  <Image source={{ uri: p.imagen_url }} style={styles.productImg} />
+                  <ExpoImage source={{ uri: p.imagen_url }} style={styles.productImg} contentFit="cover" transition={250} placeholder={BLURHASH} />
                 ) : (
                   <View style={styles.productImgFallback}>
                     <Ionicons name="fish-outline" size={32} color={C.hint} />
@@ -276,20 +289,30 @@ const HomeScreenConsumer = ({ navigation }) => {
                   colors={isDarkMode ? ['transparent', 'rgba(6,13,31,0.75)'] : ['transparent', 'rgba(0,0,0,0.18)']}
                   style={styles.productImgOverlay} />
                 {/* Favorite */}
-                <TouchableOpacity style={styles.favBtn}>
-                  <Ionicons name="heart-outline" size={15} color={C.sub} />
+                <TouchableOpacity style={styles.favBtn} onPress={() => toggle(p.id)} hitSlop={8}>
+                  <Ionicons name={isFavorito(p.id) ? 'heart' : 'heart-outline'} size={15} color={isFavorito(p.id) ? '#ef4444' : C.sub} />
                 </TouchableOpacity>
               </View>
 
               {/* Info */}
               <View style={styles.productInfo}>
                 <Text style={styles.productName} numberOfLines={1}>{p.nombre}</Text>
-                <Text style={styles.productCat}>{p.categoria || 'Pescado Fresco'}</Text>
+                <View style={styles.prodRatingRow}>
+                  {Number(p.total_valoraciones) > 0 ? (
+                    <>
+                      <Ionicons name="star" size={11} color="#fbbf24" />
+                      <Text style={styles.prodRatingText}>{Number(p.promedio_valoracion).toFixed(1)}</Text>
+                      <Text style={styles.prodRatingCount}>({p.total_valoraciones})</Text>
+                    </>
+                  ) : (
+                    <Text style={styles.prodCat}>{p.categoria || 'Pescado Fresco'}</Text>
+                  )}
+                </View>
                 <View style={styles.productFooter}>
                   <Text style={styles.productPrice}>Bs {parseFloat(p.precio || 0).toFixed(2)}</Text>
                   <TouchableOpacity style={styles.addBtn}
-                    onPress={() => navigation.navigate('DetalleProducto', { id: p.id })}>
-                    <LinearGradient colors={['#0ea5e9', '#14b8a6']} style={styles.addBtnGrad}>
+                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); navigation.navigate('DetalleProducto', { id: p.id }); }}>
+                    <LinearGradient colors={['#16a34a', '#22C55E']} style={styles.addBtnGrad}>
                       <Ionicons name="add" size={16} color="#fff" />
                     </LinearGradient>
                   </TouchableOpacity>
@@ -363,7 +386,7 @@ const HomeScreenConsumer = ({ navigation }) => {
       </View>
 
       <View style={{ height: 32 }} />
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 
@@ -393,7 +416,7 @@ const makeStyles = (C, isDarkMode) => StyleSheet.create({
   heroBadge:     { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(20,184,166,0.12)', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', borderWidth: 1, borderColor: 'rgba(20,184,166,0.25)' },
   heroBadgeText: { fontSize: 11, color: C.teal, fontWeight: '500' },
   heroActions:   { flexDirection: 'row', gap: 8 },
-  heroIconBtn:   { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(56,189,248,0.1)', borderWidth: 1, borderColor: 'rgba(56,189,248,0.22)', justifyContent: 'center', alignItems: 'center' },
+  heroIconBtn:   { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(34,197,94,0.1)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.22)', justifyContent: 'center', alignItems: 'center' },
   heroCta:       { borderRadius: 14, overflow: 'hidden' },
   heroCtaGrad:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 11, gap: 8 },
   heroCtaText:   { flex: 1, color: '#fff', fontSize: 14, fontWeight: '600' },
@@ -440,8 +463,8 @@ const makeStyles = (C, isDarkMode) => StyleSheet.create({
   // Product card
   productCard: {
     width: 158, borderRadius: 18, marginRight: 12, overflow: 'hidden',
-    borderWidth: 1, borderColor: isDarkMode ? 'rgba(56,189,248,0.18)' : C.border, backgroundColor: C.card,
-    shadowColor: isDarkMode ? '#38bdf8' : '#000', shadowOffset: { width: 0, height: 4 },
+    borderWidth: 1, borderColor: isDarkMode ? 'rgba(34,197,94,0.18)' : C.border, backgroundColor: C.card,
+    shadowColor: isDarkMode ? '#22C55E' : '#000', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: isDarkMode ? 0.18 : 0.12, shadowRadius: isDarkMode ? 14 : 8, elevation: 8,
   },
   productImgWrap:    { height: 120, position: 'relative' },
@@ -451,7 +474,10 @@ const makeStyles = (C, isDarkMode) => StyleSheet.create({
   favBtn:            { position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: 14, backgroundColor: isDarkMode ? 'rgba(9,15,30,0.75)' : 'rgba(255,255,255,0.85)', borderWidth: 1, borderColor: C.border, justifyContent: 'center', alignItems: 'center' },
   productInfo:       { padding: 12 },
   productName:       { fontSize: 13, fontWeight: '600', color: C.text, marginBottom: 3 },
-  productCat:        { fontSize: 11, color: C.hint, marginBottom: 8 },
+  productCat:        { fontSize: 11, color: C.hint },
+  prodRatingRow:     { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 8, minHeight: 14 },
+  prodRatingText:    { fontSize: 11, fontWeight: '700', color: C.text },
+  prodRatingCount:   { fontSize: 10, color: C.hint },
   productFooter:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   productPrice:      { fontSize: 15, fontWeight: 'bold', color: C.primary },
   addBtn:            { width: 28, height: 28, borderRadius: 8, overflow: 'hidden' },

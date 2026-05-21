@@ -32,7 +32,6 @@ import {
 // Components
 import SidebarProductor from '../../components/layout/SidebarProductor';
 import SensorCard from '../../components/features/SensorCard';
-import ParticleBackground from '../../components/effects/ParticleBackground';
 import GlitchText from '../../components/effects/GlitchText';
 
 // Services
@@ -341,7 +340,6 @@ const DashboardProductor = () => {
 
   return (
     <div className="np-orb-bg np-grid min-h-screen flex flex-col" style={{ background: D.bg }}>
-      <ParticleBackground />
       {/* ── Header ── */}
       <header className="glass sticky top-0 z-30" style={{
         borderBottom: `1px solid ${D.border}`,

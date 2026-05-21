@@ -14,7 +14,6 @@ import PrediccionRiesgo from "./PrediccionRiesgo"
 import { getHistoricalData } from "../../api/config/firebase"
 import { useTheme } from "../../contexts/ThemeContext"
 import HUDGauge from "../../components/effects/HUDGauge"
-import ParticleBackground from "../../components/effects/ParticleBackground"
 
 // ─── Configuración de rangos óptimos ────────────────────────────────────────
 const SENSOR_CONFIG = {

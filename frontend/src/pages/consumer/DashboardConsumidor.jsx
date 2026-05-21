@@ -9,7 +9,6 @@ import SidebarConsumidor from "../../components/layout/SidebarConsumidor"
 import { useAuth } from "../../contexts/AuthContext"
 import { useTheme } from "../../contexts/ThemeContext"
 import { useNotificaciones, useMarcarLeidaMutation, useMarcarTodasLeidasMutation } from "../../hooks/queries"
-import ParticleBackground from "../../components/effects/ParticleBackground"
 import GlitchText from "../../components/effects/GlitchText"
 
 const SOCKET_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '')
@@ -79,7 +78,6 @@ const DashboardConsumidor = () => {
 
   return (
     <div className="np-orb-bg np-grid" style={{ minHeight: '100vh', background: D.bg, display: 'flex', flexDirection: 'column' }}>
-      <ParticleBackground />
       {/* ── Header ──────────────────────────────────────────────── */}
       <header className="glass" style={{
         borderBottom: `1px solid ${D.border}`,

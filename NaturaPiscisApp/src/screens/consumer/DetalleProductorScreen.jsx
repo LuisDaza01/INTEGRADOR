@@ -175,9 +175,9 @@ const DetalleProductorScreen = ({ navigation, route }) => {
       await api.post('/carrito', { producto_id: producto.id, cantidad: qty });
       setCartCount(prev => prev + qty);
       refreshCarrito();
-      Alert.alert('✅ Agregado', `${producto.nombre} agregado al carrito`);
+      Alert.alert('✅ Agregado', `${producto.nombre} agregado a tu reserva`);
     } catch {
-      Alert.alert('Error', 'No se pudo agregar al carrito');
+      Alert.alert('Error', 'No se pudo agregar a la reserva');
     }
   };
 

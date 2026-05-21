@@ -698,7 +698,8 @@ const styles = StyleSheet.create({
   formCard: { borderRadius: 12, padding: 16 },
   paymentOption: { flexDirection: 'row', alignItems: 'center', padding: 16, borderWidth: 2, borderRadius: 12, marginBottom: 12, gap: 12 },
   paymentOptionText: { flex: 1, fontSize: 15, fontWeight: '500' },
-  footer: { padding: 16, borderTopWidth: 1 },
+  // paddingBottom alto: deja el botón por encima de la barra de pestañas flotante (~88px)
+  footer: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 100, borderTopWidth: 1 },
   footerTotal: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
   footerTotalLabel: { fontSize: 14 },
   footerTotalValue: { fontSize: 20, fontWeight: 'bold', color: '#3B82F6' },

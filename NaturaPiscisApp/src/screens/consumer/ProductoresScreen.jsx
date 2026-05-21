@@ -240,9 +240,9 @@ const ProductoresScreen = ({ navigation }) => {
 
                     {/* Stats row */}
                     <View style={styles.statsRow}>
-                      <StatPill icon="cube-outline" value={productor.productos_count || 0} label="Productos" glow={C.primary} />
-                      <StatPill icon="star" value={productor.calificacion || '—'} label="Rating" glow="#facc15" isRating />
-                      <StatPill icon="people-outline" value={productor.clientes || '—'} label="Clientes" glow={C.purple} />
+                      <StatPill icon="cube-outline" value={productor.productos_count || 0} label="Productos" glow={C.primary} styles={styles} />
+                      <StatPill icon="star" value={productor.calificacion || '—'} label="Rating" glow="#facc15" isRating styles={styles} />
+                      <StatPill icon="people-outline" value={productor.clientes || '—'} label="Clientes" glow={C.purple} styles={styles} />
                     </View>
                   </View>
 
@@ -263,7 +263,7 @@ const ProductoresScreen = ({ navigation }) => {
   );
 };
 
-const StatPill = ({ icon, value, label, glow, isRating }) => (
+const StatPill = ({ icon, value, label, glow, isRating, styles }) => (
   <View style={[styles.sPill, { borderColor: `${glow}25` }]}>
     <Ionicons name={icon} size={13} color={glow}
       style={isRating ? { marginRight: 2 } : undefined} />

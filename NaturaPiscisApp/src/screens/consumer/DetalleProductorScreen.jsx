@@ -845,38 +845,46 @@ const DetalleProductorScreen = ({ navigation, route }) => {
                     {detailProduct.descripcion && (
                       <Text style={{ fontSize: 13, color: C.sub, lineHeight: 20, marginBottom: 16 }}>{detailProduct.descripcion}</Text>
                     )}
-                    {/* precio + controles */}
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-                        <Text style={{ fontSize: 30, fontWeight: '900', color: agotado ? C.dim : C.primary }}>
-                          Bs {parseFloat(detailProduct.precio || 0).toFixed(2)}
-                        </Text>
-                        {detailProduct.unidad && <Text style={{ fontSize: 13, color: C.dim }}>/ {detailProduct.unidad}</Text>}
-                      </View>
-                      {!agotado && (
+                    {/* precio */}
+                    <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginBottom: agotado ? 0 : 16 }}>
+                      <Text style={{ fontSize: 30, fontWeight: '900', color: agotado ? C.dim : C.primary }}>
+                        Bs {parseFloat(detailProduct.precio || 0).toFixed(2)}
+                      </Text>
+                      {detailProduct.unidad && <Text style={{ fontSize: 13, color: C.dim }}>/ {detailProduct.unidad}</Text>}
+                    </View>
+
+                    {!agotado && (
+                      <>
+                        {/* Reservar — acción principal: lleva al flujo de reserva con calendario */}
+                        <TouchableOpacity
+                          onPress={() => { const p = detailProduct; setDetailProduct(null); navigation.navigate('DetalleProducto', { id: p.id }); }}
+                          style={{ height: 50, borderRadius: 14, backgroundColor: C.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 10, shadowColor: C.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 6 }}>
+                          <Ionicons name="calendar-outline" size={19} color="#fff" />
+                          <Text style={{ color: '#fff', fontWeight: '800', fontSize: 15 }}>Reservar para una fecha</Text>
+                        </TouchableOpacity>
+
+                        {/* Agregar al carrito — acción secundaria, con selector de cantidad */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                          {/* qty */}
                           <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: C.border, borderRadius: 12, overflow: 'hidden' }}>
                             <TouchableOpacity onPress={() => setModalQty(q => Math.max(1, q - 1))}
-                              style={{ width: 38, height: 38, justifyContent: 'center', alignItems: 'center' }}>
+                              style={{ width: 38, height: 44, justifyContent: 'center', alignItems: 'center' }}>
                               <Text style={{ fontSize: 22, color: C.sub, lineHeight: 26 }}>−</Text>
                             </TouchableOpacity>
                             <Text style={{ width: 34, textAlign: 'center', fontSize: 16, fontWeight: '700', color: C.text }}>{modalQty}</Text>
                             <TouchableOpacity onPress={() => setModalQty(q => q + 1)}
-                              style={{ width: 38, height: 38, justifyContent: 'center', alignItems: 'center' }}>
+                              style={{ width: 38, height: 44, justifyContent: 'center', alignItems: 'center' }}>
                               <Text style={{ fontSize: 22, color: C.sub, lineHeight: 26 }}>+</Text>
                             </TouchableOpacity>
                           </View>
-                          {/* agregar */}
                           <TouchableOpacity
                             onPress={async () => { await addToCart(detailProduct, modalQty); setDetailProduct(null); }}
-                            style={{ flex: 1, height: 44, borderRadius: 12, backgroundColor: C.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, paddingHorizontal: 18, shadowColor: C.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 6 }}>
-                            <Ionicons name="cart-outline" size={18} color="#fff" />
-                            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Agregar</Text>
+                            style={{ flex: 1, height: 48, borderRadius: 12, borderWidth: 1.5, borderColor: C.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, paddingHorizontal: 18 }}>
+                            <Ionicons name="cart-outline" size={18} color={C.primary} />
+                            <Text style={{ color: C.primary, fontWeight: '700', fontSize: 14 }}>Agregar al carrito</Text>
                           </TouchableOpacity>
                         </View>
-                      )}
-                    </View>
+                      </>
+                    )}
                   </View>
                 </>
               );

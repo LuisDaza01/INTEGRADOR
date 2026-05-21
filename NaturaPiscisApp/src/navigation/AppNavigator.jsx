@@ -308,7 +308,7 @@ const ConsumerTabs = () => {
       <Tab.Screen name="Inicio"    component={HomeScreenConsumer}  options={{ tabBarLabel: 'Inicio'    }} />
       <Tab.Screen name="Tienda"    component={TiendaScreen}        options={{ tabBarLabel: 'Tienda'    }} />
       <Tab.Screen name="Reservas"  component={MisReservasScreen}   options={{ tabBarLabel: 'Reservas'  }} />
-      <Tab.Screen name="Carrito"   component={CarritoScreen}       options={{ tabBarLabel: 'Carrito'   }} />
+      <Tab.Screen name="Carrito"   component={CarritoScreen}       options={{ tabBarLabel: 'Reservar'  }} />
       <Tab.Screen name="Perfil"    component={PerfilScreen}        options={{ tabBarLabel: 'Perfil'    }} />
     </Tab.Navigator>
   );

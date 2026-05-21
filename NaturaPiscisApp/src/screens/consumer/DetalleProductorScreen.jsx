@@ -855,15 +855,15 @@ const DetalleProductorScreen = ({ navigation, route }) => {
 
                     {!agotado && (
                       <>
-                        {/* Reservar — acción principal: lleva al flujo de reserva con calendario */}
+                        {/* Reservar — acción principal: agrega y lleva a elegir la fecha */}
                         <TouchableOpacity
-                          onPress={() => { const p = detailProduct; setDetailProduct(null); navigation.navigate('DetalleProducto', { id: p.id }); }}
+                          onPress={async () => { await addToCart(detailProduct, modalQty); setDetailProduct(null); navigation.navigate('ConsumerTabs', { screen: 'Carrito' }); }}
                           style={{ height: 50, borderRadius: 14, backgroundColor: C.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 10, shadowColor: C.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 6 }}>
                           <Ionicons name="calendar-outline" size={19} color="#fff" />
                           <Text style={{ color: '#fff', fontWeight: '800', fontSize: 15 }}>Reservar para una fecha</Text>
                         </TouchableOpacity>
 
-                        {/* Agregar al carrito — acción secundaria, con selector de cantidad */}
+                        {/* Agregar a la reserva — acción secundaria, con selector de cantidad */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: C.border, borderRadius: 12, overflow: 'hidden' }}>
                             <TouchableOpacity onPress={() => setModalQty(q => Math.max(1, q - 1))}
@@ -879,8 +879,8 @@ const DetalleProductorScreen = ({ navigation, route }) => {
                           <TouchableOpacity
                             onPress={async () => { await addToCart(detailProduct, modalQty); setDetailProduct(null); }}
                             style={{ flex: 1, height: 48, borderRadius: 12, borderWidth: 1.5, borderColor: C.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, paddingHorizontal: 18 }}>
-                            <Ionicons name="cart-outline" size={18} color={C.primary} />
-                            <Text style={{ color: C.primary, fontWeight: '700', fontSize: 14 }}>Agregar al carrito</Text>
+                            <Ionicons name="add" size={18} color={C.primary} />
+                            <Text style={{ color: C.primary, fontWeight: '700', fontSize: 14 }}>Agregar a la reserva</Text>
                           </TouchableOpacity>
                         </View>
                       </>
@@ -916,7 +916,7 @@ const DetalleProductorScreen = ({ navigation, route }) => {
       {/* Carrito flotante */}
       {cartCount > 0 && (
         <TouchableOpacity style={[styles.floatingCart, { backgroundColor: C.primary, shadowColor: C.primary }]}
-          onPress={() => navigation.navigate('Carrito')}>
+          onPress={() => navigation.navigate('ConsumerTabs', { screen: 'Carrito' })}>
           <Ionicons name="cart" size={24} color="#fff" />
           <View style={styles.cartBadge}>
             <Text style={styles.cartBadgeText}>{cartCount}</Text>

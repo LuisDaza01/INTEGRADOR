@@ -270,7 +270,7 @@ const CarritoScreen = ({ navigation }) => {
         </React.Fragment>
       ))}
       <View style={styles.stepLabels}>
-        {['Carrito', 'Fecha', 'Confirmar'].map((label, i) => (
+        {['Reserva', 'Fecha', 'Confirmar'].map((label, i) => (
           <Text key={i} style={[styles.stepLabel, { color: step >= i + 1 ? colors.primary : colors.textMuted }]}>{label}</Text>
         ))}
       </View>
@@ -375,7 +375,7 @@ const CarritoScreen = ({ navigation }) => {
 
   const renderCarrito = () => (
     <View style={styles.stepContent}>
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Mi Carrito</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Mi Reserva</Text>
       <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>{safeCarrito.length} productos</Text>
 
       {/* Banner informativo del proceso de pesaje */}
@@ -392,8 +392,8 @@ const CarritoScreen = ({ navigation }) => {
       {safeCarrito.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: colors.surface }]}>
           <Ionicons name="bag-outline" size={60} color={colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Tu carrito está vacío</Text>
-          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>Añade productos para comenzar</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Tu reserva está vacía</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>Añade productos para reservar</Text>
           <TouchableOpacity style={styles.emptyButton} onPress={() => navigation.navigate('Productores')}>
             <Text style={styles.emptyButtonText}>Ver Productores</Text>
           </TouchableOpacity>

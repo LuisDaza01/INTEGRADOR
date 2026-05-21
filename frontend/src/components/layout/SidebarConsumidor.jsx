@@ -10,14 +10,14 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 
 const menuItems = [
-  { id: "inicio",      label: "Inicio",      icon: Home,         color: '#38bdf8', path: "/dashboard-consumidor" },
-  { id: "productores", label: "Productores", icon: Users,        color: '#14b8a6', path: "/dashboard-consumidor/productores" },
+  { id: "inicio",      label: "Inicio",      icon: Home,         color: '#22C55E', path: "/dashboard-consumidor" },
+  { id: "productores", label: "Productores", icon: Users,        color: '#4ade80', path: "/dashboard-consumidor/productores" },
   { id: "carrito",     label: "Carrito",     icon: ShoppingCart, color: '#fb923c', path: "/dashboard-consumidor/carrito", badge: null },
   { id: "mis-pedidos",  label: "Mis Pedidos",  icon: Package,      color: '#a78bfa', path: "/dashboard-consumidor/mis-pedidos"  },
-  { id: "mis-reservas", label: "Mis Reservas", icon: CalendarDays,    color: '#4ade80', path: "/dashboard-consumidor/mis-reservas" },
-  { id: "mensajes",     label: "Mensajes",     icon: MessageCircle,   color: '#38bdf8', path: "/dashboard-consumidor/mensajes"    },
-  { id: "perfil",       label: "Mi Perfil",    icon: User,            color: '#34d399', path: "/dashboard-consumidor/perfil"      },
-  { id: "analizar-frescura", label: "Analizar Frescura", icon: Microscope, color: '#22c55e', path: "/dashboard-consumidor/analizar-frescura" },
+  { id: "mis-reservas", label: "Mis Reservas", icon: CalendarDays,    color: '#34d399', path: "/dashboard-consumidor/mis-reservas" },
+  { id: "mensajes",     label: "Mensajes",     icon: MessageCircle,   color: '#22C55E', path: "/dashboard-consumidor/mensajes"    },
+  { id: "perfil",       label: "Mi Perfil",    icon: User,            color: '#4ade80', path: "/dashboard-consumidor/perfil"      },
+  { id: "analizar-frescura", label: "Analizar Frescura", icon: Microscope, color: '#86efac', path: "/dashboard-consumidor/analizar-frescura" },
   { id: "ayuda",       label: "Ayuda",       icon: HelpCircle,   color: '#64748b', path: "/dashboard-consumidor/ayuda" },
 ]
 
@@ -78,11 +78,11 @@ const SidebarConsumidor = () => {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '16px', borderBottom: `1px solid ${D.border}`,
-          background: 'linear-gradient(135deg,rgba(20,184,166,0.15),rgba(56,189,248,0.1))',
+          background: 'linear-gradient(135deg,rgba(34,197,94,0.15),rgba(74,222,128,0.08))',
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#14b8a6,#38bdf8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#16a34a,#22C55E)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <User size={16} color="#fff" />
             </div>
             <div>
@@ -91,7 +91,7 @@ const SidebarConsumidor = () => {
             </div>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)}
-            style={{ background: 'rgba(56,189,248,0.1)', border: `1px solid ${D.border}`, borderRadius: 8, padding: '6px', cursor: 'pointer', color: D.muted }}>
+            style={{ background: 'rgba(34,197,94,0.1)', border: `1px solid ${D.border}`, borderRadius: 8, padding: '6px', cursor: 'pointer', color: D.muted }}>
             <X size={18} />
           </button>
         </div>
@@ -116,9 +116,9 @@ const SidebarConsumidor = () => {
                     justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
                     padding: isCollapsed && !isMobile ? '12px 0' : '11px 14px',
                     borderRadius: 12, border: 'none', cursor: 'pointer',
-                    background: active ? `rgba(56,189,248,0.1)` : 'transparent',
+                    background: active ? `rgba(34,197,94,0.1)` : 'transparent',
                     borderLeft: active ? `3px solid ${item.color}` : '3px solid transparent',
-                    boxShadow: active ? `inset 0 0 12px rgba(56,189,248,0.06)` : 'none',
+                    boxShadow: active ? `inset 0 0 12px rgba(34,197,94,0.06)` : 'none',
                     transition: 'all 0.15s',
                     position: 'relative',
                   }}
@@ -180,12 +180,12 @@ const SidebarConsumidor = () => {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           style={{
             padding: '14px', borderTop: `1px solid ${D.border}`,
-            background: 'rgba(56,189,248,0.03)', flexShrink: 0,
+            background: 'rgba(34,197,94,0.03)', flexShrink: 0,
           }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg,#14b8a6,#38bdf8)',
+              background: 'linear-gradient(135deg,#16a34a,#22C55E)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 14, fontWeight: 700, color: '#fff',
               boxShadow: '0 0 10px rgba(56,189,248,0.25)',
@@ -266,7 +266,7 @@ const SidebarConsumidor = () => {
               <div style={{ display: 'flex', gap: 12 }}>
                 <button onClick={() => setShowLogoutModal(false)} style={{
                   flex: 1, padding: '11px 0', borderRadius: 10, border: `1px solid ${D.border}`,
-                  background: 'rgba(56,189,248,0.06)', color: D.text, fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  background: 'rgba(34,197,94,0.06)', color: D.text, fontWeight: 600, fontSize: 14, cursor: 'pointer',
                 }}>
                   Cancelar
                 </button>
@@ -297,7 +297,7 @@ const SidebarConsumidor = () => {
             border: `1px solid ${D.border}`,
             borderRadius: 12, padding: '10px', cursor: 'pointer',
             color: D.primary,
-            boxShadow: '0 0 16px rgba(56,189,248,0.2)',
+            boxShadow: '0 0 16px rgba(34,197,94,0.2)',
           }}
         >
           <Menu size={22} />
@@ -364,7 +364,7 @@ const SidebarConsumidor = () => {
             border: `1px solid ${D.border}`,
             borderRadius: '50%', padding: '6px', cursor: 'pointer',
             color: D.primary,
-            boxShadow: '0 0 12px rgba(56,189,248,0.2)',
+            boxShadow: '0 0 12px rgba(34,197,94,0.2)',
           }}
         >
           <motion.div animate={{ rotate: isCollapsed ? 0 : 180 }} transition={{ duration: 0.2 }}>

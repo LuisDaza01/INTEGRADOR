@@ -91,8 +91,8 @@ const SidebarProductor = () => {
   }
 
   const mainMenu = [
-    { id: "dashboard",  icon: Home,          text: "Dashboard",    glowColor: "#38bdf8" },
-    { id: "monitoring", icon: Droplets,       text: "Monitoreo",    glowColor: "#22d3ee" },
+    { id: "dashboard",  icon: Home,          text: "Dashboard",    glowColor: "#22C55E" },
+    { id: "monitoring", icon: Droplets,       text: "Monitoreo",    glowColor: "#4ade80" },
     { id: "pedidos",    icon: ClipboardList,  text: "Pedidos",      badge: "5", glowColor: "#fb923c" },
     { id: "inventario", icon: Package,        text: "Inventario",   glowColor: "#4ade80" },
     { id: "calendario", icon: Calendar,       text: "Calendario",   glowColor: "#fbbf24" },
@@ -131,8 +131,8 @@ const SidebarProductor = () => {
       overflow: 'hidden',
     }}>
       {/* Ambient glow orbs */}
-      <div style={{ position: 'absolute', top: '8%', left: '-40%', width: '90%', height: '30%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', top: '40%', right: '-30%', width: '70%', height: '25%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(20,184,166,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '8%', left: '-40%', width: '90%', height: '30%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '40%', right: '-30%', width: '70%', height: '25%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: '15%', left: '-20%', width: '60%', height: '20%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(192,132,252,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
       {/* Logo / Header */}
@@ -145,7 +145,7 @@ const SidebarProductor = () => {
           <motion.div variants={contentVariants} className="flex items-center gap-3 min-w-0">
             <div className="relative flex-shrink-0">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 16px rgba(14,165,233,0.5)' }}>
+                style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.5)' }}>
                 <Fish size={18} className="text-white" />
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0f172a]" />
@@ -160,7 +160,7 @@ const SidebarProductor = () => {
         {!expanded && !isMobile && (
           <div className="mx-auto relative">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 16px rgba(14,165,233,0.5)' }}>
+              style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.5)' }}>
               <Fish size={18} className="text-white" />
             </div>
           </div>

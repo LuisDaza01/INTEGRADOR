@@ -1,21 +1,21 @@
 // src/constants/colors.js
-// Paleta de colores de la aplicación (igual que la web)
+// Paleta de colores — NaturaPiscis brand: verde #22C55E como primario
 
 export const COLORS = {
-  // Colores principales
+  // Colores principales — verde marca NaturaPiscis
   primary: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6',  // Color principal
-    600: '#2563eb',
-    700: '#1d4ed8',
-    800: '#1e40af',
-    900: '#1e3a8a',
+    50: '#f0fdf4',
+    100: '#dcfce7',
+    200: '#bbf7d0',
+    300: '#86efac',
+    400: '#4ade80',
+    500: '#22C55E',  // Color principal
+    600: '#16a34a',
+    700: '#15803d',
+    800: '#166534',
+    900: '#14532d',
   },
-  
+
   // Slate (fondos oscuros)
   slate: {
     50: '#f8fafc',
@@ -76,27 +76,31 @@ export const COLORS = {
   },
 };
 
-// Colores para sensores (neon vibrante)
+// Colores para sensores (neon vibrante, identidad acuícola)
 export const SENSOR_COLORS = {
   temperatura: {
-    primary: '#FF4D6D',
-    background: 'rgba(255, 77, 109, 0.12)',
-    border: 'rgba(255, 77, 109, 0.35)',
+    primary: '#f87171',
+    background: 'rgba(248, 113, 113, 0.12)',
+    border: 'rgba(248, 113, 113, 0.35)',
+    glow: 'rgba(248, 113, 113, 0.25)',
   },
   ph: {
-    primary: '#A78BFA',
+    primary: '#a78bfa',
     background: 'rgba(167, 139, 250, 0.12)',
     border: 'rgba(167, 139, 250, 0.35)',
+    glow: 'rgba(167, 139, 250, 0.25)',
   },
   oxigeno: {
-    primary: '#00D4FF',
-    background: 'rgba(0, 212, 255, 0.12)',
-    border: 'rgba(0, 212, 255, 0.35)',
+    primary: '#22C55E',
+    background: 'rgba(34, 197, 94, 0.12)',
+    border: 'rgba(34, 197, 94, 0.35)',
+    glow: 'rgba(34, 197, 94, 0.25)',
   },
   turbidez: {
-    primary: '#2AFBCE',
-    background: 'rgba(42, 251, 206, 0.12)',
-    border: 'rgba(42, 251, 206, 0.35)',
+    primary: '#38bdf8',
+    background: 'rgba(56, 189, 248, 0.12)',
+    border: 'rgba(56, 189, 248, 0.35)',
+    glow: 'rgba(56, 189, 248, 0.25)',
   },
 };
 

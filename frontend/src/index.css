@@ -2,15 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Google Fonts: Fira Code (headings/mono) + Fira Sans (body) ── */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
 /* ── CSS variables (set by ThemeContext via JS) ── */
 :root {
-  --np-bg:      #060d1f;
-  --np-surface: #0e1a2e;
-  --np-border:  rgba(56,189,248,0.14);
-  --np-primary: #38bdf8;
-  --np-text:    #e2e8f0;
+  --np-bg:      #0a1220;
+  --np-surface: #111e33;
+  --np-border:  rgba(34,197,94,0.15);
+  --np-primary: #22C55E;
+  --np-green:   #22C55E;
+  --np-text:    #f8fafc;
   --np-muted:   #64748b;
-  --np-card:    rgba(11,21,37,0.97);
+  --np-card:    rgba(17,30,51,0.75);
+  --np-shimmer: rgba(34,197,94,0.3);
   color-scheme: dark;
 }
 
@@ -36,15 +41,15 @@ svg, img, canvas, video,
 /* ── Scrollbar (dark default) ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.25); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.45); }
+::-webkit-scrollbar-thumb { background: rgba(34,197,94,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(34,197,94,0.5); }
 
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(14,116,193,0.25); }
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(14,116,193,0.45); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(22,163,74,0.3); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(22,163,74,0.5); }
 
 /* ── Selection color ── */
-::selection { background: rgba(56,189,248,0.25); }
-[data-theme="light"] ::selection { background: rgba(14,116,193,0.2); }
+::selection { background: rgba(34,197,94,0.25); }
+[data-theme="light"] ::selection { background: rgba(22,163,74,0.2); }
 
 /* ── Animations ── */
 @keyframes spin {
@@ -97,21 +102,21 @@ svg, img, canvas, video,
 
 /* ── Light mode card shadows ── */
 [data-theme="light"] .np-card {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(14,116,193,0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(22,163,74,0.07);
 }
 
 /* ── Input focus ring ── */
 input:focus, select:focus, textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(56,189,248,0.3), 0 0 12px rgba(56,189,248,0.08) !important;
-  border-color: rgba(56,189,248,0.5) !important;
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.3), 0 0 12px rgba(34,197,94,0.08) !important;
+  border-color: rgba(34,197,94,0.5) !important;
   transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 [data-theme="light"] input:focus,
 [data-theme="light"] select:focus,
 [data-theme="light"] textarea:focus {
-  box-shadow: 0 0 0 2px rgba(14,116,193,0.25), 0 0 10px rgba(14,116,193,0.06) !important;
-  border-color: rgba(14,116,193,0.45) !important;
+  box-shadow: 0 0 0 2px rgba(22,163,74,0.25), 0 0 10px rgba(22,163,74,0.06) !important;
+  border-color: rgba(22,163,74,0.45) !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -120,16 +125,16 @@ input:focus, select:focus, textarea:focus {
 
 /* ── Glassmorphism ── */
 .glass {
-  background: rgba(11,21,37,0.45) !important;
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(56,189,248,0.18) !important;
+  background: rgba(17,30,51,0.48) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(34,197,94,0.16) !important;
 }
 [data-theme="light"] .glass {
-  background: rgba(255,255,255,0.65) !important;
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(14,116,193,0.15) !important;
+  background: rgba(255,255,255,0.75) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(22,163,74,0.18) !important;
 }
 
 /* ── Orb background (animated radial glows) ── */
@@ -144,20 +149,20 @@ input:focus, select:focus, textarea:focus {
 .np-orb-bg::before {
   top: -15%; left: -8%;
   width: 55vw; height: 55vw;
-  background: radial-gradient(ellipse, rgba(56,189,248,0.07) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(34,197,94,0.06) 0%, transparent 65%);
   animation: orbFloat1 14s ease-in-out infinite;
 }
 .np-orb-bg::after {
   bottom: -15%; right: -8%;
   width: 50vw; height: 50vw;
-  background: radial-gradient(ellipse, rgba(139,92,246,0.07) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(139,92,246,0.06) 0%, transparent 65%);
   animation: orbFloat2 18s ease-in-out infinite;
 }
 [data-theme="light"] .np-orb-bg::before {
-  background: radial-gradient(ellipse, rgba(56,189,248,0.06) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(34,197,94,0.05) 0%, transparent 65%);
 }
 [data-theme="light"] .np-orb-bg::after {
-  background: radial-gradient(ellipse, rgba(139,92,246,0.05) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(139,92,246,0.04) 0%, transparent 65%);
 }
 @keyframes orbFloat1 {
   0%, 100% { transform: translate(0,0) scale(1); }
@@ -172,11 +177,11 @@ input:focus, select:focus, textarea:focus {
 
 /* ── Grid overlay (sutil dot grid) ── */
 .np-grid {
-  background-image: radial-gradient(circle, rgba(56,189,248,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(34,197,94,0.07) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 [data-theme="light"] .np-grid {
-  background-image: radial-gradient(circle, rgba(14,116,193,0.05) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(22,163,74,0.06) 1px, transparent 1px);
 }
 
 /* ── Card hover lift ── */
@@ -186,10 +191,10 @@ input:focus, select:focus, textarea:focus {
 }
 .np-hover:hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 20px 48px rgba(56,189,248,0.13), 0 4px 16px rgba(0,0,0,0.25) !important;
+  box-shadow: 0 20px 48px rgba(34,197,94,0.14), 0 4px 16px rgba(0,0,0,0.28) !important;
 }
 [data-theme="light"] .np-hover:hover {
-  box-shadow: 0 20px 48px rgba(14,116,193,0.1), 0 4px 16px rgba(0,0,0,0.08) !important;
+  box-shadow: 0 20px 48px rgba(22,163,74,0.12), 0 4px 16px rgba(0,0,0,0.08) !important;
 }
 .np-hover:active { transform: translateY(-1px) scale(0.99) !important; }
 
@@ -206,10 +211,36 @@ input:focus, select:focus, textarea:focus {
 }
 .np-btn:active { transform: scale(0.97); }
 
-/* ── Typography — tighten headings ── */
+/* ── Typography — Fira Code headings, Fira Sans body ── */
+body, p, span, li, td, th, label, input, select, textarea, button {
+  font-family: 'Fira Sans', system-ui, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fira Code', 'Fira Sans', monospace;
+}
+.font-mono, code, pre, .np-stat {
+  font-family: 'Fira Code', monospace;
+}
 h1 { letter-spacing: -0.04em; }
 h2 { letter-spacing: -0.03em; }
 h3 { letter-spacing: -0.015em; }
+
+/* ── Line height & readability ── */
+body { line-height: 1.6; }
+p    { line-height: 1.7; max-width: 70ch; }
+
+/* ── Reduced motion support ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .np-orb-bg::before, .np-orb-bg::after { animation: none !important; }
+  .np-live { animation: none !important; }
+  .np-shimmer-btn { animation: none !important; }
+  .skeleton-shimmer { animation: none !important; }
+}
 
 /* ── Stat number — monospace tabular ── */
 .np-stat {
@@ -220,8 +251,8 @@ h3 { letter-spacing: -0.015em; }
 
 /* ── Live pulse badge ── */
 @keyframes livePulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.5); }
-  50%       { box-shadow: 0 0 0 6px rgba(56,189,248,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+  50%       { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
 }
 .np-live { animation: livePulse 2s ease-in-out infinite; }
 
@@ -231,12 +262,114 @@ h3 { letter-spacing: -0.015em; }
   100% { background-position: -200% center; }
 }
 .np-shimmer-btn {
-  background: linear-gradient(90deg, #14b8a6, #38bdf8, #6366f1, #38bdf8, #14b8a6);
+  background: linear-gradient(90deg, #16a34a, #22C55E, #4ade80, #22C55E, #16a34a);
   background-size: 300% auto;
   animation: shimmerBtn 4s linear infinite;
   border: none;
   color: #fff;
   font-weight: 700;
+}
+
+/* ── Green CTA button ── */
+.np-btn-cta {
+  background: #22C55E;
+  color: #fff;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.np-btn-cta:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(34,197,94,0.35);
+}
+.np-btn-cta:active { transform: scale(0.98); }
+.np-btn-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Glassmorphism improved ── */
+.glass-strong {
+  background: rgba(11,21,37,0.72) !important;
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(34,197,94,0.14) !important;
+}
+[data-theme="light"] .glass-strong {
+  background: rgba(255,255,255,0.82) !important;
+  border: 1px solid rgba(34,197,94,0.18) !important;
+}
+
+/* ── Green glow ── */
+.glow-green-cta { box-shadow: 0 0 20px rgba(34,197,94,0.35), 0 0 48px rgba(34,197,94,0.12); }
+.glow-green-sm  { box-shadow: 0 0 12px rgba(34,197,94,0.25); }
+
+/* ── Focus ring accessible (green) ── */
+.np-focus-ring:focus-visible {
+  outline: 2px solid #22C55E;
+  outline-offset: 2px;
+}
+
+/* ── Input improved ── */
+.np-input {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 15px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: inherit;
+  width: 100%;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.np-input:focus {
+  outline: none;
+  border-color: rgba(34,197,94,0.5);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+}
+[data-theme="light"] .np-input {
+  background: rgba(255,255,255,0.9);
+  border-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .np-input:focus {
+  border-color: #22C55E;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+}
+
+/* ── Badge ── */
+.np-badge {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Section heading ── */
+.np-section-title {
+  font-family: 'Fira Code', monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+/* ── Card grid ── */
+.np-card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
 }
 
 /* ══════════════════════════════════════════════

@@ -20,26 +20,26 @@ export const THEME_MODES = {
 // PALETAS DE COLORES
 // ============================================
 const lightColors = {
-  // Backgrounds
-  background: '#F9FAFB',
+  // Backgrounds — clean white with green tint
+  background: '#F0FDF4',
   surface: '#FFFFFF',
-  surfaceVariant: '#F3F4F6',
-  
-  // Text
-  text: '#111827',
-  textSecondary: '#6B7280',
-  textMuted: '#9CA3AF',
+  surfaceVariant: '#F0FDF4',
+
+  // Text — high contrast slate
+  text: '#0F172A',
+  textSecondary: '#334155',
+  textMuted: '#64748B',
   textInverse: '#FFFFFF',
-  
-  // Primary (Verde NaturaPiscis)
-  primary: '#22C55E',
-  primaryLight: '#86EFAC',
-  primaryDark: '#16A34A',
-  
-  // Secondary (Azul agua)
-  secondary: '#3B82F6',
-  secondaryLight: '#93C5FD',
-  secondaryDark: '#2563EB',
+
+  // Primary — brand green
+  primary: '#16A34A',
+  primaryLight: '#4ade80',
+  primaryDark: '#15803d',
+
+  // Secondary — blue-water
+  secondary: '#0284c7',
+  secondaryLight: '#38bdf8',
+  secondaryDark: '#0369a1',
   
   // Status
   success: '#22C55E',
@@ -52,127 +52,127 @@ const lightColors = {
   infoBg: '#EFF6FF',
   
   // Borders & Dividers
-  border: '#E5E7EB',
-  divider: '#F3F4F6',
-  
+  border: 'rgba(22, 163, 74, 0.2)',
+  divider: 'rgba(22, 163, 74, 0.1)',
+
   // Cards & Containers
   card: '#FFFFFF',
-  cardBorder: '#E5E7EB',
-  cardGlass: 'rgba(255, 255, 255, 0.85)',
-  cardGlassBorder: 'rgba(34, 197, 94, 0.22)',
+  cardBorder: 'rgba(22, 163, 74, 0.15)',
+  cardGlass: 'rgba(255, 255, 255, 0.88)',
+  cardGlassBorder: 'rgba(22, 163, 74, 0.2)',
+
+  // Glow
+  glowColor: '#16A34A',
+  glowColorPrimary: '#16A34A',
+
+  // Tab Bar
+  tabBar: 'rgba(255, 255, 255, 0.97)',
+  tabBarBorder: 'rgba(22, 163, 74, 0.18)',
+  tabActive: '#16A34A',
+  tabInactive: '#94A3B8',
+
+  // Inputs
+  inputBackground: '#F0FDF4',
+  inputBorder: 'rgba(22, 163, 74, 0.2)',
+  inputBorderFocused: '#16A34A',
+  placeholder: '#94A3B8',
+
+  // Buttons
+  buttonPrimary: '#16A34A',
+  buttonPrimaryText: '#FFFFFF',
+  buttonSecondary: '#F0FDF4',
+  buttonSecondaryText: '#0F172A',
+  buttonDisabled: '#E2E8F0',
+  buttonDisabledText: '#94A3B8',
+
+  // Overlays
+  overlay: 'rgba(0, 0, 0, 0.5)',
+
+  // Shadows
+  shadowColor: '#16A34A',
+
+  // Gradients
+  gradientPrimary: ['#16A34A', '#22C55E'],
+  gradientSecondary: ['#0284c7', '#38bdf8'],
+  gradientDark: ['#0F172A', '#1E293B'],
+};
+
+const darkColors = {
+  // Backgrounds — dark slate aligned with web #0a1220
+  background: '#080E1A',
+  surface: '#0D1929',
+  surfaceVariant: '#111E33',
+
+  // Text — high contrast #F8FAFC base
+  text: '#F1F5F9',
+  textSecondary: '#94A3B8',
+  textMuted: '#64748B',
+  textInverse: '#080E1A',
+
+  // Primary — NaturaPiscis brand green #22C55E
+  primary: '#22C55E',
+  primaryLight: '#4ade80',
+  primaryDark: '#16a34a',
+
+  // Secondary — kept for IoT sensor accents
+  secondary: '#38bdf8',
+  secondaryLight: '#7dd3fc',
+  secondaryDark: '#0284c7',
+
+  // Status
+  success: '#22C55E',
+  successBg: 'rgba(34, 197, 94, 0.1)',
+  warning: '#fbbf24',
+  warningBg: 'rgba(251, 191, 36, 0.1)',
+  error: '#f87171',
+  errorBg: 'rgba(248, 113, 113, 0.1)',
+  info: '#38bdf8',
+  infoBg: 'rgba(56, 189, 248, 0.1)',
+
+  // Borders & Dividers — green-tinted
+  border: 'rgba(34, 197, 94, 0.14)',
+  divider: 'rgba(34, 197, 94, 0.07)',
+
+  // Cards & Containers
+  card: '#0D1929',
+  cardBorder: 'rgba(34, 197, 94, 0.16)',
+  cardGlass: 'rgba(13, 25, 41, 0.85)',
+  cardGlassBorder: 'rgba(34, 197, 94, 0.2)',
 
   // Glow
   glowColor: '#22C55E',
   glowColorPrimary: '#22C55E',
 
   // Tab Bar
-  tabBar: 'rgba(255, 255, 255, 0.96)',
-  tabBarBorder: 'rgba(34, 197, 94, 0.20)',
+  tabBar: 'rgba(8, 14, 26, 0.96)',
+  tabBarBorder: 'rgba(34, 197, 94, 0.2)',
   tabActive: '#22C55E',
-  tabInactive: '#9CA3AF',
-  
+  tabInactive: '#334155',
+
   // Inputs
-  inputBackground: '#F9FAFB',
-  inputBorder: '#D1D5DB',
+  inputBackground: '#0D1929',
+  inputBorder: 'rgba(34, 197, 94, 0.14)',
   inputBorderFocused: '#22C55E',
-  placeholder: '#9CA3AF',
-  
+  placeholder: '#64748B',
+
   // Buttons
   buttonPrimary: '#22C55E',
   buttonPrimaryText: '#FFFFFF',
-  buttonSecondary: '#F3F4F6',
-  buttonSecondaryText: '#374151',
-  buttonDisabled: '#E5E7EB',
-  buttonDisabledText: '#9CA3AF',
-  
-  // Overlays
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  
-  // Shadows
-  shadowColor: '#000000',
-  
-  // Gradients
-  gradientPrimary: ['#22C55E', '#16A34A'],
-  gradientSecondary: ['#3B82F6', '#2563EB'],
-  gradientDark: ['#1F2937', '#111827'],
-};
-
-const darkColors = {
-  // Backgrounds - ultra dark blue-black
-  background: '#080C14',
-  surface: '#0D1525',
-  surfaceVariant: '#111E33',
-
-  // Text
-  text: '#E8F0FF',
-  textSecondary: '#8BA5C8',
-  textMuted: '#4D6A8A',
-  textInverse: '#080C14',
-
-  // Primary (Neon Green - NaturaPiscis brand)
-  primary: '#00E676',
-  primaryLight: '#69F0AE',
-  primaryDark: '#00C853',
-
-  // Secondary (Cyan Neon)
-  secondary: '#00D4FF',
-  secondaryLight: '#67E8F9',
-  secondaryDark: '#0099BB',
-
-  // Status
-  success: '#00E676',
-  successBg: 'rgba(0, 230, 118, 0.08)',
-  warning: '#FFB74D',
-  warningBg: 'rgba(255, 183, 77, 0.08)',
-  error: '#FF5370',
-  errorBg: 'rgba(255, 83, 112, 0.08)',
-  info: '#00D4FF',
-  infoBg: 'rgba(0, 212, 255, 0.08)',
-
-  // Borders & Dividers
-  border: 'rgba(0, 212, 255, 0.12)',
-  divider: 'rgba(0, 212, 255, 0.07)',
-
-  // Cards & Containers
-  card: '#0D1525',
-  cardBorder: 'rgba(0, 212, 255, 0.15)',
-  cardGlass: 'rgba(13, 21, 37, 0.82)',
-  cardGlassBorder: 'rgba(0, 212, 255, 0.22)',
-
-  // Glow
-  glowColor: '#00D4FF',
-  glowColorPrimary: '#00E676',
-
-  // Tab Bar
-  tabBar: 'rgba(8, 12, 20, 0.94)',
-  tabBarBorder: 'rgba(0, 212, 255, 0.22)',
-  tabActive: '#00D4FF',
-  tabInactive: '#2E4A6A',
-
-  // Inputs
-  inputBackground: '#0D1525',
-  inputBorder: 'rgba(0, 212, 255, 0.15)',
-  inputBorderFocused: '#00D4FF',
-  placeholder: '#4D6A8A',
-
-  // Buttons
-  buttonPrimary: '#00E676',
-  buttonPrimaryText: '#080C14',
   buttonSecondary: '#111E33',
-  buttonSecondaryText: '#E8F0FF',
+  buttonSecondaryText: '#F1F5F9',
   buttonDisabled: '#111E33',
-  buttonDisabledText: '#4D6A8A',
+  buttonDisabledText: '#64748B',
 
   // Overlays
-  overlay: 'rgba(0, 0, 0, 0.75)',
+  overlay: 'rgba(0, 0, 0, 0.78)',
 
   // Shadows
-  shadowColor: '#00D4FF',
+  shadowColor: '#22C55E',
 
   // Gradients
-  gradientPrimary: ['#00E676', '#00C853'],
-  gradientSecondary: ['#00D4FF', '#0088BB'],
-  gradientDark: ['#0D1525', '#080C14'],
+  gradientPrimary: ['#22C55E', '#16a34a'],
+  gradientSecondary: ['#38bdf8', '#0284c7'],
+  gradientDark: ['#0D1929', '#080E1A'],
 };
 
 // ============================================

@@ -24,6 +24,12 @@ export const FONT_SIZE = {
   title: 36,
 };
 
+export const FONT_FAMILY = {
+  heading: 'System',   // React Native system font (closest to Fira Code feel)
+  body: 'System',
+  mono: Platform?.OS === 'ios' ? 'Courier New' : 'monospace',
+};
+
 export const FONT_WEIGHT = {
   regular: '400',
   medium: '500',
@@ -62,10 +68,10 @@ export const SHADOWS = {
     elevation: 8,
   },
   primary: {
-    shadowColor: '#3b82f6',
+    shadowColor: '#22C55E',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
     elevation: 6,
   },
   neonCyan: {

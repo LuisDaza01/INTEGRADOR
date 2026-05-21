@@ -66,20 +66,20 @@ const Inicio = () => {
     <motion.div className="p-6 h-full overflow-auto" initial="hidden" animate="visible" variants={containerVariants}
       style={{ background: D.bg }}>
 
-      {/* Hero Banner — brand gradient kept in both modes */}
+      {/* Hero Banner */}
       <motion.div variants={itemVariants} className="rounded-2xl overflow-hidden mb-6 relative"
         style={{
           background: isDark
-            ? 'linear-gradient(135deg, #060e20 0%, #0a1a30 40%, #061525 100%)'
-            : 'linear-gradient(135deg, #0369a1 0%, #0c4a6e 50%, #065f46 100%)',
-          border: `1px solid ${isDark ? 'rgba(56,189,248,0.18)' : 'rgba(56,189,248,0.3)'}`,
-          boxShadow: isDark ? '0 8px 60px rgba(0,0,0,0.6)' : '0 8px 40px rgba(3,105,161,0.2)',
+            ? 'linear-gradient(135deg, #061a10 0%, #0a2818 40%, #061f14 100%)'
+            : 'linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%)',
+          border: `1px solid ${isDark ? 'rgba(34,197,94,0.2)' : 'rgba(34,197,94,0.35)'}`,
+          boxShadow: isDark ? '0 8px 60px rgba(0,0,0,0.6)' : '0 8px 40px rgba(22,163,74,0.25)',
         }}>
 
         {/* Layered animated waves */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ height: 80 }}>
-            <motion.path fill="rgba(56,189,248,0.07)"
+            <motion.path fill="rgba(34,197,94,0.08)"
               animate={{ d: [
                 "M0,80 C240,120 480,40 720,80 C960,120 1200,40 1440,80 L1440,120 L0,120 Z",
                 "M0,55 C240,95 480,15 720,55 C960,95 1200,15 1440,55 L1440,120 L0,120 Z",
@@ -89,7 +89,7 @@ const Inicio = () => {
             />
           </svg>
           <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 100" preserveAspectRatio="none" style={{ height: 55 }}>
-            <motion.path fill="rgba(20,184,166,0.07)"
+            <motion.path fill="rgba(74,222,128,0.06)"
               animate={{ d: [
                 "M0,40 C360,80 720,0 1080,50 C1260,75 1380,20 1440,40 L1440,100 L0,100 Z",
                 "M0,60 C360,20 720,75 1080,30 C1260,10 1380,70 1440,60 L1440,100 L0,100 Z",
@@ -99,31 +99,31 @@ const Inicio = () => {
             />
           </svg>
           <motion.div className="absolute -top-16 -right-16 w-72 h-72 rounded-full blur-3xl"
-            style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 70%)' }}
+            style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.14) 0%, transparent 70%)' }}
             animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
           <motion.div className="absolute -bottom-8 left-1/4 w-48 h-48 rounded-full blur-3xl"
-            style={{ background: 'radial-gradient(circle, rgba(20,184,166,0.1) 0%, transparent 70%)' }}
+            style={{ background: 'radial-gradient(circle, rgba(74,222,128,0.1) 0%, transparent 70%)' }}
             animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.9, 0.5] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }} />
         </div>
 
         <div className="absolute top-0 inset-x-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent, #38bdf8, #14b8a6, #a78bfa, transparent)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent, #22C55E, #4ade80, #a78bfa, transparent)' }} />
 
         <div className="relative px-6 py-12 md:px-10 md:flex md:items-center md:justify-between gap-8">
           <div className="flex-1">
             <motion.div className="flex items-center gap-2 mb-3"
               animate={{ opacity: [0.7, 1, 0.7] }} transition={{ duration: 2.5, repeat: Infinity }}>
-              <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
-              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#38bdf8' }}>
+              <div className="w-2 h-2 rounded-full" style={{ background: '#22C55E', boxShadow: '0 0 6px #22C55E' }} />
+              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#4ade80' }}>
                 Marketplace Acuícola · En línea
               </span>
             </motion.div>
 
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 leading-tight">
               ¡Bienvenido,{' '}
-              <span style={{ background: 'linear-gradient(135deg, #38bdf8, #14b8a6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span style={{ background: 'linear-gradient(135deg, #22C55E, #4ade80)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {user?.nombre?.split(' ')[0] || 'Usuario'}
               </span>
               !
@@ -134,8 +134,8 @@ const Inicio = () => {
 
             <div className="flex flex-wrap gap-3 mb-5">
               {[
-                { label: '2,500+ clientes', color: '#38bdf8' },
-                { label: '150+ productores', color: '#14b8a6' },
+                { label: '2,500+ clientes', color: '#22C55E' },
+                { label: '150+ productores', color: '#4ade80' },
                 { label: '4.8 ★ promedio', color: '#facc15' },
               ].map(({ label, color }) => (
                 <span key={label} className="text-xs font-semibold px-3 py-1 rounded-full"
@@ -147,16 +147,16 @@ const Inicio = () => {
 
             <div className="flex gap-3 flex-wrap">
               <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                className="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                className="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer"
                 style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}>
                 <ShoppingBag className="h-4 w-4 mr-2" />
                 Tienda
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(56,189,248,0.5)' }}
+                whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(34,197,94,0.55)' }}
                 whileTap={{ scale: 0.96 }}
-                className="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 20px rgba(14,165,233,0.35)' }}>
+                className="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 20px rgba(34,197,94,0.4)' }}>
                 <Fish className="h-4 w-4 mr-2" />
                 Ver Productores
               </motion.button>
@@ -168,10 +168,10 @@ const Inicio = () => {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
             <div className="relative w-32 h-32 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full blur-2xl opacity-30"
-                style={{ background: 'radial-gradient(circle, #38bdf8, transparent)' }} />
+                style={{ background: 'radial-gradient(circle, #22C55E, transparent)' }} />
               <div className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, rgba(56,189,248,0.2), rgba(20,184,166,0.15))', border: '1px solid rgba(56,189,248,0.3)', backdropFilter: 'blur(10px)' }}>
-                <Fish size={44} style={{ color: '#38bdf8', filter: 'drop-shadow(0 0 12px rgba(56,189,248,0.6))' }} />
+                style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(74,222,128,0.12))', border: '1px solid rgba(34,197,94,0.35)', backdropFilter: 'blur(10px)' }}>
+                <Fish size={44} style={{ color: '#22C55E', filter: 'drop-shadow(0 0 12px rgba(34,197,94,0.7))' }} />
               </div>
             </div>
           </motion.div>

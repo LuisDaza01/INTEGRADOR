@@ -240,24 +240,13 @@ h3 { letter-spacing: -0.015em; }
 }
 
 /* ══════════════════════════════════════════════
-   MOBILE RESPONSIVE — Dashboard
+   MOBILE RESPONSIVE
 ══════════════════════════════════════════════ */
-
-/* Padding bottom para no quedar tapado por el bottom nav */
 @media (max-width: 767px) {
-  .dashboard-main {
-    padding-bottom: 70px !important;
-  }
-
   /* Tablas horizontales en mobile */
   .np-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-  }
-
-  /* Grids adaptativos */
-  .np-grid-auto {
-    grid-template-columns: 1fr !important;
   }
 
   /* Cards sin hover lift en touch */
@@ -266,12 +255,7 @@ h3 { letter-spacing: -0.015em; }
     box-shadow: none !important;
   }
 
-  /* Padding de páginas en mobile */
-  .np-page {
-    padding: 16px !important;
-  }
-
-  /* Headings más pequeños */
+  /* Headings fluid */
   h1 { font-size: clamp(1.25rem, 5vw, 2rem); }
   h2 { font-size: clamp(1.1rem, 4vw, 1.5rem); }
 }

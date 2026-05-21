@@ -310,7 +310,7 @@ const DashboardConsumidor = () => {
       {/* ── Main ────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', flex: 1 }}>
         <SidebarConsumidor currentTab={currentTab} />
-        <main className="dashboard-main" style={{ flex: 1, overflowY: 'auto', background: D.bg }}>
+        <main style={{ flex: 1, overflowY: 'auto', background: D.bg }}>
           <Outlet />
         </main>
       </div>

@@ -20,6 +20,14 @@ const Login = () => {
   useEffect(() => { if (error) setErrorMsg(error); }, [error]);
   useEffect(() => () => setError(null), [setError]);
 
+  // Aviso cuando la sesión se cerró por inactividad (2 h)
+  useEffect(() => {
+    if (localStorage.getItem('sesion_expirada')) {
+      setErrorMsg('Tu sesión se cerró por inactividad. Inicia sesión de nuevo.');
+      localStorage.removeItem('sesion_expirada');
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');

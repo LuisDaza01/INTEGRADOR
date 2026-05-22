@@ -15,6 +15,9 @@ export const AuthContext = createContext();
 
 const API_URL = '';
 
+// Cierre de sesión tras 2 horas de inactividad (sin interacción del usuario).
+const IDLE_LIMIT_MS = 2 * 60 * 60 * 1000;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('usuario');
@@ -148,9 +151,49 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('usuario');
       localStorage.removeItem('auth_token');
       localStorage.removeItem('token');
+      localStorage.removeItem('last_activity');
       setSessionTick(t => t + 1);
     }
   }, []);
+
+  // ── Cierre de sesión por inactividad (2 h) ─────────────────────
+  // Si el usuario no interactúa durante 2 h, se cierra la sesión y debe
+  // volver a iniciar. `last_activity` se guarda en localStorage para que
+  // el control también aplique al recargar o al volver a la pestaña.
+  useEffect(() => {
+    if (!user) return;
+
+    // Al montar con un usuario ya logueado, primero verificar si venció.
+    const last = parseInt(localStorage.getItem('last_activity') || '0', 10);
+    if (last && Date.now() - last > IDLE_LIMIT_MS) {
+      localStorage.setItem('sesion_expirada', '1');
+      logout();
+      return;
+    }
+
+    const touch = () => localStorage.setItem('last_activity', String(Date.now()));
+    touch();
+
+    const eventos = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    eventos.forEach(e => window.addEventListener(e, touch, { passive: true }));
+
+    const check = () => {
+      const t = parseInt(localStorage.getItem('last_activity') || '0', 10);
+      if (t && Date.now() - t > IDLE_LIMIT_MS) {
+        localStorage.setItem('sesion_expirada', '1');
+        logout();
+      }
+    };
+    const intervalId = setInterval(check, 30000); // revisa cada 30 s
+    const onVisible = () => { if (document.visibilityState === 'visible') check(); };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      eventos.forEach(e => window.removeEventListener(e, touch));
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [user, logout]);
 
   // ── UPDATE PROFILE ─────────────────────────────────────────────
   const updateProfile = useCallback(async (profileData) => {

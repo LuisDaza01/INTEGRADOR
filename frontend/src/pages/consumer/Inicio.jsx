@@ -147,6 +147,7 @@ const Inicio = () => {
 
             <div className="flex gap-3 flex-wrap">
               <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                onClick={() => navigate('/dashboard-consumidor/tienda')}
                 className="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer"
                 style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}>
                 <ShoppingBag className="h-4 w-4 mr-2" />
@@ -155,10 +156,11 @@ const Inicio = () => {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(34,197,94,0.55)' }}
                 whileTap={{ scale: 0.96 }}
+                onClick={() => navigate('/dashboard-consumidor/carrito')}
                 className="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 20px rgba(34,197,94,0.4)' }}>
                 <Fish className="h-4 w-4 mr-2" />
-                Ver Productores
+                Reservar
               </motion.button>
             </div>
           </div>

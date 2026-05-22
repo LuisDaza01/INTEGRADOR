@@ -1,7 +1,7 @@
 "use client"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Home, Users, ShoppingCart, Package, User,
+  Home, Store, CalendarPlus, Package, User,
   HelpCircle, LogOut, ChevronRight, Menu, X, CalendarDays, MessageCircle, Microscope,
 } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
@@ -11,8 +11,8 @@ import { useState, useEffect } from "react"
 
 const menuItems = [
   { id: "inicio",      label: "Inicio",      icon: Home,         color: '#22C55E', path: "/dashboard-consumidor" },
-  { id: "productores", label: "Productores", icon: Users,        color: '#4ade80', path: "/dashboard-consumidor/productores" },
-  { id: "carrito",     label: "Carrito",     icon: ShoppingCart, color: '#fb923c', path: "/dashboard-consumidor/carrito", badge: null },
+  { id: "tienda",      label: "Tienda",      icon: Store,        color: '#4ade80', path: "/dashboard-consumidor/tienda" },
+  { id: "carrito",     label: "Reservar",    icon: CalendarPlus, color: '#fb923c', path: "/dashboard-consumidor/carrito", badge: null },
   { id: "mis-pedidos",  label: "Mis Pedidos",  icon: Package,      color: '#a78bfa', path: "/dashboard-consumidor/mis-pedidos"  },
   { id: "mis-reservas", label: "Mis Reservas", icon: CalendarDays,    color: '#34d399', path: "/dashboard-consumidor/mis-reservas" },
   { id: "mensajes",     label: "Mensajes",     icon: MessageCircle,   color: '#22C55E', path: "/dashboard-consumidor/mensajes"    },
@@ -60,7 +60,7 @@ const SidebarConsumidor = () => {
   const getCurrentTab = () => {
     const p = location.pathname
     if (p === '/dashboard-consumidor') return 'inicio'
-    if (p.split('/').includes('productor')) return 'productores'
+    if (p.split('/').includes('productor') || p.includes('tienda') || p.includes('productores')) return 'tienda'
     if (p.includes('mis-reservas')) return 'mis-reservas'
     return p.split('/').pop()
   }

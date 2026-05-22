@@ -357,17 +357,24 @@ const DashboardProductor = () => {
                 <Menu className="w-5 h-5" />
               </button>
             )}
-            <div className="flex items-center gap-3">
-              <motion.div whileHover={{ rotate: 15, scale: 1.1 }}
-                className="p-2 rounded-xl"
-                style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.4)' }}>
-                <Fish className="text-white w-5 h-5" />
-              </motion.div>
-              <div className="min-w-0">
-                <GlitchText as="h1" className="text-lg font-bold truncate" style={{ color: D.text }} continuous>NaturaPiscis</GlitchText>
-                {!isMobile && <p className="text-xs truncate" style={{ color: D.primary }}>{getPageTitle()}</p>}
+            {/* En escritorio el sidebar ya lleva la marca; aquí mostramos solo el título
+                de la sección. En móvil (sidebar oculto) sí mostramos logo + nombre. */}
+            {isMobile ? (
+              <div className="flex items-center gap-3">
+                <motion.div whileHover={{ rotate: 15, scale: 1.1 }}
+                  className="p-2 rounded-xl"
+                  style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.4)' }}>
+                  <Fish className="text-white w-5 h-5" />
+                </motion.div>
+                <div className="min-w-0">
+                  <GlitchText as="h1" className="text-lg font-bold truncate" style={{ color: D.text }} continuous>NaturaPiscis</GlitchText>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold truncate" style={{ color: D.text }}>{getPageTitle()}</h1>
+              </div>
+            )}
           </div>
 
           {isMobile && (

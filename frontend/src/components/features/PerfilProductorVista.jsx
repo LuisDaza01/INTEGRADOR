@@ -293,8 +293,30 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
           api.get(API_ENDPOINTS.PRODUCTORES.BY_ID(productorId)),
           api.get(`${API_ENDPOINTS.PRODUCTORES.BY_ID(productorId)}/productos`),
         ])
-        setProductor(pRes.data)
-        setProductos(prRes.data)
+
+        // El backend envuelve la respuesta como { success, data }. Desenvolver.
+        const prod      = pRes.data?.data ?? pRes.data ?? null
+        const prodsRaw  = prRes.data?.data ?? prRes.data ?? []
+
+        // Algunos campos JSONB pueden llegar como string/objeto: forzar a array
+        const parseArr = (v) => {
+          if (Array.isArray(v)) return v
+          if (v && typeof v === 'object') return []
+          if (typeof v === 'string') {
+            try { const x = JSON.parse(v); return Array.isArray(x) ? x : [] }
+            catch { return v.split(',').map(s => s.trim()).filter(Boolean) }
+          }
+          return []
+        }
+        if (prod) {
+          prod.certificaciones  = parseArr(prod.certificaciones)
+          prod.metodos_envio    = parseArr(prod.metodos_envio)
+          prod.galeria_criadero = parseArr(prod.galeria_criadero)
+          // especialidad se renderiza con .split(","): si viene como array, unir
+          if (Array.isArray(prod.especialidad)) prod.especialidad = prod.especialidad.join(', ')
+        }
+        setProductor(prod)
+        setProductos(Array.isArray(prodsRaw) ? prodsRaw : [])
         await loadCart()
       } catch (e) { console.error(e) }
       finally { setLoading(false) }

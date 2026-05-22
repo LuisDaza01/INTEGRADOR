@@ -52,6 +52,36 @@ async function startServer() {
       logger.warn('⚠️ No se pudo verificar columna comprobante_url:', e.message);
     }
 
+    // Migraciones idempotentes de features recientes (reservas multi-ítem, verificación de pago).
+    // Se ejecutan una por una (el wrapper db.query usa protocolo parametrizado y no admite
+    // múltiples sentencias). Todas usan IF NOT EXISTS / DROP NOT NULL → seguras en cada arranque.
+    const safeMigrations = [
+      `ALTER TABLE reservas ADD COLUMN IF NOT EXISTS codigo VARCHAR(20) UNIQUE`,
+      `ALTER TABLE reservas ALTER COLUMN producto_id DROP NOT NULL`,
+      `ALTER TABLE reservas ALTER COLUMN cantidad DROP NOT NULL`,
+      `ALTER TABLE reservas ADD COLUMN IF NOT EXISTS ultimo_recordatorio_dias INTEGER`,
+      `CREATE TABLE IF NOT EXISTS reserva_items (
+         id                 SERIAL PRIMARY KEY,
+         reserva_id         INTEGER NOT NULL REFERENCES reservas(id) ON DELETE CASCADE,
+         producto_id        INTEGER NOT NULL REFERENCES productos(id),
+         modo               VARCHAR(10) NOT NULL DEFAULT 'cantidad',
+         cantidad           NUMERIC(10,2) NOT NULL DEFAULT 1,
+         peso_solicitado_kg NUMERIC(10,2),
+         precio_estimado    NUMERIC(10,2),
+         fecha_creacion     TIMESTAMP DEFAULT NOW()
+       )`,
+      `CREATE INDEX IF NOT EXISTS idx_reserva_items_reserva ON reserva_items(reserva_id)`,
+      `ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS pago_verificado BOOLEAN DEFAULT false`,
+    ];
+    for (const sql of safeMigrations) {
+      try {
+        await db.query(sql);
+      } catch (e) {
+        logger.warn('⚠️ Safe migration falló (continuando):', e.message);
+      }
+    }
+    logger.info('✅ Migraciones de reservas/pago verificadas');
+
     // Attach Socket.IO to HTTP server
     const httpServer = http.createServer(app);
     const io = new Server(httpServer, {

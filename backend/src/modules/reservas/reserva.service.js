@@ -152,14 +152,21 @@ class ReservaService {
   }
 
   // Adjunta los reserva_items a cada reserva de la lista (batch)
+  // Resiliente: si la tabla reserva_items aún no existe (migración pendiente),
+  // devuelve las reservas sin items en lugar de fallar con 500.
   async _attachItems(reservas) {
-    const ids = reservas.map(r => r.id);
-    const items = await repo.getItemsForReservas(ids);
-    const porReserva = {};
-    for (const it of items) {
-      (porReserva[it.reserva_id] = porReserva[it.reserva_id] || []).push(it);
+    try {
+      const ids = reservas.map(r => r.id);
+      const items = await repo.getItemsForReservas(ids);
+      const porReserva = {};
+      for (const it of items) {
+        (porReserva[it.reserva_id] = porReserva[it.reserva_id] || []).push(it);
+      }
+      return reservas.map(r => ({ ...r, items: porReserva[r.id] || [] }));
+    } catch (e) {
+      logger.warn('No se pudieron adjuntar reserva_items (¿migración pendiente?)', { error: e.message });
+      return reservas.map(r => ({ ...r, items: [] }));
     }
-    return reservas.map(r => ({ ...r, items: porReserva[r.id] || [] }));
   }
 
   async listarMisReservas(usuario) {
@@ -184,7 +191,7 @@ class ReservaService {
         r.productor_id  !== usuario.id) {
       throw new AppError('Sin permisos para ver esta reserva', 403);
     }
-    r.items = await repo.getItems(id);
+    try { r.items = await repo.getItems(id); } catch { r.items = []; }
     return r;
   }
 

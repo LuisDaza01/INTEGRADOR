@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import {
   Save, Upload, X, Plus, Edit, Trash2, Calendar, Clock,
   MapPin, Award, Truck, Camera, Eye, EyeOff, Check, AlertCircle, QrCode,
@@ -8,6 +9,7 @@ import {
 import api from "../../api/config/axios"
 import { API_ENDPOINTS } from "../../config/apiConfig"
 import { useTheme } from "../../contexts/ThemeContext"
+import Calendario from "./Calendario"
 
 const InputField = ({ label, type = "text", value, onChange, placeholder, full }) => {
   const { D, isDark } = useTheme()
@@ -95,7 +97,22 @@ const MinutosConfirmacion = ({ D, valor, onSaved }) => {
 
 const PerfilProductor = () => {
   const { D, isDark } = useTheme()
-  const [activeSection, setActiveSection] = useState("informacion-basica")
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialTab = searchParams.get("tab") || "informacion-basica"
+  const [activeSection, setActiveSection] = useState(initialTab)
+
+  // Sincroniza el query param cuando el usuario cambia de pestaña
+  useEffect(() => {
+    const current = searchParams.get("tab")
+    if (current !== activeSection) {
+      const next = new URLSearchParams(searchParams)
+      if (activeSection === "informacion-basica") next.delete("tab")
+      else next.set("tab", activeSection)
+      setSearchParams(next, { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection])
+
   const [loading, setLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
@@ -315,12 +332,13 @@ const PerfilProductor = () => {
   }
 
   const tabs = [
-    { id: "informacion-basica",       label: "Información Básica",       icon: <MapPin  size={15} /> },
-    { id: "horarios-disponibilidad",  label: "Horarios y Disponibilidad", icon: <Calendar size={15} /> },
-    { id: "galeria-criadero",         label: "Galería del Criadero",     icon: <Camera  size={15} /> },
-    { id: "certificaciones",          label: "Certificaciones",          icon: <Award   size={15} /> },
-    { id: "metodos-envio",            label: "Métodos de Envío",         icon: <Truck   size={15} /> },
-    { id: "configuracion-avanzada",   label: "Configuración Avanzada",   icon: <Edit    size={15} /> },
+    { id: "informacion-basica",       label: "Información Básica",       icon: <MapPin   size={15} /> },
+    { id: "horarios-disponibilidad",  label: "Horarios y Disponibilidad", icon: <Clock    size={15} /> },
+    { id: "calendario",               label: "Calendario",                icon: <Calendar size={15} /> },
+    { id: "galeria-criadero",         label: "Galería del Criadero",     icon: <Camera   size={15} /> },
+    { id: "certificaciones",          label: "Certificaciones",          icon: <Award    size={15} /> },
+    { id: "metodos-envio",            label: "Métodos de Envío",         icon: <Truck    size={15} /> },
+    { id: "configuracion-avanzada",   label: "Configuración Avanzada",   icon: <Edit     size={15} /> },
   ]
 
   return (
@@ -557,6 +575,29 @@ const PerfilProductor = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ── Calendario de Reservas ── */}
+      {activeSection === "calendario" && (
+        <div style={sectionCardSt}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 18 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: `linear-gradient(135deg, ${D.primary}, #16a34a)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: `0 4px 12px ${D.primary}40`, flexShrink: 0,
+            }}>
+              <Calendar size={18} color="#fff" />
+            </div>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: D.text, margin: '0 0 4px' }}>Calendario de Reservas</h2>
+              <p style={{ fontSize: 13, color: D.muted, margin: 0 }}>
+                Configura disponibilidad mensual y bloquea fechas específicas. Las reservas se crearán solo en días marcados como disponibles.
+              </p>
+            </div>
+          </div>
+          <Calendario embedded />
         </div>
       )}
 

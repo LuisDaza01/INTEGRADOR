@@ -24,8 +24,8 @@ import MapaProductores from './pages/consumer/MapaProductores';
 
 // PRODUCER — layout
 import DashboardProductor from './pages/producer/DashboardProductor';
-import Calendario          from './pages/producer/Calendario';
 import ReservasProductor   from './pages/producer/Reservas';
+// Calendario ahora vive como pestaña dentro de PerfilProductor (no se importa aquí)
 // PRODUCER — secciones (rutas anidadas)
 import Monitoring from './pages/producer/Monitoring';
 import Pedidos from './pages/producer/Pedidos';
@@ -130,7 +130,8 @@ const App = () => {
             <Route path="monitoring" element={<Monitoring />} />
             <Route path="pedidos" element={<Pedidos />} />
             <Route path="inventario" element={<Inventario />} />
-            <Route path="calendario" element={<Calendario />} />
+            {/* Calendario migrado a pestaña dentro de Perfil — redirect por compat */}
+            <Route path="calendario" element={<Navigate to="/dashboard-productor/perfil?tab=calendario" replace />} />
             <Route path="reservas"   element={<ReservasProductor />} />
             <Route path="estadisticas" element={<Estadisticas />} />
             <Route path="mensajes" element={<Mensajes />} />

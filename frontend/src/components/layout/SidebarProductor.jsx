@@ -19,7 +19,6 @@ import {
   MoreHorizontal,
   X,
   Zap,
-  Calendar,
   CalendarCheck,
 } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext";
@@ -100,7 +99,6 @@ const SidebarProductor = () => {
     { id: "monitoring", icon: Droplets,       text: "Monitoreo",    glowColor: "#4ade80" },
     { id: "pedidos",    icon: ClipboardList,  text: "Pedidos",      badge: "5", glowColor: "#fb923c" },
     { id: "inventario", icon: Package,        text: "Inventario",   glowColor: "#4ade80" },
-    { id: "calendario", icon: Calendar,       text: "Calendario",   glowColor: "#fbbf24" },
     { id: "reservas",   icon: CalendarCheck,  text: "Reservas",     glowColor: "#a78bfa" },
   ]
 
@@ -264,8 +262,7 @@ const SidebarProductor = () => {
     ]
     const moreMenuItems = [
       mainMenu[1],    // Monitoreo
-      mainMenu[4],    // Calendario
-      mainMenu[5],    // Reservas
+      mainMenu[4],    // Reservas (era índice 5 antes de quitar Calendario)
       analyticsMenu[1], // Mensajes
       analyticsMenu[2], // Notificaciones
       configMenu[1],  // Ajustes

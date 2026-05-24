@@ -1,21 +1,24 @@
+"use client"
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Search, ShoppingBag, ChevronLeft, ChevronRight, Eye, X, User, Package } from "lucide-react"
 import axiosInstance from "../../api/config/axios"
 import { useAuth } from "../../contexts/AuthContext"
+import { useTheme } from "../../contexts/ThemeContext"
 
 const ESTADOS = ["todos", "pendiente", "confirmado", "enviado", "entregado", "cancelado"]
 
-const estadoStyle = {
-  pendiente:  "bg-yellow-100 text-yellow-700",
-  confirmado: "bg-blue-100 text-blue-700",
-  enviado:    "bg-cyan-100 text-cyan-700",
-  entregado:  "bg-green-100 text-green-700",
-  cancelado:  "bg-red-100 text-red-700",
+const estadoColor = {
+  pendiente:  { bg: 'rgba(251,191,36,0.15)', border: 'rgba(251,191,36,0.35)', text: '#fbbf24' },
+  confirmado: { bg: 'rgba(34,197,94,0.15)',  border: 'rgba(34,197,94,0.35)',  text: '#22C55E' },
+  enviado:    { bg: 'rgba(74,222,128,0.15)', border: 'rgba(74,222,128,0.35)', text: '#4ade80' },
+  entregado:  { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.35)', text: '#34d399' },
+  cancelado:  { bg: 'rgba(248,113,113,0.15)',border: 'rgba(248,113,113,0.35)',text: '#f87171' },
 }
 
 const PedidosAdmin = () => {
   const { user } = useAuth()
+  const { D } = useTheme()
   const [pedidos, setPedidos] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -32,7 +35,7 @@ const PedidosAdmin = () => {
         const res = await axiosInstance.get("/pedidos/admin/todos")
         const data = Array.isArray(res.data) ? res.data : (res.data.data || [])
         setPedidos(data)
-      } catch (err) { console.error(err) }
+      } catch (err) { if (import.meta.env.DEV) console.error(err) }
       finally { setLoading(false) }
     }
     if (user) fetchPedidos()
@@ -42,130 +45,188 @@ const PedidosAdmin = () => {
     setDetalle({ ...p, items: null })
     setDetalleLoading(true)
     try {
-      // Intentar obtener detalle completo con items
       const res = await axiosInstance.get(`/pedidos/${p.id}`)
       const data = res.data.data || res.data
       setDetalle(data)
-    } catch (err) {
-      // Si falla, usar los datos básicos que ya tenemos
-      setDetalle(p)
-    } finally {
-      setDetalleLoading(false)
-    }
+    } catch (err) { setDetalle(p) }
+    finally { setDetalleLoading(false) }
   }
 
   const filtered = pedidos.filter(p => {
     const matchSearch = String(p.id).includes(search) ||
-      p.consumidor?.toLowerCase().includes(search.toLowerCase()) || false
+      (p.consumidor?.toLowerCase() || '').includes(search.toLowerCase())
     const matchEstado = filtroEstado === "todos" || p.estado === filtroEstado
     return matchSearch && matchEstado
   })
   const totalPages = Math.ceil(filtered.length / PER_PAGE)
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500" />
+  const Spinner = ({ size = 40 }) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 30 }}>
+      <div style={{
+        width: size, height: size, borderRadius: '50%',
+        border: `3px solid ${D.border}`, borderTopColor: D.primary,
+        animation: 'spin 0.8s linear infinite',
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
 
+  if (loading) return <Spinner size={48} />
+
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Pedidos</h2>
-          <p className="text-gray-500 text-sm">{pedidos.length} pedidos en total</p>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: D.text, margin: 0, letterSpacing: '-0.5px' }}>Pedidos</h2>
+          <p style={{ color: D.muted, fontSize: 13, margin: '4px 0 0' }}>{pedidos.length} pedidos en total</p>
         </div>
-        <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <div style={{ position: 'relative', width: 'min(280px, 100%)' }}>
+          <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: D.muted, pointerEvents: 'none' }} />
           <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Buscar por ID o consumidor..."
-            className="bg-white border border-gray-300 text-gray-800 text-sm rounded-xl pl-9 pr-4 py-2.5 w-64 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400" />
+            style={{
+              width: '100%',
+              background: D.card, border: `1px solid ${D.border}`,
+              color: D.text, fontSize: 13,
+              borderRadius: 12, padding: '10px 14px 10px 36px',
+              outline: 'none',
+            }}
+            onFocus={e => e.target.style.borderColor = D.primary}
+            onBlur={e => e.target.style.borderColor = D.border} />
         </div>
       </div>
 
-      {/* Filtros */}
-      <div className="flex gap-2 flex-wrap">
-        {ESTADOS.map(e => (
-          <button key={e} onClick={() => { setFiltroEstado(e); setPage(1) }}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize border transition-all
-              ${filtroEstado === e
-                ? "bg-blue-600 text-white border-blue-600"
-                : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
-              }`}>
-            {e}
-          </button>
-        ))}
+      {/* Filtros pills */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {ESTADOS.map(e => {
+          const sel = filtroEstado === e
+          return (
+            <button key={e} onClick={() => { setFiltroEstado(e); setPage(1) }}
+              style={{
+                padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                textTransform: 'capitalize',
+                border: `1px solid ${sel ? D.primary : D.border}`,
+                background: sel ? `rgba(34,197,94,0.15)` : D.card,
+                color: sel ? D.primary : D.muted,
+                transition: 'all 0.15s',
+              }}>
+              {e}
+            </button>
+          )
+        })}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">ID</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden md:table-cell">Consumidor</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden sm:table-cell">Fecha</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden md:table-cell">Total</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Estado</th>
-              <th className="px-5 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {paginated.length === 0 ? (
-              <tr><td colSpan={6} className="text-center py-12 text-gray-400">No se encontraron pedidos</td></tr>
-            ) : paginated.map((p, i) => (
-              <motion.tr key={p.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                className="hover:bg-gray-50 transition-colors">
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
-                      <ShoppingBag size={13} className="text-orange-500" />
-                    </div>
-                    <span className="text-gray-800 text-sm font-mono font-medium">#{p.id}</span>
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 hidden md:table-cell">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      <User size={12} className="text-blue-600" />
-                    </div>
-                    <span className="text-gray-700 text-sm">{p.consumidor || "—"}</span>
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 hidden sm:table-cell">
-                  <span className="text-gray-500 text-sm">
-                    {p.fecha_pedido ? new Date(p.fecha_pedido).toLocaleDateString("es-BO") : "—"}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5 hidden md:table-cell">
-                  <span className="text-green-600 text-sm font-medium">Bs {parseFloat(p.total || 0).toFixed(2)}</span>
-                </td>
-                <td className="px-5 py-3.5">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${estadoStyle[p.estado] || "bg-gray-100 text-gray-500"}`}>
-                    {p.estado || "—"}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5">
-                  <button onClick={() => handleVerDetalle(p)}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-                    <Eye size={15} />
-                  </button>
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Tabla */}
+      <div style={{
+        background: D.card, borderRadius: 16,
+        border: `1px solid ${D.border}`,
+        boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
+        overflow: 'hidden',
+      }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: 'rgba(34,197,94,0.05)', borderBottom: `1px solid ${D.border}` }}>
+                <th style={th(D)}>ID</th>
+                <th className="hidden md:table-cell" style={th(D)}>Consumidor</th>
+                <th className="hidden sm:table-cell" style={th(D)}>Fecha</th>
+                <th className="hidden md:table-cell" style={th(D)}>Total</th>
+                <th style={th(D)}>Estado</th>
+                <th style={th(D)} />
+              </tr>
+            </thead>
+            <tbody>
+              {paginated.length === 0 ? (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px 16px', color: D.muted, fontSize: 13 }}>No se encontraron pedidos</td></tr>
+              ) : paginated.map((p, i) => {
+                const es = estadoColor[p.estado] || { bg: D.inputBg, border: D.border, text: D.muted }
+                return (
+                  <motion.tr key={p.id}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
+                    style={{ borderBottom: `1px solid ${D.border}`, transition: 'background 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(34,197,94,0.04)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <td style={td()}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: 8,
+                          background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          <ShoppingBag size={13} style={{ color: '#fb923c' }} />
+                        </div>
+                        <span style={{ color: D.text, fontSize: 13, fontFamily: "'Fira Code', monospace", fontWeight: 600 }}>#{p.id}</span>
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell" style={td()}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <User size={11} style={{ color: D.primary }} />
+                        </div>
+                        <span style={{ color: D.sub, fontSize: 13 }}>{p.consumidor || "—"}</span>
+                      </div>
+                    </td>
+                    <td className="hidden sm:table-cell" style={td()}>
+                      <span style={{ color: D.muted, fontSize: 13 }}>
+                        {p.fecha_pedido ? new Date(p.fecha_pedido).toLocaleDateString("es-BO") : "—"}
+                      </span>
+                    </td>
+                    <td className="hidden md:table-cell" style={td()}>
+                      <span style={{ color: D.primary, fontSize: 13, fontWeight: 700, fontFamily: "'Fira Code', monospace" }}>
+                        Bs {parseFloat(p.total || 0).toFixed(2)}
+                      </span>
+                    </td>
+                    <td style={td()}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center',
+                        padding: '3px 10px', borderRadius: 999,
+                        background: es.bg, border: `1px solid ${es.border}`,
+                        color: es.text, fontSize: 11, fontWeight: 700,
+                        textTransform: 'capitalize',
+                      }}>
+                        {p.estado || "—"}
+                      </span>
+                    </td>
+                    <td style={td()}>
+                      <button onClick={() => handleVerDetalle(p)}
+                        style={{
+                          padding: 6, borderRadius: 8, border: 'none', cursor: 'pointer',
+                          background: 'transparent', color: D.muted, transition: 'all 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(34,197,94,0.1)'; e.currentTarget.style.color = D.primary }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = D.muted }}>
+                        <Eye size={16} />
+                      </button>
+                    </td>
+                  </motion.tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50">
-            <p className="text-gray-400 text-xs">Página {page} de {totalPages}</p>
-            <div className="flex gap-2">
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 18px', borderTop: `1px solid ${D.border}`,
+            background: 'rgba(34,197,94,0.03)',
+          }}>
+            <p style={{ color: D.muted, fontSize: 12, margin: 0 }}>Página {page} de {totalPages}</p>
+            <div style={{ display: 'flex', gap: 6 }}>
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                style={{
+                  padding: 6, borderRadius: 8, border: 'none', cursor: page === 1 ? 'not-allowed' : 'pointer',
+                  background: 'transparent', color: D.muted, opacity: page === 1 ? 0.3 : 1,
+                }}>
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                style={{
+                  padding: 6, borderRadius: 8, border: 'none', cursor: page === totalPages ? 'not-allowed' : 'pointer',
+                  background: 'transparent', color: D.muted, opacity: page === totalPages ? 0.3 : 1,
+                }}>
                 <ChevronRight size={16} />
               </button>
             </div>
@@ -174,120 +235,156 @@ const PedidosAdmin = () => {
       </div>
 
       {/* Modal detalle */}
-      {detalle && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
-          onClick={() => setDetalle(null)}>
-          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}>
-
-            {/* Header modal */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
-                  <ShoppingBag size={18} className="text-orange-500" />
-                </div>
-                <div>
-                  <h3 className="text-gray-900 font-bold text-lg">Pedido #{detalle.id}</h3>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${estadoStyle[detalle.estado] || "bg-gray-100 text-gray-500"}`}>
-                    {detalle.estado}
-                  </span>
-                </div>
-              </div>
-              <button onClick={() => setDetalle(null)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
-                <X size={18} />
-              </button>
-            </div>
-
-            {detalleLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {/* Info consumidor */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Consumidor</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-                      <User size={16} className="text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-gray-800 font-medium text-sm">{detalle.consumidor || "—"}</p>
-                      {detalle.consumidor_email && (
-                        <p className="text-gray-400 text-xs">{detalle.consumidor_email}</p>
-                      )}
-                    </div>
+      <AnimatePresence>
+        {detalle && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+              zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+              backdropFilter: 'blur(4px)',
+            }}
+            onClick={() => setDetalle(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              style={{
+                background: D.card, borderRadius: 18,
+                padding: 24, maxWidth: 540, width: '100%',
+                maxHeight: '90vh', overflowY: 'auto',
+                border: `1px solid ${D.border}`,
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(34,197,94,0.1)',
+              }}
+              onClick={e => e.stopPropagation()}>
+              {/* Header modal */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 42, height: 42, borderRadius: 10,
+                    background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <ShoppingBag size={18} style={{ color: '#fb923c' }} />
+                  </div>
+                  <div>
+                    <h3 style={{ color: D.text, fontWeight: 700, fontSize: 18, margin: 0, fontFamily: "'Fira Code', monospace" }}>Pedido #{detalle.id}</h3>
+                    <span style={{
+                      display: 'inline-flex', padding: '2px 10px', borderRadius: 999,
+                      background: (estadoColor[detalle.estado] || { bg: D.inputBg }).bg,
+                      color: (estadoColor[detalle.estado] || { text: D.muted }).text,
+                      fontSize: 10, fontWeight: 700, marginTop: 4, textTransform: 'capitalize',
+                    }}>
+                      {detalle.estado}
+                    </span>
                   </div>
                 </div>
+                <button onClick={() => setDetalle(null)} style={{ padding: 6, borderRadius: 8, border: 'none', background: 'transparent', color: D.muted, cursor: 'pointer' }}>
+                  <X size={18} />
+                </button>
+              </div>
 
-                {/* Info del pedido */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Detalles del pedido</p>
-                  <div className="space-y-2 text-sm">
-                    {[
-                      ["Fecha", detalle.fecha_pedido ? new Date(detalle.fecha_pedido).toLocaleString("es-BO") : "—"],
-                      ["Método envío", detalle.metodo_envio || "—"],
-                      ["Costo envío", `Bs ${parseFloat(detalle.costo_envio || 0).toFixed(2)}`],
-                      ["Total", <span className="text-green-600 font-semibold">Bs {parseFloat(detalle.total || 0).toFixed(2)}</span>],
-                    ].map(([label, value]) => (
-                      <div key={label} className="flex justify-between items-center py-1.5 border-b border-gray-200 last:border-0">
-                        <span className="text-gray-500">{label}</span>
-                        <span className="text-gray-800">{value}</span>
+              {detalleLoading ? <Spinner size={32} /> : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {/* Consumidor */}
+                  <div style={{ background: 'rgba(34,197,94,0.05)', borderRadius: 12, padding: 14, border: `1px solid ${D.border}` }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: D.muted, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Consumidor</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#16a34a,#22C55E)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <User size={15} color="#fff" />
                       </div>
-                    ))}
+                      <div>
+                        <p style={{ color: D.text, fontWeight: 600, fontSize: 14, margin: 0 }}>{detalle.consumidor || "—"}</p>
+                        {detalle.consumidor_email && <p style={{ color: D.muted, fontSize: 12, margin: '2px 0 0' }}>{detalle.consumidor_email}</p>}
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Productos del pedido con productor */}
-                {detalle.items && detalle.items.length > 0 && (
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Productos y Productores</p>
-                    <div className="space-y-2">
-                      {detalle.items.map((item, i) => (
-                        <div key={i} className="py-2 border-b border-gray-200 last:border-0">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                <Package size={13} className="text-blue-500" />
-                              </div>
-                              <div>
-                                <p className="text-gray-800 text-sm font-medium">{item.nombre || `Producto #${item.producto_id}`}</p>
-                                <p className="text-gray-400 text-xs">x{item.cantidad} · Bs {parseFloat(item.precio_unitario || 0).toFixed(2)} c/u</p>
-                              </div>
-                            </div>
-                            <span className="text-gray-700 text-sm font-medium">
-                              Bs {(item.cantidad * parseFloat(item.precio_unitario || 0)).toFixed(2)}
-                            </span>
-                          </div>
-                          {item.productor_nombre && (
-                            <div className="mt-1.5 ml-9 flex items-center gap-1.5">
-                              <div className="w-4 h-4 rounded-full bg-cyan-100 flex items-center justify-center flex-shrink-0">
-                                <User size={9} className="text-cyan-600" />
-                              </div>
-                              <p className="text-xs text-cyan-700 font-medium">
-                                {item.productor_empresa || item.productor_nombre}
-                              </p>
-                            </div>
-                          )}
+                  {/* Info del pedido */}
+                  <div style={{ background: 'rgba(34,197,94,0.05)', borderRadius: 12, padding: 14, border: `1px solid ${D.border}` }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: D.muted, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Detalles del pedido</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
+                      {[
+                        ["Fecha",        detalle.fecha_pedido ? new Date(detalle.fecha_pedido).toLocaleString("es-BO") : "—"],
+                        ["Método envío", detalle.metodo_envio || "—"],
+                        ["Costo envío",  `Bs ${parseFloat(detalle.costo_envio || 0).toFixed(2)}`],
+                        ["Total",        <span style={{ color: D.primary, fontWeight: 700, fontFamily: "'Fira Code', monospace" }}>Bs {parseFloat(detalle.total || 0).toFixed(2)}</span>],
+                      ].map(([label, value], idx, arr) => (
+                        <div key={label} style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          padding: '6px 0', borderBottom: idx < arr.length - 1 ? `1px solid ${D.border}` : 'none',
+                        }}>
+                          <span style={{ color: D.muted }}>{label}</span>
+                          <span style={{ color: D.text }}>{value}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            )}
 
-            <button onClick={() => setDetalle(null)}
-              className="mt-5 w-full px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium transition-colors">
-              Cerrar
-            </button>
+                  {/* Productos del pedido */}
+                  {detalle.items && detalle.items.length > 0 && (
+                    <div style={{ background: 'rgba(34,197,94,0.05)', borderRadius: 12, padding: 14, border: `1px solid ${D.border}` }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: D.muted, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Productos</p>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {detalle.items.map((item, i) => (
+                          <div key={i} style={{ padding: '10px 0', borderBottom: i < detalle.items.length - 1 ? `1px solid ${D.border}` : 'none' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                                <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(34,197,94,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Package size={14} style={{ color: D.primary }} />
+                                </div>
+                                <div style={{ minWidth: 0 }}>
+                                  <p style={{ color: D.text, fontWeight: 600, fontSize: 13, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nombre || `Producto #${item.producto_id}`}</p>
+                                  <p style={{ color: D.muted, fontSize: 11, margin: '2px 0 0' }}>x{item.cantidad} · Bs {parseFloat(item.precio_unitario || 0).toFixed(2)} c/u</p>
+                                </div>
+                              </div>
+                              <span style={{ color: D.sub, fontSize: 13, fontWeight: 600, fontFamily: "'Fira Code', monospace", flexShrink: 0 }}>
+                                Bs {(item.cantidad * parseFloat(item.precio_unitario || 0)).toFixed(2)}
+                              </span>
+                            </div>
+                            {item.productor_nombre && (
+                              <div style={{ marginTop: 6, marginLeft: 40, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <User size={10} style={{ color: D.primary }} />
+                                <span style={{ color: D.primary, fontSize: 11, fontWeight: 600 }}>{item.productor_empresa || item.productor_nombre}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <button onClick={() => setDetalle(null)}
+                style={{
+                  marginTop: 18, width: '100%',
+                  padding: '11px 0', borderRadius: 12,
+                  border: `1px solid ${D.border}`,
+                  background: 'rgba(34,197,94,0.06)', color: D.text,
+                  fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                  minHeight: 44,
+                }}>
+                Cerrar
+              </button>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   )
 }
+
+const th = (D) => ({
+  textAlign: 'left',
+  fontSize: 10,
+  fontWeight: 700,
+  color: D.muted,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  padding: '12px 18px',
+  whiteSpace: 'nowrap',
+})
+
+const td = () => ({
+  padding: '13px 18px',
+  fontSize: 13,
+})
 
 export default PedidosAdmin

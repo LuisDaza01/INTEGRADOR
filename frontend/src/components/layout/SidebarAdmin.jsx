@@ -1,246 +1,404 @@
-import { useState, useEffect } from "react"
+"use client"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard, Package, ShoppingBag, Tag, LogOut,
-  ChevronLeft, Menu, X, Shield, Fish, UserPlus, Users
+  ChevronRight, Menu, X, Shield, Users, UserPlus,
 } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
+import { useTheme } from "../../contexts/ThemeContext"
 import { useNavigate, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
+
+const menuItems = [
+  { id: "estadisticas",        label: "Estadísticas",       icon: LayoutDashboard, color: '#22C55E', path: "/dashboard-admin" },
+  { id: "productos",           label: "Productos",           icon: Package,         color: '#4ade80', path: "/dashboard-admin/productos" },
+  { id: "pedidos",             label: "Pedidos",             icon: ShoppingBag,     color: '#fb923c', path: "/dashboard-admin/pedidos" },
+  { id: "categorias",          label: "Categorías",          icon: Tag,             color: '#34d399', path: "/dashboard-admin/categorias" },
+  { id: "usuarios",            label: "Usuarios",            icon: Users,           color: '#a78bfa', path: "/dashboard-admin/usuarios" },
+  { id: "registrar-productor", label: "Registrar Usuario",   icon: UserPlus,        color: '#c084fc', path: "/dashboard-admin/registrar-productor" },
+]
 
 const SidebarAdmin = () => {
   const { logout, user } = useAuth()
+  const { D } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [showLogoutModal, setShowLogoutModal] = useState(false)
 
   const iniciales = user?.nombre
     ? user.nombre.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase()
     : "A"
   const nombreCompleto = user?.nombre || "Administrador"
 
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
+
+  // Breakpoints alineados con el resto del proyecto:
+  //  < 900 px   → mobile (drawer + hamburguesa)
+  //  900-1279px → desktop colapsado (solo iconos)
+  //  ≥ 1280 px  → desktop expandido (label + icono)
   useEffect(() => {
+    let raf = null
     const check = () => {
-      const mobile = window.innerWidth < 768
-      setIsMobile(mobile)
-      if (window.innerWidth >= 768 && window.innerWidth < 1024) setIsCollapsed(true)
-      else if (window.innerWidth >= 1024) setIsCollapsed(false)
-      if (!mobile && isMobileOpen) setIsMobileOpen(false)
+      const w = window.innerWidth
+      const mobile = w < 900
+      setIsMobile(prev => prev !== mobile ? mobile : prev)
+      if (!mobile) setIsMobileMenuOpen(false)
+      if (w >= 900 && w < 1280) setIsCollapsed(true)
+      else if (w >= 1280) setIsCollapsed(false)
     }
+    const debounced = () => { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(check) }
     check()
-    window.addEventListener("resize", check)
-    return () => window.removeEventListener("resize", check)
-  }, [isMobileOpen])
+    window.addEventListener('resize', debounced)
+    return () => { window.removeEventListener('resize', debounced); if (raf) cancelAnimationFrame(raf) }
+  }, [])
 
   useEffect(() => {
-    if (isMobileOpen) document.body.style.overflow = "hidden"
-    else document.body.style.overflow = "unset"
-    return () => { document.body.style.overflow = "unset" }
-  }, [isMobileOpen])
-
-  const menuItems = [
-    { id: "estadisticas",        label: "Estadísticas",       icon: LayoutDashboard, color: "text-blue-600",   path: "/dashboard-admin" },
-    { id: "productos",           label: "Productos",          icon: Package,          color: "text-green-600",  path: "/dashboard-admin/productos" },
-    { id: "pedidos",             label: "Pedidos",            icon: ShoppingBag,      color: "text-orange-600", path: "/dashboard-admin/pedidos" },
-    { id: "categorias",          label: "Categorías",         icon: Tag,              color: "text-cyan-600",   path: "/dashboard-admin/categorias" },
-    { id: "usuarios",            label: "Usuarios",           icon: Users,            color: "text-indigo-600", path: "/dashboard-admin/usuarios" },
-    { id: "registrar-productor", label: "Registrar Usuario",  icon: UserPlus,         color: "text-purple-600", path: "/dashboard-admin/registrar-productor" },
-  ]
+    const esc = e => { if (e.key === 'Escape' && isMobileMenuOpen) setIsMobileMenuOpen(false) }
+    if (isMobileMenuOpen) { document.addEventListener('keydown', esc); document.body.style.overflow = 'hidden' }
+    else document.body.style.overflow = 'unset'
+    return () => { document.removeEventListener('keydown', esc); document.body.style.overflow = 'unset' }
+  }, [isMobileMenuOpen])
 
   const getCurrentTab = () => {
     const p = location.pathname
-    if (p === "/dashboard-admin") return "estadisticas"
-    return p.split("/").pop()
+    if (p === '/dashboard-admin') return 'estadisticas'
+    return p.split('/').pop()
   }
   const currentTab = getCurrentTab()
 
-  const handleNav = (item) => {
+  const handleItemClick = item => {
     navigate(item.path)
-    if (isMobile) setIsMobileOpen(false)
+    if (isMobile) setIsMobileMenuOpen(false)
   }
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full min-h-screen bg-white border-r border-gray-200">
-
-      {/* Header móvil */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '100vh' }}>
+      {/* Mobile header */}
       {isMobile && (
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-blue-600">
-          <div className="flex items-center gap-2">
-            <Fish size={20} className="text-white" />
-            <span className="text-white font-bold">NaturaPiscis</span>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px', borderBottom: `1px solid ${D.border}`,
+          background: 'linear-gradient(135deg,rgba(34,197,94,0.15),rgba(74,222,128,0.08))',
+          flexShrink: 0,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#16a34a,#22C55E)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Shield size={16} color="#fff" />
+            </div>
+            <div>
+              <h2 style={{ fontWeight: 700, color: D.text, fontSize: 16 }}>Admin Panel</h2>
+              <p style={{ fontSize: 11, color: D.muted }}>NaturaPiscis</p>
+            </div>
           </div>
-          <button onClick={() => setIsMobileOpen(false)} className="p-1 text-white hover:text-blue-100">
-            <X size={20} />
+          <button onClick={() => setIsMobileMenuOpen(false)}
+            style={{ background: 'rgba(34,197,94,0.1)', border: `1px solid ${D.border}`, borderRadius: 8, padding: '6px', cursor: 'pointer', color: D.muted }}>
+            <X size={18} />
           </button>
         </div>
       )}
 
-      {/* Header desktop */}
-      {!isMobile && (
-        <div className="relative flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
-          {(!isCollapsed) && (
-            <div className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-1.5 rounded-lg">
-                <Shield size={14} className="text-white" />
-              </div>
-              <div>
-                <p className="text-gray-800 font-bold text-sm leading-none">Admin Panel</p>
-                <p className="text-blue-500 text-xs mt-0.5">NaturaPiscis</p>
-              </div>
-            </div>
-          )}
-          {isCollapsed && (
-            <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-1.5 rounded-lg mx-auto">
-              <Shield size={14} className="text-white" />
-            </div>
-          )}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-3 top-6 w-6 h-6 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center shadow hover:border-blue-300 z-10"
-          >
-            <motion.div animate={{ rotate: isCollapsed ? 180 : 0 }} transition={{ duration: 0.2 }}>
-              <ChevronLeft size={12} className="text-gray-600" />
-            </motion.div>
-          </button>
+      {/* Desktop header (compacto) */}
+      {!isMobile && !isCollapsed && (
+        <div style={{
+          padding: '18px 16px', borderBottom: `1px solid ${D.border}`,
+          background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(74,222,128,0.04))',
+          display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
+        }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#16a34a,#22C55E)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(34,197,94,0.35)' }}>
+            <Shield size={15} color="#fff" />
+          </div>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 700, color: D.text, margin: 0, letterSpacing: '-0.01em' }}>Admin Panel</p>
+            <p style={{ fontSize: 10, color: D.primary, margin: 0, fontWeight: 600 }}>NaturaPiscis</p>
+          </div>
+        </div>
+      )}
+      {!isMobile && isCollapsed && (
+        <div style={{ padding: '18px 0', display: 'flex', justifyContent: 'center', borderBottom: `1px solid ${D.border}`, flexShrink: 0 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#16a34a,#22C55E)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(34,197,94,0.35)' }}>
+            <Shield size={15} color="#fff" />
+          </div>
         </div>
       )}
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav style={{ flex: 1, padding: '12px 10px', overflowY: 'auto' }}>
         {(!isCollapsed || isMobile) && (
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 mb-3">Menú Principal</p>
+          <p style={{ fontSize: 10, fontWeight: 700, color: D.muted, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 6px 8px' }}>
+            Menú Principal
+          </p>
         )}
-        {menuItems.map((item) => {
-          const Icon = item.icon
-          const isActive = currentTab === item.id
-          return (
-            <div key={item.id} className="relative group">
-              <motion.button
-                onClick={() => handleNav(item)}
-                whileHover={{ x: isCollapsed && !isMobile ? 0 : 4 }}
-                whileTap={{ scale: 0.97 }}
-                className={`w-full flex items-center px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
-                  ${isCollapsed && !isMobile ? "justify-center" : "gap-3"}
-                  ${isActive
-                    ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 shadow-sm border-l-4 border-blue-500"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-              >
-                <Icon size={18} className={isActive ? "text-blue-600" : item.color} />
-                {(!isCollapsed || isMobile) && <span>{item.label}</span>}
-                {isActive && (!isCollapsed || isMobile) && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500" />
-                )}
-              </motion.button>
-              {/* Tooltip colapsado */}
-              {isCollapsed && !isMobile && (
-                <div className="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                  {item.label}
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
-                </div>
-              )}
-            </div>
-          )
-        })}
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {menuItems.map(item => {
+            const Icon = item.icon
+            const active = currentTab === item.id
+            return (
+              <li key={item.id}>
+                <motion.button
+                  whileHover={{ x: isCollapsed && !isMobile ? 0 : 3 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => handleItemClick(item)}
+                  title={isCollapsed && !isMobile ? item.label : ""}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center',
+                    gap: isCollapsed && !isMobile ? 0 : 12,
+                    justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
+                    padding: isCollapsed && !isMobile ? '12px 0' : '11px 14px',
+                    borderRadius: 12, border: 'none', cursor: 'pointer',
+                    background: active ? `rgba(34,197,94,0.1)` : 'transparent',
+                    borderLeft: active ? `3px solid ${item.color}` : '3px solid transparent',
+                    boxShadow: active ? `inset 0 0 12px rgba(34,197,94,0.06)` : 'none',
+                    transition: 'all 0.15s',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={e => { if (!active) e.currentTarget.style.background = D.inputBg || 'rgba(255,255,255,0.04)' }}
+                  onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <Icon size={21} color={active ? item.color : D.muted} style={{ flexShrink: 0 }} />
+                  <AnimatePresence initial={false}>
+                    {(!isCollapsed || isMobile) && (
+                      <motion.span
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: 'auto' }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.18 }}
+                        style={{
+                          fontWeight: active ? 700 : 500, fontSize: 14,
+                          color: active ? item.color : D.muted,
+                          overflow: 'hidden', whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {item.label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                  {active && (!isCollapsed || isMobile) && (
+                    <div style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: item.color, boxShadow: `0 0 8px ${item.color}` }} />
+                  )}
+                </motion.button>
+              </li>
+            )
+          })}
+        </ul>
       </nav>
 
-      {/* User */}
-      <div className="p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
-        <div className={`flex items-center mb-3 ${isCollapsed && !isMobile ? "justify-center" : "gap-3"}`}>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow flex-shrink-0">
-            {iniciales}
-          </div>
-          {(!isCollapsed || isMobile) && (
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{nombreCompleto}</p>
-              <p className="text-xs text-blue-500">Administrador</p>
+      {/* User section */}
+      {(!isCollapsed || isMobile) && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          style={{
+            padding: '14px', borderTop: `1px solid ${D.border}`,
+            background: 'rgba(34,197,94,0.03)', flexShrink: 0,
+          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg,#16a34a,#22C55E)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 14, fontWeight: 700, color: '#fff',
+              boxShadow: '0 0 10px rgba(34,197,94,0.25)',
+            }}>
+              {iniciales}
             </div>
-          )}
-        </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: D.text, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {nombreCompleto}
+              </p>
+              <p style={{ fontSize: 11, color: D.primary, margin: 0, fontWeight: 600 }}>Administrador</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Logout */}
+      <div style={{ padding: '10px', borderTop: `1px solid ${D.border}`, flexShrink: 0 }}>
         <motion.button
+          whileHover={{ x: isCollapsed && !isMobile ? 0 : 3 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => setShowLogoutModal(true)}
-          className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all shadow-sm
-            ${isCollapsed && !isMobile ? "justify-center" : ""}`}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center',
+            gap: isCollapsed && !isMobile ? 0 : 10,
+            justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
+            padding: '10px 14px',
+            borderRadius: 10, border: 'none', cursor: 'pointer',
+            background: 'transparent', color: D.red,
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(248,113,113,0.08)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         >
-          <LogOut size={15} />
-          {(!isCollapsed || isMobile) && <span>Cerrar sesión</span>}
+          <LogOut size={20} style={{ flexShrink: 0 }} />
+          {(!isCollapsed || isMobile) && (
+            <span style={{ fontWeight: 600, fontSize: 14 }}>Cerrar Sesión</span>
+          )}
         </motion.button>
       </div>
-
-      {/* Logout Modal */}
-      <AnimatePresence>
-        {showLogoutModal && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm"
-            onClick={() => setShowLogoutModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-100"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="text-center">
-                <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                  <LogOut className="text-red-600" size={24} />
-                </div>
-                <h3 className="text-gray-900 font-bold text-lg mb-2">¿Cerrar sesión?</h3>
-                <p className="text-gray-500 text-sm mb-6">Tendrás que iniciar sesión nuevamente para acceder al panel de administración.</p>
-                <div className="flex gap-3">
-                  <button onClick={() => setShowLogoutModal(false)}
-                    className="flex-1 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-medium transition-colors">
-                    Cancelar
-                  </button>
-                  <button onClick={() => { logout(); setShowLogoutModal(false) }}
-                    className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors">
-                    Cerrar sesión
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 
+  const LogoutModal = () => (
+    <AnimatePresence>
+      {showLogoutModal && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          onClick={() => setShowLogoutModal(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+            zIndex: 70, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+            onClick={e => e.stopPropagation()}
+            className="np-logout-modal-admin"
+            style={{
+              background: 'rgba(10,15,30,0.98)',
+              border: `1px solid rgba(248,113,113,0.3)`,
+              borderRadius: 18, maxWidth: 360, width: '100%',
+              boxShadow: '0 0 40px rgba(248,113,113,0.15)',
+            }}
+          >
+            <style>{`
+              .np-logout-modal-admin { padding: 28px; }
+              .np-logout-modal-admin .actions { display: flex; gap: 12px; }
+              @media (max-width: 420px) {
+                .np-logout-modal-admin { padding: 20px; border-radius: 16px; }
+                .np-logout-modal-admin .actions { flex-direction: column-reverse; gap: 8px; }
+              }
+            `}</style>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: '50%', background: 'rgba(248,113,113,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
+                border: `1px solid rgba(248,113,113,0.3)`,
+              }}>
+                <LogOut size={24} color={D.red} />
+              </div>
+              <h3 style={{ fontWeight: 700, color: D.text, fontSize: 18, margin: '0 0 8px' }}>¿Cerrar Sesión?</h3>
+              <p style={{ color: D.muted, fontSize: 13, margin: '0 0 24px', lineHeight: 1.5 }}>
+                Tendrás que iniciar sesión nuevamente para acceder al panel de administración.
+              </p>
+              <div className="actions">
+                <button onClick={() => setShowLogoutModal(false)} style={{
+                  flex: 1, padding: '12px 0', borderRadius: 10, border: `1px solid ${D.border}`,
+                  background: 'rgba(34,197,94,0.06)', color: D.text, fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  minHeight: 44,
+                }}>
+                  Cancelar
+                </button>
+                <button onClick={() => { logout(); setShowLogoutModal(false) }} style={{
+                  flex: 1, padding: '12px 0', borderRadius: 10, border: 'none',
+                  background: 'linear-gradient(135deg,#dc2626,#ef4444)', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  minHeight: 44,
+                }}>
+                  Cerrar Sesión
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
+  // ── MOBILE ─────────────────────────────────────────────────────
   if (isMobile) {
     return (
       <>
-        <motion.button whileTap={{ scale: 0.95 }} onClick={() => setIsMobileOpen(true)}
-          className="fixed top-4 left-4 z-50 bg-white border border-gray-200 rounded-xl p-3 shadow-lg md:hidden">
-          <Menu size={20} className="text-gray-700" />
+        <motion.button
+          whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+          onClick={() => setIsMobileMenuOpen(true)}
+          style={{
+            position: 'fixed', top: 14, left: 14, zIndex: 50,
+            background: 'rgba(10,15,30,0.95)',
+            border: `1px solid ${D.border}`,
+            borderRadius: 12, padding: '10px', cursor: 'pointer',
+            color: D.primary,
+            boxShadow: '0 0 16px rgba(34,197,94,0.2)',
+          }}
+        >
+          <Menu size={22} />
         </motion.button>
+
         <AnimatePresence>
-          {isMobileOpen && (
-            <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
-                onClick={() => setIsMobileOpen(false)} />
-              <motion.div initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
-                transition={{ ease: "easeInOut", duration: 0.3 }}
-                className="fixed left-0 top-0 bottom-0 w-72 z-50 shadow-2xl">
-                <SidebarContent />
-              </motion.div>
-            </>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 40, backdropFilter: 'blur(4px)' }}
+            />
           )}
         </AnimatePresence>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ x: -300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              style={{
+                position: 'fixed', left: 0, top: 0, bottom: 0,
+                width: 'min(300px, 86vw)', maxWidth: 320,
+                background: D.surface,
+                border: `1px solid ${D.border}`,
+                borderLeft: 'none',
+                boxShadow: '4px 0 32px rgba(0,0,0,0.5)',
+                zIndex: 50, display: 'flex', flexDirection: 'column',
+              }}
+            >
+              <SidebarContent />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <LogoutModal />
       </>
     )
   }
 
+  // ── DESKTOP ────────────────────────────────────────────────────
   return (
-    <motion.aside
-      animate={{ width: isCollapsed ? 80 : 280 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="relative flex-shrink-0 min-h-screen shadow-lg"
-      style={{ width: isCollapsed ? 80 : 280, minWidth: isCollapsed ? 80 : 280 }}
-    >
-      <SidebarContent />
-    </motion.aside>
+    <>
+      <motion.div
+        initial={false}
+        animate={{ width: isCollapsed ? 72 : 260 }}
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        style={{
+          background: D.sidebarBg,
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderRight: `1px solid ${D.border}`,
+          height: '100%', minHeight: '100vh',
+          display: 'flex', flexDirection: 'column',
+          position: 'relative', flexShrink: 0,
+          boxShadow: '2px 0 32px rgba(0,0,0,0.2)',
+        }}
+      >
+        <motion.button
+          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          style={{
+            position: 'absolute', right: -14, top: 32, zIndex: 10,
+            background: D.surface,
+            border: `1px solid ${D.border}`,
+            borderRadius: '50%', padding: '6px', cursor: 'pointer',
+            color: D.primary,
+            boxShadow: '0 0 12px rgba(34,197,94,0.2)',
+          }}
+        >
+          <motion.div animate={{ rotate: isCollapsed ? 0 : 180 }} transition={{ duration: 0.2 }}>
+            <ChevronRight size={15} />
+          </motion.div>
+        </motion.button>
+
+        <SidebarContent />
+      </motion.div>
+
+      <LogoutModal />
+    </>
   )
 }
 

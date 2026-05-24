@@ -6,7 +6,7 @@ const StatBox = ({
   value, 
   unit = '',
   icon: Icon,
-  backgroundColor = 'bg-gradient-to-br from-blue-400 to-blue-600',
+  backgroundColor = 'bg-gradient-to-br from-green-400 to-green-600',
   textColor = 'text-white'
 }) => {
   return (

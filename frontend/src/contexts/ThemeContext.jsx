@@ -8,7 +8,7 @@ export const DARK = {
   border:  'rgba(34,197,94,0.15)',
   // Brand — green CTA (#22C55E) as primary accent
   primary: '#22C55E',
-  cyan:    '#38bdf8',
+  cyan:    '#4ade80',  // alias deprecado → verde claro brand
   teal:    '#14b8a6',
   green:   '#22C55E',
   red:     '#f87171',
@@ -27,10 +27,10 @@ export const DARK = {
   headerBg:  'rgba(10,18,32,0.6)',
   shimmer:   'rgba(34,197,94,0.3)',
   // Glow tokens
-  glowCyan:   '0 0 24px rgba(56,189,248,0.3),  0 0 64px rgba(56,189,248,0.1)',
+  glowCyan:   '0 0 24px rgba(74,222,128,0.3),  0 0 64px rgba(74,222,128,0.1)',  // alias → green
   glowPurple: '0 0 24px rgba(139,92,246,0.3),  0 0 64px rgba(139,92,246,0.1)',
-  glowGreen:  '0 0 24px rgba(34,197,94,0.35),  0 0 64px rgba(34,197,94,0.12)',
-  glowTeal:   '0 0 24px rgba(20,184,166,0.3),  0 0 64px rgba(20,184,166,0.1)',
+  glowGreen:  '0 0 24px rgba(34,197,94,0.35), 0 0 64px rgba(34,197,94,0.12)',
+  glowTeal:   '0 0 24px rgba(20,184,166,0.3), 0 0 64px rgba(20,184,166,0.1)',
 }
 
 export const LIGHT = {
@@ -41,7 +41,7 @@ export const LIGHT = {
   border:  'rgba(34,197,94,0.2)',
   // Brand — green (#16a34a) for light mode
   primary: '#16a34a',
-  cyan:    '#0284c7',
+  cyan:    '#16a34a',  // alias deprecado → verde brand
   teal:    '#0d9488',
   green:   '#16a34a',
   red:     '#dc2626',
@@ -60,10 +60,10 @@ export const LIGHT = {
   headerBg:  'rgba(240,249,244,0.78)',
   shimmer:   'rgba(22,163,74,0.2)',
   // Glow tokens
-  glowCyan:   '0 0 20px rgba(2,132,199,0.2),   0 0 48px rgba(2,132,199,0.08)',
-  glowPurple: '0 0 20px rgba(124,58,237,0.2),  0 0 48px rgba(124,58,237,0.08)',
-  glowGreen:  '0 0 20px rgba(22,163,74,0.25),  0 0 48px rgba(22,163,74,0.1)',
-  glowTeal:   '0 0 20px rgba(13,148,136,0.2),  0 0 48px rgba(13,148,136,0.08)',
+  glowCyan:   '0 0 20px rgba(22,163,74,0.2),  0 0 48px rgba(22,163,74,0.08)',  // alias → green
+  glowPurple: '0 0 20px rgba(124,58,237,0.2), 0 0 48px rgba(124,58,237,0.08)',
+  glowGreen:  '0 0 20px rgba(22,163,74,0.25), 0 0 48px rgba(22,163,74,0.1)',
+  glowTeal:   '0 0 20px rgba(13,148,136,0.2), 0 0 48px rgba(13,148,136,0.08)',
 }
 
 const ThemeContext = createContext(null)

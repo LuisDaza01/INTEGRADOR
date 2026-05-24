@@ -9,10 +9,10 @@ const POLLING = 15000
 
 const STATUS_COLOR = {
   listo_para_recoger: '#F59E0B',
-  en_camino:          '#3B82F6',
-  entregado:          '#22C55E',
+  en_camino:          '#22C55E',
+  entregado:          '#16a34a',
   preparando:         '#8B5CF6',
-  confirmado:         '#06B6D4',
+  confirmado:         '#4ade80',
   pendiente:          '#9CA3AF',
 }
 const STATUS_LABEL = {

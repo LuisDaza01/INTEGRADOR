@@ -366,8 +366,8 @@ const Mensajes = () => {
                   {/* Botón galería */}
                   <motion.button type="button" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                     onClick={() => fileInputRef.current?.click()}
-                    style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(56,189,248,0.08)", border: "1px solid rgba(56,189,248,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Paperclip size={17} color="#38bdf8" />
+                    style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Paperclip size={17} color="#22C55E" />
                   </motion.button>
                   {/* Botón cámara */}
                   <motion.button type="button" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}

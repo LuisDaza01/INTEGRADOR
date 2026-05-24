@@ -12,7 +12,7 @@ const Notificaciones = () => {
 
   const typeStyle = {
     alerta:  { bg: 'rgba(251,146,60,0.12)',  color: '#fb923c', border: 'rgba(251,146,60,0.3)'  },
-    info:    { bg: 'rgba(56,189,248,0.1)',   color: '#38bdf8', border: 'rgba(56,189,248,0.25)' },
+    info:    { bg: 'rgba(34,197,94,0.1)',    color: '#22C55E', border: 'rgba(34,197,94,0.28)' },
     success: { bg: 'rgba(74,222,128,0.1)',   color: '#4ade80', border: 'rgba(74,222,128,0.25)' },
   }
 
@@ -67,7 +67,7 @@ const Notificaciones = () => {
         {filters.map(f => (
           <motion.button key={f.id} onClick={() => setActiveFilter(f.id)} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600,
-              background: activeFilter === f.id ? `rgba(56,189,248,0.15)` : D.card,
+              background: activeFilter === f.id ? `rgba(34,197,94,0.15)` : D.card,
               color: activeFilter === f.id ? D.primary : D.muted,
               outline: activeFilter === f.id ? `1.5px solid ${D.primary}` : `1px solid ${D.border}` }}>
             {f.label}

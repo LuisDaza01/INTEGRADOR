@@ -6,7 +6,7 @@ const STEPS = [
   { key: 'confirmado',  label: 'Confirmado',  icon: CheckCircle,  color: '#22C55E' },
   { key: 'preparando',  label: 'Preparando',  icon: Package,      color: '#a78bfa' },
   { key: 'listo',       label: 'Listo',       icon: CheckCircle,  color: '#4ade80' },
-  { key: 'en_camino',   label: 'En camino',   icon: Truck,        color: '#38bdf8' },
+  { key: 'en_camino',   label: 'En camino',   icon: Truck,        color: '#22C55E' },
   { key: 'entregado',   label: 'Entregado',   icon: Home,         color: '#22C55E' },
 ]
 

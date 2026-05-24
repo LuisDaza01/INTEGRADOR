@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { io } from 'socket.io-client'
 import api from '../../api/config/axios'
+import { useTheme } from '../../contexts/ThemeContext'
 import {
   ArrowLeft, MapPin, Navigation, Package, CheckCircle,
   Truck, Fish, Phone, RefreshCw, AlertTriangle, Bike,
@@ -163,10 +164,10 @@ const MapaTracking = ({ pedido }) => {
 
   if (sinCoordenadas) {
     return (
-      <div className="h-64 bg-gray-100 rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center">
-        <MapPin className="h-8 w-8 text-gray-300 mb-2" />
-        <p className="text-gray-500 text-sm font-medium">Mapa no disponible</p>
-        <p className="text-gray-400 text-xs mt-1">Las coordenadas aún no están registradas</p>
+      <div style={{ height: 256, background: 'rgba(34,197,94,0.04)', borderRadius: 14, border: '1px dashed rgba(34,197,94,0.25)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <MapPin size={32} style={{ color: '#22C55E', opacity: 0.4, marginBottom: 8 }} />
+        <p style={{ color: '#cbd5e1', fontSize: 13, fontWeight: 600, margin: 0 }}>Mapa no disponible</p>
+        <p style={{ color: '#94a3b8', fontSize: 11, marginTop: 4 }}>Las coordenadas aún no están registradas</p>
       </div>
     )
   }
@@ -183,57 +184,49 @@ const MapaTracking = ({ pedido }) => {
         }
         .leaflet-control-zoom a:hover { background: #2d3f6b !important; color: #fff !important; }
       `}</style>
-      <div ref={mapRef} className="rounded-xl overflow-hidden border border-gray-800 shadow-lg" style={{ height: '60vh', minHeight: 420 }} />
+      <div ref={mapRef} style={{ height: '60vh', minHeight: 420, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(34,197,94,0.2)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }} />
 
       {/* Botón centrar */}
       <button onClick={recentrar}
-        className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-[401]"
-        title="Centrar mapa">
-        <Locate className="h-5 w-5 text-gray-700" />
+        title="Centrar mapa"
+        style={{ position: 'absolute', top: 12, right: 12, width: 40, height: 40, background: 'rgba(10,15,30,0.95)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 401, color: '#22C55E' }}>
+        <Locate size={20} />
       </button>
 
       {/* Leyenda flotante */}
-      <div className="absolute bottom-3 left-3 bg-white bg-opacity-95 backdrop-blur rounded-lg px-3 py-2 shadow-lg text-xs flex flex-col gap-1.5 z-[401]">
-        <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Parada de recojo</span>
-        <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Conductor</span>
-        <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Tu dirección</span>
+      <div style={{ position: 'absolute', bottom: 12, left: 12, background: 'rgba(10,15,30,0.92)', border: '1px solid rgba(34,197,94,0.25)', backdropFilter: 'blur(10px)', borderRadius: 10, padding: '8px 12px', boxShadow: '0 4px 12px rgba(0,0,0,0.4)', fontSize: 11, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: 6, zIndex: 401 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B' }} /> Parada de recojo</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#3B82F6' }} /> Conductor</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444' }} /> Tu dirección</span>
       </div>
     </div>
   )
 }
 
 // ── Timeline horizontal (pasos) ────────────────────────────────
-const TimelineEstados = ({ estadoActual }) => {
+const TimelineEstados = ({ estadoActual, D }) => {
   const idxActual = ESTADO_IDX[estadoActual] ?? 0
   return (
-    <div className="flex items-center gap-0">
+    <div style={{ display: 'flex', alignItems: 'center' }}>
       {ESTADOS.map((e, i) => {
         const done    = i < idxActual
         const current = i === idxActual
+        const bg     = done ? '#22C55E' : current ? D.primary : D.surface
+        const border = done ? '#22C55E' : current ? D.primary : D.border
         return (
-          <div key={e.key} className="flex items-center flex-1 min-w-0">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${
-                done    ? 'bg-green-500 border-green-500'    :
-                current ? 'bg-blue-500 border-blue-500 ring-4 ring-blue-100 animate-pulse' :
-                          'bg-white border-gray-200'
-              }`}>
+          <div key={e.key} style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${border}`, background: bg, transition: 'all 0.2s', boxShadow: current ? `0 0 0 4px ${D.primary}20, 0 0 16px ${D.primary}60` : 'none', animation: current ? 'pulse 2s infinite' : 'none' }}>
                 {done ? (
-                  <CheckCircle className="h-4 w-4 text-white" />
+                  <CheckCircle size={16} color="#fff" />
                 ) : (
-                  <e.icon className={`h-4 w-4 ${current ? 'text-white' : 'text-gray-300'}`} />
+                  <e.icon size={16} color={current ? '#fff' : D.dim || D.muted} />
                 )}
               </div>
-              <span className={`text-xs mt-1.5 text-center leading-tight max-w-[70px] hidden sm:block ${
-                current ? 'text-blue-600 font-semibold' :
-                done    ? 'text-green-600' :
-                          'text-gray-400'
-              }`}>{e.label}</span>
+              <span style={{ fontSize: 10, marginTop: 6, textAlign: 'center', lineHeight: 1.2, maxWidth: 70, color: current ? D.primary : done ? '#22C55E' : D.muted, fontWeight: current ? 600 : 400 }} className="hidden sm:block">{e.label}</span>
             </div>
             {i < ESTADOS.length - 1 && (
-              <div className={`flex-1 h-0.5 mx-1 -mt-4 sm:-mt-5 ${
-                i < idxActual ? 'bg-green-400' : 'bg-gray-200'
-              }`} />
+              <div style={{ flex: 1, height: 2, margin: '0 4px', marginTop: -20, background: i < idxActual ? '#22C55E' : D.border }} />
             )}
           </div>
         )
@@ -246,6 +239,7 @@ const TimelineEstados = ({ estadoActual }) => {
 const TrackingPedidoWeb = () => {
   const { pedidoId } = useParams()
   const navigate     = useNavigate()
+  const { D }        = useTheme()
   const [pedido, setPedido]         = useState(null)
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState(null)
@@ -313,24 +307,24 @@ const TrackingPedidoWeb = () => {
   }, [pedido?.estado])
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="text-center">
-        <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
-          <Truck className="h-7 w-7 text-blue-600" />
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256, background: D.bg }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ width: 56, height: 56, background: 'rgba(34,197,94,0.12)', border: `1px solid ${D.border}`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', animation: 'pulse 2s infinite' }}>
+          <Truck size={28} style={{ color: D.primary }} />
         </div>
-        <p className="text-gray-600 font-medium">Cargando tracking...</p>
+        <p style={{ color: D.muted, fontWeight: 600 }}>Cargando tracking...</p>
       </div>
     </div>
   )
 
   if (error) return (
-    <div className="p-6">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4 text-sm">
-        <ArrowLeft className="h-4 w-4" /> Volver
+    <div style={{ padding: 24, background: D.bg, minHeight: '100vh' }}>
+      <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: 8, color: D.muted, marginBottom: 16, fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer' }}>
+        <ArrowLeft size={16} /> Volver
       </button>
-      <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-        <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-        <p className="text-red-700 font-medium">{error}</p>
+      <div style={{ background: `${D.red}15`, border: `1px solid ${D.red}40`, borderRadius: 14, padding: 24, textAlign: 'center' }}>
+        <AlertTriangle size={32} style={{ color: D.red, margin: '0 auto 8px' }} />
+        <p style={{ color: D.red, fontWeight: 600, margin: 0 }}>{error}</p>
       </div>
     </div>
   )
@@ -343,13 +337,13 @@ const TrackingPedidoWeb = () => {
   const isEntregado = pedido.estado === 'entregado'
   const isCancelado = pedido.estado === 'cancelado'
 
-  // Color según estado
-  const colorEstado = isCancelado ? 'red' : isEntregado ? 'green' : isEnCamino ? 'blue' : 'gray'
+  // Color según estado (dark theme)
+  const colorEstado = isCancelado ? 'red' : isEntregado ? 'green' : isEnCamino ? 'primary' : 'gray'
   const colorClasses = {
-    red:   { bg: 'bg-red-50',   border: 'border-red-300',   text: 'text-red-600',   icon: 'text-red-500' },
-    green: { bg: 'bg-green-50', border: 'border-green-300', text: 'text-green-700', icon: 'text-green-500' },
-    blue:  { bg: 'bg-blue-50',  border: 'border-blue-300',  text: 'text-blue-700',  icon: 'text-blue-500' },
-    gray:  { bg: 'bg-gray-50',  border: 'border-gray-300',  text: 'text-gray-700',  icon: 'text-gray-500' },
+    red:     { bg: `${D.red}12`,     border: `${D.red}50`,     text: D.red,     icon: D.red },
+    green:   { bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.4)',  text: '#4ade80', icon: '#22C55E' },
+    primary: { bg: `${D.primary}15`, border: `${D.primary}40`, text: D.primary, icon: D.primary },
+    gray:    { bg: D.surface,        border: D.border,         text: D.text,    icon: D.muted },
   }[colorEstado]
 
   const tieneMapa = !!(pedido.parada_lat || pedido.consumidor_lat)
@@ -357,30 +351,33 @@ const TrackingPedidoWeb = () => {
 
   const scrollAlMapa = () => mapaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
+  const cardStyle = { background: D.card, border: `1px solid ${D.border}`, borderRadius: 14, padding: 20, boxShadow: '0 2px 12px rgba(0,0,0,0.2)' }
+
   return (
-    <div className="space-y-4 pb-8 max-w-4xl mx-auto">
+    <div style={{ padding: 24, paddingBottom: 32, background: D.bg, minHeight: '100vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 960, margin: '0 auto' }}>
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => navigate(-1)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ArrowLeft className="h-5 w-5 text-gray-600" />
+            style={{ padding: 8, background: D.card, border: `1px solid ${D.border}`, borderRadius: 10, cursor: 'pointer', color: D.text }}>
+            <ArrowLeft size={20} />
           </button>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Seguimiento del pedido</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: D.text, margin: 0 }}>Seguimiento del pedido</h2>
             {lastUpdate && (
-              <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                <RefreshCw className="h-3 w-3" />
+              <p style={{ fontSize: 11, color: D.muted, display: 'flex', alignItems: 'center', gap: 4, margin: '2px 0 0' }}>
+                <RefreshCw size={12} />
                 Actualizado {lastUpdate.toLocaleTimeString('es-BO')}
               </p>
             )}
           </div>
         </div>
         {!isCancelado && !isEntregado && (
-          <div className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
-            <span className={`w-2 h-2 rounded-full ${socketVivo ? 'bg-green-500' : 'bg-blue-400'} animate-pulse`} />
-            <span className={`text-xs font-bold ${socketVivo ? 'text-green-600' : 'text-blue-500'}`}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: D.card, border: `1px solid ${D.border}`, borderRadius: 999, padding: '6px 12px' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: socketVivo ? '#22C55E' : '#fbbf24', animation: 'pulse 2s infinite' }} />
+            <span style={{ fontSize: 11, fontWeight: 700, color: socketVivo ? '#4ade80' : '#fbbf24' }}>
               {socketVivo ? 'En vivo' : 'Actualizando…'}
             </span>
           </div>
@@ -390,29 +387,29 @@ const TrackingPedidoWeb = () => {
       {/* ── Banner "En camino" ── */}
       {isEnCamino && (
         <button onClick={scrollAlMapa}
-          className="w-full flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all">
-          <div className="w-11 h-11 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
-            <Bike className="h-6 w-6 text-white" />
+          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 16, borderRadius: 14, background: `linear-gradient(135deg, ${D.primary}, #16a34a)`, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(34,197,94,0.3)' }}>
+          <div style={{ width: 44, height: 44, background: 'rgba(255,255,255,0.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'pulse 2s infinite' }}>
+            <Bike size={24} color="#fff" />
           </div>
-          <div className="flex-1 text-left">
-            <p className="text-white font-bold text-sm">¡Tu conductor está en camino!</p>
-            <p className="text-blue-100 text-xs mt-0.5">Toca para ver la ruta en tiempo real →</p>
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: 0 }}>¡Tu conductor está en camino!</p>
+            <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11, marginTop: 2 }}>Toca para ver la ruta en tiempo real →</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-white/70" />
+          <ChevronRight size={20} color="rgba(255,255,255,0.7)" />
         </button>
       )}
 
       {/* ── Código de retiro (prominente) ── */}
       {pedido.codigo_retiro && (
-        <div className="bg-white rounded-xl border-2 border-gray-200 p-5 shadow-sm flex flex-col items-center gap-2">
-          <div className="flex items-center gap-1.5 text-sm text-gray-500">
-            <QrCode className="h-4 w-4 text-blue-600" />
+        <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, borderColor: `${D.primary}50`, borderWidth: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: D.muted }}>
+            <QrCode size={16} style={{ color: D.primary }} />
             <span>Código de tu pedido</span>
           </div>
-          <p className="text-3xl font-bold text-blue-600 tracking-[0.4em]">
+          <p style={{ fontSize: 30, fontWeight: 800, color: D.primary, letterSpacing: '0.4em', margin: 0, textShadow: `0 0 24px ${D.primary}60` }}>
             {pedido.codigo_retiro}
           </p>
-          <p className="text-xs text-gray-500 text-center max-w-md">
+          <p style={{ fontSize: 11, color: D.muted, textAlign: 'center', maxWidth: 400, margin: 0 }}>
             El productor usa este código para entregar al conductor
           </p>
         </div>
@@ -420,24 +417,24 @@ const TrackingPedidoWeb = () => {
 
       {/* ── Estado actual (card grande) ── */}
       {isCancelado ? (
-        <div className="bg-red-50 border-2 border-red-300 rounded-xl p-6 text-center space-y-2">
-          <AlertTriangle className="h-10 w-10 text-red-500 mx-auto" />
-          <p className="text-red-700 font-bold text-xl">Pedido cancelado</p>
+        <div style={{ background: `${D.red}12`, border: `2px solid ${D.red}50`, borderRadius: 14, padding: 24, textAlign: 'center' }}>
+          <AlertTriangle size={40} style={{ color: D.red, margin: '0 auto 8px', display: 'block' }} />
+          <p style={{ color: D.red, fontWeight: 700, fontSize: 20, margin: 0 }}>Pedido cancelado</p>
         </div>
       ) : (
-        <div className={`${colorClasses.bg} border-2 ${colorClasses.border} rounded-xl p-6 text-center space-y-2`}>
-          <estadoActual.icon className={`h-10 w-10 ${colorClasses.icon} mx-auto ${isEnCamino ? 'animate-pulse' : ''}`} />
-          <p className={`${colorClasses.text} font-bold text-xl`}>{estadoActual.label}</p>
+        <div style={{ background: colorClasses.bg, border: `2px solid ${colorClasses.border}`, borderRadius: 14, padding: 24, textAlign: 'center' }}>
+          <estadoActual.icon size={40} style={{ color: colorClasses.icon, margin: '0 auto 8px', display: 'block', animation: isEnCamino ? 'pulse 2s infinite' : 'none' }} />
+          <p style={{ color: colorClasses.text, fontWeight: 700, fontSize: 20, margin: 0 }}>{estadoActual.label}</p>
           {pedido.fecha_recogida && estadoIdx >= ESTADO_IDX['en_camino'] && (
-            <p className="text-xs text-gray-500 flex items-center justify-center gap-1">
-              <Clock className="h-3 w-3" />
+            <p style={{ fontSize: 11, color: D.muted, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 8 }}>
+              <Clock size={12} />
               Recogido: {new Date(pedido.fecha_recogida).toLocaleString('es-BO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
           {tieneMapa && ['confirmado','preparando','listo_para_recoger','en_camino'].includes(pedido.estado) && (
             <button onClick={scrollAlMapa}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm font-medium transition-colors">
-              <MapIcon className="h-4 w-4" />
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', marginTop: 12, background: `${D.primary}20`, color: D.primary, border: `1px solid ${D.primary}40`, borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              <MapIcon size={16} />
               {isEnCamino ? 'Ver conductor en el mapa →' : 'Ver ruta planificada →'}
             </button>
           )}
@@ -446,31 +443,31 @@ const TrackingPedidoWeb = () => {
 
       {/* ── Timeline horizontal ── */}
       {!isCancelado && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Progreso del pedido</h3>
-          <TimelineEstados estadoActual={pedido.estado} />
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: 13, fontWeight: 600, color: D.muted, marginBottom: 16 }}>Progreso del pedido</h3>
+          <TimelineEstados estadoActual={pedido.estado} D={D} />
         </div>
       )}
 
       {/* ── Mapa ── */}
       {mostrarMapa && (
-        <div ref={mapaRef} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Navigation className="h-5 w-5 text-blue-600" />
+        <div ref={mapaRef} style={cardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h3 style={{ fontWeight: 700, color: D.text, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+              <Navigation size={20} style={{ color: D.primary }} />
               Seguimiento en tiempo real
             </h3>
             {isEnCamino && (
-              <span className="flex items-center gap-1.5 bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(34,197,94,0.15)', color: '#4ade80', fontSize: 11, padding: '4px 10px', borderRadius: 999, fontWeight: 600, border: '1px solid rgba(34,197,94,0.3)' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'pulse 2s infinite' }} />
                 {socketVivo ? 'En vivo' : 'Polling'}
               </span>
             )}
           </div>
           <MapaTracking pedido={pedido} />
           {isEnCamino && (
-            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
-              <RefreshCw className="h-3 w-3 animate-spin" style={{ animationDuration: '3s' }} />
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 11, color: D.muted }}>
+              <RefreshCw size={12} style={{ animation: 'spin 3s linear infinite' }} />
               Ubicación en tiempo real
             </div>
           )}
@@ -479,24 +476,24 @@ const TrackingPedidoWeb = () => {
 
       {/* ── Conductor card ── */}
       {(pedido.repartidor_nombre || isEnCamino) && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Tu conductor</h3>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Bike className="h-6 w-6 text-blue-600" />
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: 13, fontWeight: 600, color: D.muted, marginBottom: 12 }}>Tu conductor</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 48, height: 48, background: `${D.primary}20`, border: `1px solid ${D.primary}40`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Bike size={24} style={{ color: D.primary }} />
             </div>
-            <div className="flex-1">
-              <p className="font-semibold text-gray-900 text-base">
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontWeight: 600, color: D.text, fontSize: 15, margin: 0 }}>
                 {pedido.repartidor_nombre || 'Conductor asignado'}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p style={{ fontSize: 11, color: D.muted, marginTop: 2 }}>
                 Pedido #{pedido.id}{pedido.codigo_retiro ? ` · ${pedido.codigo_retiro}` : ''}
               </p>
             </div>
             {pedido.repartidor_telefono && (
               <a href={`tel:${pedido.repartidor_telefono}`}
-                className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                <Phone className="h-4 w-4" />
+                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: `linear-gradient(135deg, ${D.primary}, #16a34a)`, color: '#fff', borderRadius: 10, fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: `0 4px 12px ${D.primary}40` }}>
+                <Phone size={16} />
                 Llamar
               </a>
             )}
@@ -505,48 +502,49 @@ const TrackingPedidoWeb = () => {
       )}
 
       {/* ── Detalles del pedido ── */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Package className="h-5 w-5 text-gray-400" />
+      <div style={cardStyle}>
+        <h3 style={{ fontWeight: 700, color: D.text, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Package size={20} style={{ color: D.muted }} />
           Detalles del pedido
         </h3>
-        <div className="space-y-1 text-sm">
-          <Detalle label="Total" valor={`Bs. ${parseFloat(pedido.total || 0).toFixed(2)}`} bold />
+        <div style={{ fontSize: 13 }}>
+          <Detalle label="Total" valor={`Bs. ${parseFloat(pedido.total || 0).toFixed(2)}`} bold D={D} />
           {pedido.consumidor_direccion && (
-            <Detalle label="Dirección" valor={pedido.consumidor_direccion} />
+            <Detalle label="Dirección" valor={pedido.consumidor_direccion} D={D} />
           )}
           {pedido.fecha_pedido && (
-            <Detalle label="Fecha del pedido" valor={new Date(pedido.fecha_pedido).toLocaleDateString('es-BO', { day: 'numeric', month: 'long', year: 'numeric' })} />
+            <Detalle label="Fecha del pedido" valor={new Date(pedido.fecha_pedido).toLocaleDateString('es-BO', { day: 'numeric', month: 'long', year: 'numeric' })} D={D} />
           )}
           {pedido.fecha_entrega_real && (
-            <Detalle label="Entregado" valor={new Date(pedido.fecha_entrega_real).toLocaleString('es-BO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} valorClass="text-green-600 font-medium" />
+            <Detalle label="Entregado" valor={new Date(pedido.fecha_entrega_real).toLocaleString('es-BO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} valorColor="#22C55E" D={D} />
           )}
         </div>
       </div>
 
       {/* ── Banner entregado ── */}
       {isEntregado && (
-        <div className="bg-green-50 rounded-xl border border-green-200 p-5 text-center">
-          <CheckCircle className="h-10 w-10 text-green-500 mx-auto mb-2" />
-          <p className="font-bold text-green-800 text-lg">¡Pedido entregado!</p>
-          <p className="text-green-600 text-sm mt-1">Gracias por confiar en NaturaPiscis</p>
+        <div style={{ background: 'rgba(34,197,94,0.12)', borderRadius: 14, border: '1px solid rgba(34,197,94,0.3)', padding: 20, textAlign: 'center' }}>
+          <CheckCircle size={40} style={{ color: '#22C55E', margin: '0 auto 8px', display: 'block' }} />
+          <p style={{ fontWeight: 700, color: '#4ade80', fontSize: 17, margin: 0 }}>¡Pedido entregado!</p>
+          <p style={{ color: '#86efac', fontSize: 13, marginTop: 4 }}>Gracias por confiar en NaturaPiscis</p>
         </div>
       )}
 
       {!isCancelado && !isEntregado && (
-        <p className="text-center text-xs text-gray-400 flex items-center justify-center gap-1">
-          <RefreshCw className="h-3 w-3" />
+        <p style={{ textAlign: 'center', fontSize: 11, color: D.muted, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <RefreshCw size={12} />
           Se actualiza automáticamente cada 15 segundos
         </p>
       )}
+      </div>
     </div>
   )
 }
 
-const Detalle = ({ label, valor, bold = false, valorClass = '' }) => (
-  <div className="flex justify-between py-2 border-b border-gray-100 last:border-0">
-    <span className="text-gray-500">{label}</span>
-    <span className={`text-right max-w-xs ${bold ? 'font-bold text-gray-900' : 'text-gray-700'} ${valorClass}`}>
+const Detalle = ({ label, valor, bold = false, valorColor, D }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${D.border}` }}>
+    <span style={{ color: D.muted }}>{label}</span>
+    <span style={{ textAlign: 'right', maxWidth: 320, color: valorColor || (bold ? D.text : D.text), fontWeight: bold ? 700 : 500 }}>
       {valor}
     </span>
   </div>

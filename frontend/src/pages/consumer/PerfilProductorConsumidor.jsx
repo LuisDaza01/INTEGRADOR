@@ -661,13 +661,13 @@ const PerfilProductorConsumidor = () => {
             ? 'linear-gradient(180deg, rgba(6,13,31,0.55) 0%, rgba(6,13,31,0.80) 60%, rgba(6,13,31,0.98) 100%)'
             : isDark
               ? 'linear-gradient(135deg, #071228 0%, #0a1a38 40%, #061528 70%, #04101e 100%)'
-              : 'linear-gradient(135deg, #0369a1 0%, #0c4a6e 40%, #065f46 70%, #0369a1 100%)',
+              : 'linear-gradient(135deg, #15803d 0%, #0c4a6e 40%, #065f46 70%, #15803d 100%)',
         }} />
 
         {/* Ambient glow orbs */}
         <div className="absolute pointer-events-none"
           style={{ top: -60, right: '10%', width: 340, height: 340, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 65%)', filter: 'blur(32px)' }} />
+            background: 'radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 65%)', filter: 'blur(32px)' }} />
         <div className="absolute pointer-events-none"
           style={{ bottom: -40, left: '5%', width: 260, height: 260, borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(20,184,166,0.14) 0%, transparent 65%)', filter: 'blur(28px)' }} />
@@ -677,7 +677,7 @@ const PerfilProductorConsumidor = () => {
 
         {/* Top shimmer line */}
         <div className="absolute top-0 inset-x-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent 5%, rgba(56,189,248,0.7) 40%, rgba(20,184,166,0.5) 60%, transparent 95%)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent 5%, rgba(34,197,94,0.7) 40%, rgba(20,184,166,0.5) 60%, transparent 95%)' }} />
 
         {/* Bottom fade into page */}
         <div className="absolute bottom-0 inset-x-0 h-20"
@@ -716,8 +716,8 @@ const PerfilProductorConsumidor = () => {
             <div className="relative flex-shrink-0">
               <div className="w-28 h-28 rounded-2xl overflow-hidden"
                 style={{
-                  border: '2px solid rgba(56,189,248,0.5)',
-                  boxShadow: '0 0 0 4px rgba(56,189,248,0.12), 0 8px 32px rgba(0,0,0,0.5)',
+                  border: '2px solid rgba(34,197,94,0.5)',
+                  boxShadow: '0 0 0 4px rgba(34,197,94,0.12), 0 8px 32px rgba(0,0,0,0.5)',
                 }}>
                 {producer.foto_perfil ? (
                   <img src={producer.foto_perfil} alt={producer.nombre} className="w-full h-full object-cover"
@@ -725,7 +725,7 @@ const PerfilProductorConsumidor = () => {
                 ) : null}
                 <div className="w-full h-full items-center justify-center text-3xl font-bold"
                   style={{ display: producer.foto_perfil ? 'none' : 'flex',
-                    background: 'linear-gradient(135deg, rgba(56,189,248,0.2), rgba(20,184,166,0.15))', color: '#38bdf8' }}>
+                    background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(20,184,166,0.15))', color: '#22C55E' }}>
                   {producer.nombre?.charAt(0)?.toUpperCase() || 'P'}
                 </div>
               </div>
@@ -753,7 +753,7 @@ const PerfilProductorConsumidor = () => {
                 {producer.nombre}
               </h1>
               {producer.nombre_empresa && producer.nombre_empresa !== 'no hay' && (
-                <p className="text-base mb-3" style={{ color: '#38bdf8' }}>{producer.nombre_empresa}</p>
+                <p className="text-base mb-3" style={{ color: '#22C55E' }}>{producer.nombre_empresa}</p>
               )}
 
               {/* Info chips */}
@@ -761,7 +761,7 @@ const PerfilProductorConsumidor = () => {
                 {producer.ciudad && (
                   <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
                     style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#cbd5e1' }}>
-                    <MapPin size={11} style={{ color: '#38bdf8' }} />
+                    <MapPin size={11} style={{ color: '#22C55E' }} />
                     {producer.ciudad}
                   </span>
                 )}
@@ -790,7 +790,7 @@ const PerfilProductorConsumidor = () => {
                   <span className="text-xs" style={{ color: 'rgba(251,191,36,0.7)' }}>({producer.total_reviews} reseñas)</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm" style={{ color: '#64748b' }}>
-                  <Package size={14} style={{ color: '#38bdf8' }} />
+                  <Package size={14} style={{ color: '#22C55E' }} />
                   <span>{producer.productos_vendidos?.toLocaleString() || 0} vendidos</span>
                 </div>
               </div>
@@ -802,18 +802,18 @@ const PerfilProductorConsumidor = () => {
                 style={{
                   background: 'rgba(0,0,0,0.35)',
                   backdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(56,189,248,0.3)',
+                  border: '1px solid rgba(34,197,94,0.3)',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                   minWidth: 140,
                 }}
                 initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
                 <div className="text-center">
-                  <ShoppingCart size={22} style={{ color: '#38bdf8', margin: '0 auto 6px' }} />
+                  <ShoppingCart size={22} style={{ color: '#22C55E', margin: '0 auto 6px' }} />
                   <div className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{getTotalItems()} productos</div>
                   <div className="font-bold text-white mb-2">Bs{getTotalPrice().toFixed(2)}</div>
                   <button onClick={goToCart}
                     className="w-full px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                    style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', color: '#fff' }}>
+                    style={{ background: 'linear-gradient(135deg, #16a34a, #14b8a6)', color: '#fff' }}>
                     Ver Carrito
                   </button>
                 </div>
@@ -866,7 +866,7 @@ const PerfilProductorConsumidor = () => {
                   <div className="flex flex-wrap gap-2">
                     {producer.especialidad.map((esp, i) => (
                       <span key={i} className="px-3 py-1 rounded-full text-xs font-medium"
-                        style={{ background: 'rgba(56,189,248,0.1)', color: D.primary, border: '1px solid rgba(56,189,248,0.25)' }}>
+                        style={{ background: 'rgba(34,197,94,0.1)', color: D.primary, border: '1px solid rgba(34,197,94,0.25)' }}>
                         {esp}
                       </span>
                     ))}
@@ -905,7 +905,7 @@ const PerfilProductorConsumidor = () => {
                       <button key={cat.id} onClick={() => setGaleriaCategoria(cat.id)}
                         className="flex items-center gap-2 px-3 py-2 text-xs font-semibold whitespace-nowrap rounded-lg transition-all"
                         style={galeriaCategoria === cat.id
-                          ? { background: 'rgba(56,189,248,0.15)', color: D.primary, border: '1px solid rgba(56,189,248,0.3)' }
+                          ? { background: 'rgba(34,197,94,0.15)', color: D.primary, border: '1px solid rgba(34,197,94,0.3)' }
                           : { color: D.muted, border: '1px solid transparent' }}>
                         <span>{cat.icono}</span><span>{cat.label}</span>
                       </button>
@@ -921,7 +921,7 @@ const PerfilProductorConsumidor = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {itemsActivos.map((item, idx) => (
                         <div key={idx} className="relative rounded-xl overflow-hidden aspect-square group"
-                          style={{ background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.1)' }}>
+                          style={{ background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.1)' }}>
                           {item.tipo === "video" ? (
                             <video src={item.url} className="w-full h-full object-cover" muted playsInline
                               onMouseEnter={e => e.target.play()}
@@ -978,8 +978,8 @@ const PerfilProductorConsumidor = () => {
               {producer.productos.length === 0 ? (
                 <div className="text-center py-12 flex flex-col items-center gap-3">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.15)' }}>
-                    <Package size={28} style={{ color: 'rgba(56,189,248,0.4)' }} />
+                    style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)' }}>
+                    <Package size={28} style={{ color: 'rgba(34,197,94,0.4)' }} />
                   </div>
                   <p style={{ color: D.muted }}>Este productor aún no ha agregado productos.</p>
                 </div>
@@ -995,21 +995,21 @@ const PerfilProductorConsumidor = () => {
                         return (
                           <motion.div key={producto.id}
                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ y: -5, boxShadow: '0 14px 36px rgba(56,189,248,0.14)' }}
+                            whileHover={{ y: -5, boxShadow: '0 14px 36px rgba(34,197,94,0.14)' }}
                             onClick={() => setDetailProduct(producto)}
                             style={{
                               borderRadius: 14, overflow: 'hidden', cursor: 'pointer',
                               background: isDark ? 'rgba(255,255,255,0.03)' : D.surface,
-                              border: '1px solid rgba(56,189,248,0.1)',
+                              border: '1px solid rgba(34,197,94,0.1)',
                               opacity: agotado ? 0.75 : 1,
                               transition: 'border-color 0.2s',
                             }}>
                             {/* imagen cuadrada */}
-                            <div style={{ aspectRatio: '1/1', position: 'relative', overflow: 'hidden', background: 'rgba(56,189,248,0.04)' }}>
+                            <div style={{ aspectRatio: '1/1', position: 'relative', overflow: 'hidden', background: 'rgba(34,197,94,0.04)' }}>
                               {(producto.foto_principal || producto.imagen)
                                 ? <img src={producto.foto_principal || producto.imagen} alt={producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Package size={32} style={{ color: 'rgba(56,189,248,0.22)' }} />
+                                    <Package size={32} style={{ color: 'rgba(34,197,94,0.22)' }} />
                                   </div>
                               }
                               {agotado && (
@@ -1039,9 +1039,9 @@ const PerfilProductorConsumidor = () => {
                                   onClick={e => { e.stopPropagation(); !agotado && !syncingCart && handleAddToCart(producto) }}
                                   disabled={agotado || syncingCart}
                                   style={{ width: 30, height: 30, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                    background: agotado ? 'rgba(255,255,255,0.06)' : `linear-gradient(135deg,${D.primary},#0369a1)`,
+                                    background: agotado ? 'rgba(255,255,255,0.06)' : `linear-gradient(135deg,${D.primary},#15803d)`,
                                     border: 'none', cursor: agotado ? 'default' : 'pointer',
-                                    boxShadow: agotado ? 'none' : '0 0 10px rgba(56,189,248,0.25)' }}>
+                                    boxShadow: agotado ? 'none' : '0 0 10px rgba(34,197,94,0.25)' }}>
                                   <ShoppingCart size={13} color={agotado ? D.dim : '#fff'} />
                                 </button>
                               </div>
@@ -1069,11 +1069,11 @@ const PerfilProductorConsumidor = () => {
                             onClick={e => e.stopPropagation()}
                             style={{ background: isDark ? '#0a1220' : D.card, border: `1px solid ${D.border}`, borderRadius: 24, overflow: 'hidden', maxWidth: 520, width: '100%', boxShadow: '0 32px 80px rgba(0,0,0,0.6)' }}>
                             {/* imagen */}
-                            <div style={{ position: 'relative', height: 280, background: 'rgba(56,189,248,0.04)' }}>
+                            <div style={{ position: 'relative', height: 280, background: 'rgba(34,197,94,0.04)' }}>
                               {(p.foto_principal || p.imagen)
                                 ? <img src={p.foto_principal || p.imagen} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Package size={64} style={{ color: 'rgba(56,189,248,0.18)' }} />
+                                    <Package size={64} style={{ color: 'rgba(34,197,94,0.18)' }} />
                                   </div>
                               }
                               <button onClick={() => setDetailProduct(null)}
@@ -1124,7 +1124,7 @@ const PerfilProductorConsumidor = () => {
                                     {/* agregar */}
                                     <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                                       onClick={() => handleAddToCart(p)} disabled={syncingCart}
-                                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 12, background: `linear-gradient(135deg,${D.primary},#0369a1)`, border: 'none', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: syncingCart ? 0.7 : 1, boxShadow: '0 0 20px rgba(56,189,248,0.28)' }}>
+                                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 12, background: `linear-gradient(135deg,${D.primary},#15803d)`, border: 'none', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: syncingCart ? 0.7 : 1, boxShadow: '0 0 20px rgba(34,197,94,0.28)' }}>
                                       <ShoppingCart size={14} /> Agregar
                                     </motion.button>
                                     {/* reservar */}
@@ -1159,7 +1159,7 @@ const PerfilProductorConsumidor = () => {
                       <button key={p.id} onClick={() => setSelectedProductoReview(p.id)}
                         className="px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all"
                         style={selectedProductoReview === p.id
-                          ? { background: 'rgba(56,189,248,0.15)', color: D.primary, border: '1px solid rgba(56,189,248,0.3)' }
+                          ? { background: 'rgba(34,197,94,0.15)', color: D.primary, border: '1px solid rgba(34,197,94,0.3)' }
                           : { color: D.muted, border: `1px solid ${D.border}` }}>
                         {p.nombre}
                       </button>
@@ -1256,7 +1256,7 @@ const PerfilProductorConsumidor = () => {
                         />
                         <button onClick={() => submitOpinion(selectedProductoReview)}
                           disabled={enviandoOpinion || !opinionForm.calificacion}
-                          style={{ padding: '8px 20px', borderRadius: 10, background: opinionForm.calificacion ? `linear-gradient(135deg,${D.primary},#0369a1)` : D.dim, color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: opinionForm.calificacion ? 'pointer' : 'not-allowed', display: 'inline-flex', alignItems: 'center', gap: 8, opacity: enviandoOpinion ? 0.7 : 1 }}>
+                          style={{ padding: '8px 20px', borderRadius: 10, background: opinionForm.calificacion ? `linear-gradient(135deg,${D.primary},#15803d)` : D.dim, color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: opinionForm.calificacion ? 'pointer' : 'not-allowed', display: 'inline-flex', alignItems: 'center', gap: 8, opacity: enviandoOpinion ? 0.7 : 1 }}>
                           {enviandoOpinion
                             ? <><div style={{ width: 14, height: 14, border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> Publicando…</>
                             : 'Publicar reseña'}
@@ -1509,7 +1509,7 @@ const PerfilProductorConsumidor = () => {
             {getTotalItems() > 0 && (
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                 className="rounded-2xl p-5"
-                style={{ background: 'linear-gradient(135deg,rgba(56,189,248,0.08),rgba(20,184,166,0.05))', border: '1px solid rgba(56,189,248,0.2)' }}>
+                style={{ background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(20,184,166,0.05))', border: '1px solid rgba(34,197,94,0.2)' }}>
                 <h3 className="font-bold mb-4 text-sm flex items-center gap-2" style={{ color: D.text }}>
                   <ShoppingCart size={16} style={{ color: D.primary }} />Tu Carrito
                 </h3>
@@ -1519,14 +1519,14 @@ const PerfilProductorConsumidor = () => {
                     <span className="font-semibold" style={{ color: D.text }}>{getTotalItems()}</span>
                   </div>
                   <div className="flex justify-between pt-2 font-bold text-base"
-                    style={{ borderTop: '1px solid rgba(56,189,248,0.1)', color: D.text }}>
+                    style={{ borderTop: '1px solid rgba(34,197,94,0.1)', color: D.text }}>
                     <span>Total:</span>
                     <span style={{ color: D.primary }}>Bs{getTotalPrice().toFixed(2)}</span>
                   </div>
                 </div>
                 <button onClick={goToCart}
                   className="w-full py-3 rounded-xl font-bold text-sm"
-                  style={{ background: 'linear-gradient(135deg,#0ea5e9,#0369a1)', color: '#fff', boxShadow: '0 0 16px rgba(56,189,248,0.25)' }}>
+                  style={{ background: 'linear-gradient(135deg,#16a34a,#15803d)', color: '#fff', boxShadow: '0 0 16px rgba(34,197,94,0.25)' }}>
                   Ir al carrito
                 </button>
               </motion.div>
@@ -1548,7 +1548,7 @@ const PerfilProductorConsumidor = () => {
             onClick={e => e.stopPropagation()}>
 
             {/* Franja top */}
-            <div style={{ height: 3, background: 'linear-gradient(90deg,#22c55e,#38bdf8,#14b8a6)' }} />
+            <div style={{ height: 3, background: 'linear-gradient(90deg,#22C55E,#16a34a,#15803d)' }} />
 
             <div style={{ padding: 24 }}>
               {/* Header */}

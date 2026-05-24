@@ -137,7 +137,7 @@ const PerfilConsumidor = () => {
   const title = { fontSize: 15, fontWeight: 700, color: D.text, margin: '0 0 16px' }
   const sub   = { fontSize: 13, fontWeight: 600, color: D.text, margin: '20px 0 10px' }
   const lbl   = { display: 'block', fontSize: 12, fontWeight: 600, color: D.muted, marginBottom: 5 }
-  const inp   = { width: '100%', padding: '9px 12px', background: isDark ? 'rgba(56,189,248,0.05)' : D.bg, border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 14, outline: 'none', boxSizing: 'border-box' }
+  const inp   = { width: '100%', padding: '9px 12px', background: isDark ? 'rgba(34,197,94,0.05)' : D.bg, border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 14, outline: 'none', boxSizing: 'border-box' }
   const primBtn = { display:'inline-flex', alignItems:'center', gap:6, padding:'9px 18px', borderRadius:10, background:`linear-gradient(135deg,${D.primary},${D.teal})`, color:'#fff', border:'none', cursor:'pointer', fontWeight:700, fontSize:13 }
   const addBtn  = { display:'inline-flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, background:`linear-gradient(135deg,${D.primary},${D.teal})`, color:'#fff', border:'none', cursor:'pointer', fontWeight:600, fontSize:12 }
   const iconBtn = { padding:6, background:'none', border:'none', cursor:'pointer', color:D.muted, display:'flex', alignItems:'center' }
@@ -196,7 +196,7 @@ const PerfilConsumidor = () => {
               <div>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
                   <h4 style={{ fontWeight:700, color:D.text, margin:0, fontSize:14 }}>{dir.nombre}</h4>
-                  {dir.predeterminada && <span style={{ padding:'2px 8px', background:`rgba(56,189,248,0.15)`, color:D.primary, fontSize:11, borderRadius:20, fontWeight:600 }}>Predeterminada</span>}
+                  {dir.predeterminada && <span style={{ padding:'2px 8px', background:`rgba(34,197,94,0.15)`, color:D.primary, fontSize:11, borderRadius:20, fontWeight:600 }}>Predeterminada</span>}
                 </div>
                 <p style={{ color:D.muted, fontSize:13, margin:'0 0 2px' }}>{dir.direccion}</p>
                 <p style={{ color:D.muted, fontSize:13, margin:'0 0 2px' }}>{dir.ciudad}, {dir.codigoPostal}</p>
@@ -233,7 +233,7 @@ const PerfilConsumidor = () => {
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
                   <CreditCard size={16} style={{ color:D.muted }}/>
                   <h4 style={{ fontWeight:700, color:D.text, margin:0, fontSize:14 }}>{m.tipo}</h4>
-                  {m.predeterminado && <span style={{ padding:'2px 8px', background:`rgba(56,189,248,0.15)`, color:D.primary, fontSize:11, borderRadius:20, fontWeight:600 }}>Predeterminado</span>}
+                  {m.predeterminado && <span style={{ padding:'2px 8px', background:`rgba(34,197,94,0.15)`, color:D.primary, fontSize:11, borderRadius:20, fontWeight:600 }}>Predeterminado</span>}
                 </div>
                 {m.tipo === 'Tarjeta de crédito'
                   ? <><p style={{ color:D.muted, fontSize:13, margin:'0 0 2px' }}>{m.numero}</p><p style={{ color:D.muted, fontSize:13, margin:0 }}>{m.titular} • Expira: {m.expiracion}</p></>
@@ -252,7 +252,7 @@ const PerfilConsumidor = () => {
           </motion.div>
         ))}
       </div>
-      <div style={{ marginTop:16, padding:14, background:`rgba(56,189,248,0.06)`, borderRadius:12, border:`1px solid rgba(56,189,248,0.2)`, display:'flex', alignItems:'flex-start', gap:10 }}>
+      <div style={{ marginTop:16, padding:14, background:`rgba(34,197,94,0.08)`, borderRadius:12, border:`1px solid rgba(34,197,94,0.25)`, display:'flex', alignItems:'flex-start', gap:10 }}>
         <Shield size={17} style={{ color:D.primary, flexShrink:0, marginTop:1 }}/>
         <p style={{ color:D.muted, fontSize:13, margin:0 }}>Tu información de pago está protegida y encriptada.</p>
       </div>
@@ -376,7 +376,7 @@ const PerfilConsumidor = () => {
             { icon:ShoppingBag, text:"Realizaste un pedido",                time:"15/04/2024, 11:30 AM", id:"PED-2024-001" },
           ].map((a, i) => (
             <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:12, padding:'12px 14px', background: isDark ? 'rgba(255,255,255,0.03)' : D.bg, borderRadius:10, border:`1px solid ${D.border}` }}>
-              <div style={{ padding:8, borderRadius:'50%', background:`rgba(56,189,248,0.12)`, flexShrink:0 }}>
+              <div style={{ padding:8, borderRadius:'50%', background:`rgba(34,197,94,0.12)`, flexShrink:0 }}>
                 <a.icon size={15} style={{ color:D.primary }}/>
               </div>
               <div style={{ flex:1 }}>
@@ -490,7 +490,7 @@ const PerfilConsumidor = () => {
               <p style={{ color:D.muted, fontSize:12, margin:'0 0 10px', wordBreak:'break-all' }}>{formData.email}</p>
 
               {formData.fechaRegistro && (
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, padding:'6px 10px', background: isDark ? 'rgba(56,189,248,0.08)' : `rgba(56,189,248,0.08)`, borderRadius:8 }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, padding:'6px 10px', background: isDark ? 'rgba(34,197,94,0.08)' : `rgba(34,197,94,0.08)`, borderRadius:8 }}>
                   <Calendar size={12} style={{ color:D.primary }}/>
                   <span style={{ fontSize:11, color:D.muted }}>Desde {formData.fechaRegistro}</span>
                 </div>
@@ -504,7 +504,7 @@ const PerfilConsumidor = () => {
                   style={{
                     display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:10,
                     border:'none', cursor:'pointer', fontWeight:600, fontSize:13, width:'100%', textAlign:'left',
-                    background: activeSection === id ? `rgba(56,189,248,0.12)` : 'transparent',
+                    background: activeSection === id ? `rgba(34,197,94,0.12)` : 'transparent',
                     color: activeSection === id ? D.primary : D.muted,
                     borderLeft:`3px solid ${activeSection === id ? D.primary : 'transparent'}`,
                     transition:'all 0.15s',

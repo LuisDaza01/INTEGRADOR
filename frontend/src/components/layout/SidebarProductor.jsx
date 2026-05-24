@@ -187,14 +187,14 @@ const SidebarProductor = () => {
             className="absolute -right-4 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all"
             style={{ background: D.surface, border: `1px solid ${D.border}`, boxShadow: `0 0 12px ${D.shimmer}` }}>
             <motion.div animate={{ rotate: expanded ? 0 : 180 }} transition={{ duration: 0.3 }}>
-              <ChevronLeft size={14} className="text-sky-400" />
+              <ChevronLeft size={14} className="text-green-400" />
             </motion.div>
           </button>
         )}
       </div>
 
       {/* Vertical gradient strip on left edge */}
-      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 2, background: 'linear-gradient(180deg, #38bdf8, #14b8a6, #a78bfa, #38bdf8)', opacity: 0.5, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 2, background: 'linear-gradient(180deg, #22C55E, #16a34a, #a78bfa, #22C55E)', opacity: 0.5, pointerEvents: 'none' }} />
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto flex flex-col">
@@ -214,7 +214,7 @@ const SidebarProductor = () => {
         <div className="flex items-center gap-3">
           <div className="relative flex-shrink-0">
             <div className="h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm"
-              style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', boxShadow: '0 0 12px rgba(14,165,233,0.4)', color: '#fff' }}>
+              style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 12px rgba(34,197,94,0.4)', color: '#fff' }}>
               {iniciales}
             </div>
             <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ border: `2px solid ${D.surface}` }} />
@@ -377,10 +377,10 @@ const SidebarProductor = () => {
                 }}>
                   <div style={{
                     width: 44, height: 44, borderRadius: '50%',
-                    background: 'linear-gradient(135deg,#0ea5e9,#14b8a6)',
+                    background: 'linear-gradient(135deg,#16a34a,#22C55E)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 16, fontWeight: 700, color: '#fff',
-                    boxShadow: '0 0 12px rgba(14,165,233,0.35)', flexShrink: 0,
+                    boxShadow: '0 0 12px rgba(34,197,94,0.35)', flexShrink: 0,
                   }}>
                     {iniciales}
                   </div>

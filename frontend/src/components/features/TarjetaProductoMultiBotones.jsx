@@ -66,8 +66,8 @@ const TarjetaProductoMultiBotones = ({ producto, onReservar, onVerDetalle, onTog
             {producto.imagen ? (
               <img src={producto.imagen} alt={producto.nombre} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-cyan-100">
-                <Package size={32} className="text-blue-400" />
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-emerald-100">
+                <Package size={32} className="text-green-400" />
               </div>
             )}
             <button onClick={handleToggleFavoriteLocal} className="absolute top-1 right-1 bg-white p-1 rounded-full">
@@ -79,7 +79,7 @@ const TarjetaProductoMultiBotones = ({ producto, onReservar, onVerDetalle, onTog
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-bold text-lg text-gray-900 truncate">{producto.nombre}</h3>
               <div className="text-right ml-2">
-                <p className="text-2xl font-bold text-blue-600">Bs {Number(producto.precio).toFixed(2)}</p>
+                <p className="text-2xl font-bold text-green-600">Bs {Number(producto.precio).toFixed(2)}</p>
                 <p className="text-xs text-gray-500">por {producto.unidad || "kg"}</p>
               </div>
             </div>
@@ -96,7 +96,7 @@ const TarjetaProductoMultiBotones = ({ producto, onReservar, onVerDetalle, onTog
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-500">Total:</p>
-                <p className="font-bold text-lg text-blue-600">Bs {precioTotal}</p>
+                <p className="font-bold text-lg text-green-600">Bs {precioTotal}</p>
               </div>
             </div>
 
@@ -113,7 +113,7 @@ const TarjetaProductoMultiBotones = ({ producto, onReservar, onVerDetalle, onTog
               <motion.button
                 onClick={handleAgregarAlCarrito}
                 disabled={agregandoCarrito}
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-1"
+                className="bg-green-600 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-1"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

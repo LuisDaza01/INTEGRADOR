@@ -79,7 +79,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
       case "pendiente":
         return "bg-yellow-100 text-yellow-800"
       case "confirmado":
-        return "bg-blue-100 text-blue-800"
+        return "bg-green-100 text-green-800"
       case "en preparación":
         return "bg-purple-100 text-purple-800"
       case "en camino":
@@ -152,14 +152,14 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
 
       {/* ✅ Indicador de carga */}
       {updating && (
-        <div className="bg-blue-50 border-b border-blue-200 p-2">
+        <div className="bg-green-50 border-b border-green-200 p-2">
           <div className="flex items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full mr-2"
+              className="h-4 w-4 border-2 border-green-600 border-t-transparent rounded-full mr-2"
             />
-            <span className="text-sm text-blue-700">Actualizando pedido...</span>
+            <span className="text-sm text-green-700">Actualizando pedido...</span>
           </div>
         </div>
       )}
@@ -169,8 +169,8 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Package className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                <Package className="h-5 w-5 text-green-600" />
               </div>
             </div>
             <div>
@@ -292,7 +292,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
                 {/* Fechas */}
                 <div className="bg-white p-3 rounded-lg border border-gray-200">
                   <div className="flex items-center mb-1">
-                    <Calendar className="h-4 w-4 text-blue-500 mr-2" />
+                    <Calendar className="h-4 w-4 text-green-500 mr-2" />
                     <h4 className="text-sm font-medium text-gray-700">Fechas</h4>
                   </div>
                   <div className="text-xs text-gray-600 space-y-1 mt-2">
@@ -310,7 +310,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
                 {/* Envío */}
                 <div className="bg-white p-3 rounded-lg border border-gray-200">
                   <div className="flex items-center mb-1">
-                    <Truck className="h-4 w-4 text-blue-500 mr-2" />
+                    <Truck className="h-4 w-4 text-green-500 mr-2" />
                     <h4 className="text-sm font-medium text-gray-700">Envío</h4>
                   </div>
                   <div className="text-xs text-gray-600 space-y-1 mt-2">
@@ -328,7 +328,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
                 {/* Pago */}
                 <div className="bg-white p-3 rounded-lg border border-gray-200">
                   <div className="flex items-center mb-1">
-                    <DollarSign className="h-4 w-4 text-blue-500 mr-2" />
+                    <DollarSign className="h-4 w-4 text-green-500 mr-2" />
                     <h4 className="text-sm font-medium text-gray-700">Pago</h4>
                   </div>
                   <div className="text-xs text-gray-600 space-y-1 mt-2">
@@ -365,7 +365,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleConfirmar(pedido.id, "confirmado")}
                       disabled={updating}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                      className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50"
                     >
                       <CheckCircle className="h-4 w-4 inline mr-1" />
                       Aceptar pedido
@@ -379,7 +379,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleConfirmar(pedido.id, "en preparación")}
                     disabled={updating}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50"
                   >
                     <Package className="h-4 w-4 inline mr-1" />
                     Marcar en preparación
@@ -392,7 +392,7 @@ const PedidoItem = ({ pedido, onConfirmar }) => {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleConfirmar(pedido.id, "en camino")}
                     disabled={updating}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50"
                   >
                     <Truck className="h-4 w-4 inline mr-1" />
                     Marcar en camino

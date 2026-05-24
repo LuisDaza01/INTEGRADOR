@@ -95,10 +95,10 @@ export default function FloatingAssistant() {
   const fab = {
     position: 'fixed', bottom: 24, right: 24,
     width: 52, height: 52, borderRadius: '50%',
-    background: 'linear-gradient(135deg,#0ea5e9,#14b8a6)',
+    background: 'linear-gradient(135deg,#16a34a,#22C55E)',
     border: 'none', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    boxShadow: '0 4px 20px rgba(14,165,233,0.45)',
+    boxShadow: '0 4px 20px rgba(34,197,94,0.45)',
     zIndex: 9999, transition: 'transform 0.15s',
   };
 
@@ -107,8 +107,8 @@ export default function FloatingAssistant() {
       <style>{`
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
-        .np-bubble-user { background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;border-radius:14px 14px 4px 14px; }
-        .np-bubble-bot  { background:${isDark?'rgba(14,165,233,0.1)':'#EFF6FF'};color:${D.text};border-radius:14px 14px 14px 4px; }
+        .np-bubble-user { background:linear-gradient(135deg,#16a34a,#22C55E);color:#fff;border-radius:14px 14px 4px 14px; }
+        .np-bubble-bot  { background:${isDark?'rgba(34,197,94,0.1)':'#F0FDF4'};color:${D.text};border-radius:14px 14px 14px 4px; }
         .np-chip:hover  { opacity:0.8; }
         .np-fab:hover   { transform:scale(1.08)!important; }
       `}</style>
@@ -116,7 +116,7 @@ export default function FloatingAssistant() {
       {abierto && (
         <div style={panel}>
           {/* Header */}
-          <div style={{background:'linear-gradient(135deg,#0ea5e9,#14b8a6)',borderRadius:'20px 20px 0 0',padding:'12px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{background:'linear-gradient(135deg,#16a34a,#22C55E)',borderRadius:'20px 20px 0 0',padding:'12px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <div style={{display:'flex',alignItems:'center',gap:10}}>
               <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(255,255,255,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}}>🐟</div>
               <div>
@@ -136,7 +136,7 @@ export default function FloatingAssistant() {
                 <div style={{display:'flex',flexWrap:'wrap',gap:6,marginTop:4}}>
                   {sugerencias.map((s, i) => (
                     <button key={i} className="np-chip" onClick={() => enviar(s)}
-                      style={{background:isDark?'rgba(14,165,233,0.1)':'#EFF6FF',border:'1px solid #0ea5e9',borderRadius:20,padding:'5px 12px',fontSize:11,color:'#0ea5e9',cursor:'pointer',fontWeight:500}}>
+                      style={{background:isDark?'rgba(34,197,94,0.1)':'#F0FDF4',border:'1px solid #22C55E',borderRadius:20,padding:'5px 12px',fontSize:11,color:'#22C55E',cursor:'pointer',fontWeight:500}}>
                       {s}
                     </button>
                   ))}
@@ -147,7 +147,7 @@ export default function FloatingAssistant() {
             {mensajes.map((m, i) => (
               <div key={i} style={{display:'flex',justifyContent:m.role==='user'?'flex-end':'flex-start',alignItems:'flex-start',gap:6}}>
                 {m.role === 'assistant' && (
-                  <div style={{width:22,height:22,borderRadius:'50%',background:'rgba(14,165,233,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,flexShrink:0,marginTop:2}}>🐟</div>
+                  <div style={{width:22,height:22,borderRadius:'50%',background:'rgba(34,197,94,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,flexShrink:0,marginTop:2}}>🐟</div>
                 )}
                 <div className={m.role==='user'?'np-bubble-user':'np-bubble-bot'}
                   style={{padding:'8px 12px',fontSize:13,lineHeight:1.55,maxWidth:'80%',whiteSpace:'pre-wrap'}}>
@@ -158,10 +158,10 @@ export default function FloatingAssistant() {
 
             {cargando && (
               <div style={{display:'flex',alignItems:'center',gap:6}}>
-                <div style={{width:22,height:22,borderRadius:'50%',background:'rgba(14,165,233,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>🐟</div>
+                <div style={{width:22,height:22,borderRadius:'50%',background:'rgba(34,197,94,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>🐟</div>
                 <div className="np-bubble-bot" style={{padding:'10px 16px'}}>
                   <span style={{display:'inline-flex',gap:4}}>
-                    {[0,1,2].map(n=><span key={n} style={{width:6,height:6,borderRadius:'50%',background:'#0ea5e9',animation:`bounce 1s ${n*0.2}s infinite`,display:'inline-block'}}/>)}
+                    {[0,1,2].map(n=><span key={n} style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',animation:`bounce 1s ${n*0.2}s infinite`,display:'inline-block'}}/>)}
                   </span>
                 </div>
               </div>
@@ -176,7 +176,7 @@ export default function FloatingAssistant() {
               style={{flex:1,resize:'none',border:`1px solid ${D.border}`,borderRadius:12,padding:'8px 12px',fontSize:13,background:isDark?'#1E293B':'#F3F4F6',color:D.text,outline:'none',maxHeight:80,lineHeight:1.5}}
             />
             <button onClick={() => enviar()} disabled={!input.trim()||cargando}
-              style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,#0ea5e9,#14b8a6)',border:'none',cursor:input.trim()&&!cargando?'pointer':'not-allowed',opacity:input.trim()&&!cargando?1:0.4,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,#16a34a,#22C55E)',border:'none',cursor:input.trim()&&!cargando?'pointer':'not-allowed',opacity:input.trim()&&!cargando?1:0.4,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
           </div>

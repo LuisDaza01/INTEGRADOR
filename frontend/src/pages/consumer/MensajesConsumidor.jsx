@@ -13,7 +13,7 @@ const SOCKET_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api')
 const Avatar = ({ nombre, foto, size = 38, D }) => (
   foto
     ? <img src={foto} alt={nombre} style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-    : <div style={{ width: size, height: size, borderRadius: "50%", background: `linear-gradient(135deg,#14b8a6,#38bdf8)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#fff", fontWeight: 700, fontSize: size * 0.37 }}>
+    : <div style={{ width: size, height: size, borderRadius: "50%", background: `linear-gradient(135deg,#16a34a,#22C55E)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#fff", fontWeight: 700, fontSize: size * 0.37 }}>
         {nombre?.[0]?.toUpperCase() || "?"}
       </div>
 )
@@ -209,7 +209,7 @@ const MensajesConsumidor = () => {
           <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: D.muted, pointerEvents: "none" }} />
           <input type="text" placeholder="Buscar productor..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
             style={{ width: "100%", paddingLeft: 38, paddingRight: 14, paddingTop: 9, paddingBottom: 9, background: D.surface, border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 14, outline: "none", boxSizing: "border-box" }}
-            onFocus={e => e.target.style.borderColor = "#38bdf8"}
+            onFocus={e => e.target.style.borderColor = "#22C55E"}
             onBlur={e => e.target.style.borderColor = D.border} />
         </div>
       </div>
@@ -231,9 +231,9 @@ const MensajesConsumidor = () => {
               <motion.div key={conv.partner_id} onClick={() => handleSelect(conv.partner_id)}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                 style={{ padding: "12px 16px", borderBottom: `1px solid ${D.border}`, cursor: "pointer",
-                  background: isActive ? "rgba(56,189,248,0.1)" : "transparent",
-                  borderLeft: isActive ? "3px solid #38bdf8" : "3px solid transparent" }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "rgba(56,189,248,0.05)" }}
+                  background: isActive ? "rgba(34,197,94,0.1)" : "transparent",
+                  borderLeft: isActive ? "3px solid #22C55E" : "3px solid transparent" }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "rgba(34,197,94,0.05)" }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <Avatar nombre={conv.partner_nombre} foto={conv.partner_foto} size={40} D={D} />
@@ -251,7 +251,7 @@ const MensajesConsumidor = () => {
                         {conv.ultimo_mensaje || "Sin mensajes aún"}
                       </span>
                       {conv.no_leidos > 0 && (
-                        <span style={{ background: "#38bdf8", color: "#fff", borderRadius: 10, fontSize: 11, fontWeight: 700, padding: "1px 7px", flexShrink: 0, marginLeft: 6 }}>
+                        <span style={{ background: "#22C55E", color: "#fff", borderRadius: 10, fontSize: 11, fontWeight: 700, padding: "1px 7px", flexShrink: 0, marginLeft: 6 }}>
                           {conv.no_leidos}
                         </span>
                       )}
@@ -318,7 +318,7 @@ const MensajesConsumidor = () => {
                         <video src={m.archivo_url} controls style={{ maxWidth: 260, borderRadius: isMine ? "16px 4px 16px 16px" : "4px 16px 16px 16px", display: "block" }} />
                       ) : (
                         <div style={{ maxWidth: "70%", padding: "8px 12px", borderRadius: isMine ? "16px 4px 16px 16px" : "4px 16px 16px 16px",
-                          background: isMine ? "linear-gradient(135deg,#14b8a6,#38bdf8)" : D.surface,
+                          background: isMine ? "linear-gradient(135deg,#16a34a,#22C55E)" : D.surface,
                           color: isMine ? "#fff" : D.text, fontSize: 14, lineHeight: 1.5, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
                           {m.contenido}
                         </div>
@@ -349,7 +349,7 @@ const MensajesConsumidor = () => {
                     </div>
                     <motion.button onClick={handleSendMedia} disabled={uploadingMedia}
                       whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, background: "linear-gradient(135deg,#14b8a6,#38bdf8)", color: "#fff", border: "none", cursor: uploadingMedia ? "wait" : "pointer", opacity: uploadingMedia ? 0.6 : 1, fontSize: 13, fontWeight: 600 }}>
+                      style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, background: "linear-gradient(135deg,#16a34a,#22C55E)", color: "#fff", border: "none", cursor: uploadingMedia ? "wait" : "pointer", opacity: uploadingMedia ? 0.6 : 1, fontSize: 13, fontWeight: 600 }}>
                       {uploadingMedia ? "Enviando…" : <><Send size={14} /> Enviar</>}
                     </motion.button>
                   </div>
@@ -362,8 +362,8 @@ const MensajesConsumidor = () => {
                   {/* Botón galería */}
                   <motion.button type="button" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                     onClick={() => fileInputRef.current?.click()}
-                    style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(56,189,248,0.08)", border: "1px solid rgba(56,189,248,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Paperclip size={17} color="#38bdf8" />
+                    style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Paperclip size={17} color="#22C55E" />
                   </motion.button>
                   {/* Botón cámara */}
                   <motion.button type="button" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
@@ -375,11 +375,11 @@ const MensajesConsumidor = () => {
                     onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e) } }}
                     placeholder="Escribe un mensaje... (Enter para enviar)" rows={1}
                     style={{ flex: 1, background: D.bg, border: `1px solid ${D.border}`, borderRadius: 10, padding: "9px 12px", color: D.text, fontSize: 14, outline: "none", resize: "none", maxHeight: 120, overflowY: "auto", lineHeight: 1.5 }}
-                    onFocus={e => e.target.style.borderColor = "#38bdf8"}
+                    onFocus={e => e.target.style.borderColor = "#22C55E"}
                     onBlur={e => e.target.style.borderColor = D.border} />
                   <motion.button type="submit" disabled={!texto.trim() || sending}
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 14px", borderRadius: 8, background: "linear-gradient(135deg,#14b8a6,#38bdf8)", color: "#fff", border: "none", cursor: !texto.trim() || sending ? "not-allowed" : "pointer", opacity: !texto.trim() || sending ? 0.5 : 1, flexShrink: 0 }}>
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 14px", borderRadius: 8, background: "linear-gradient(135deg,#16a34a,#22C55E)", color: "#fff", border: "none", cursor: !texto.trim() || sending ? "not-allowed" : "pointer", opacity: !texto.trim() || sending ? 0.5 : 1, flexShrink: 0 }}>
                     <Send size={16} />
                   </motion.button>
                 </form>

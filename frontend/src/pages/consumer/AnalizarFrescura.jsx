@@ -107,7 +107,7 @@ const AnalizarFrescura = () => {
                 textAlign: 'center',
                 cursor: 'pointer',
                 background: dragging
-                  ? (isDark ? 'rgba(56,189,248,0.08)' : 'rgba(56,189,248,0.04)')
+                  ? (isDark ? 'rgba(34,197,94,0.08)' : 'rgba(34,197,94,0.04)')
                   : D.card,
                 transition: 'all 0.2s',
               }}
@@ -116,7 +116,7 @@ const AnalizarFrescura = () => {
               <motion.div animate={{ y: dragging ? -6 : 0 }} transition={{ duration: 0.2 }}>
                 <div style={{
                   width: 72, height: 72, borderRadius: '50%', margin: '0 auto 18px',
-                  background: isDark ? 'rgba(56,189,248,0.1)' : 'rgba(56,189,248,0.08)',
+                  background: isDark ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.08)',
                   border: `1px solid ${D.border}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
@@ -176,7 +176,7 @@ const AnalizarFrescura = () => {
               disabled={analizando}
               style={{
                 width: '100%', padding: '14px 0',
-                background: analizando ? D.dim : 'linear-gradient(135deg,#14b8a6,#38bdf8)',
+                background: analizando ? D.dim : 'linear-gradient(135deg,#16a34a,#22C55E)',
                 color: '#fff', border: 'none', borderRadius: 12,
                 fontWeight: 800, fontSize: 15, cursor: analizando ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -274,8 +274,8 @@ const AnalizarFrescura = () => {
                 <div style={{
                   margin: '0 22px 20px',
                   padding: '12px 14px',
-                  background: isDark ? 'rgba(56,189,248,0.07)' : 'rgba(56,189,248,0.06)',
-                  border: `1px solid rgba(56,189,248,0.2)`,
+                  background: isDark ? 'rgba(34,197,94,0.07)' : 'rgba(34,197,94,0.06)',
+                  border: `1px solid rgba(34,197,94,0.2)`,
                   borderRadius: 10,
                   display: 'flex', alignItems: 'flex-start', gap: 10,
                 }}>

@@ -144,7 +144,7 @@ const Ajustes = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
                   {["Clásico", "Moderno", "Compacto"].map((layout, index) => (
                     <motion.div key={layout} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
-                      style={{ border: `1.5px solid ${index === 1 ? D.primary : D.border}`, borderRadius: 10, padding: 12, textAlign: 'center', cursor: 'pointer', background: index === 1 ? `rgba(56,189,248,0.08)` : D.surface }}>
+                      style={{ border: `1.5px solid ${index === 1 ? D.primary : D.border}`, borderRadius: 10, padding: 12, textAlign: 'center', cursor: 'pointer', background: index === 1 ? `rgba(34,197,94,0.08)` : D.surface }}>
                       <div style={{ height: 40, background: D.dim, borderRadius: 6, marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {index === 1 && <Check size={14} style={{ color: D.primary }} />}
                       </div>
@@ -241,7 +241,7 @@ const Ajustes = () => {
                   style={{
                     display: 'flex', alignItems: 'center', width: '100%', padding: '9px 12px', borderRadius: 10,
                     border: 'none', cursor: 'pointer', textAlign: 'left', gap: 10,
-                    background: activeSection === section.id ? `rgba(56,189,248,0.12)` : 'transparent',
+                    background: activeSection === section.id ? `rgba(34,197,94,0.12)` : 'transparent',
                     color: activeSection === section.id ? D.primary : D.muted,
                     fontWeight: activeSection === section.id ? 700 : 500, fontSize: 13,
                   }}>

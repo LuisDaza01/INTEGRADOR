@@ -58,8 +58,8 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
               }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-blue-50">
-              <Package size={24} className="text-blue-400" />
+            <div className="w-full h-full flex items-center justify-center bg-green-50">
+              <Package size={24} className="text-green-400" />
             </div>
           )}
         </div>
@@ -67,7 +67,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         {/* Información del producto */}
         <div className="flex-1">
           <h3 className="font-semibold text-gray-800 mb-1">{item.nombre}</h3>
-          <p className="text-blue-600 font-bold text-lg">Bs{parseFloat(item.precio).toFixed(2)}</p>
+          <p className="text-green-600 font-bold text-lg">Bs{parseFloat(item.precio).toFixed(2)}</p>
           
           {/* Controles de cantidad */}
           <div className="flex items-center justify-between mt-3">
@@ -117,7 +117,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       {(isUpdating || isRemoving) && (
         <div className="mt-3 flex items-center justify-center">
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-green-500"></div>
             {isUpdating ? "Actualizando..." : "Eliminando..."}
           </div>
         </div>

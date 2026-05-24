@@ -535,7 +535,7 @@ const Monitoring = () => {
       </div>
 
       {/* Info de especie */}
-      <div style={{ background: `linear-gradient(135deg,rgba(6,182,212,0.08),rgba(56,189,248,0.06))`, border: `1px solid rgba(6,182,212,0.3)`, borderRadius: 14, padding: 20 }}>
+      <div style={{ background: `linear-gradient(135deg,rgba(34,197,94,0.08),rgba(22,163,74,0.06))`, border: `1px solid rgba(34,197,94,0.3)`, borderRadius: 14, padding: 20 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
           <div style={{ padding: 8, background: 'rgba(6,182,212,0.15)', borderRadius: 8 }}>
             <Info size={18} style={{ color: '#06b6d4' }} />

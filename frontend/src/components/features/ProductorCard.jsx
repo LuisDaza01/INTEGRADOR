@@ -14,11 +14,11 @@ const ProductorCard = ({ productor, onClick }) => {
 
   const borderColor = hovered
     ? `${D.primary}88`
-    : isDark ? 'rgba(56,189,248,0.14)' : D.border
+    : isDark ? 'rgba(34,197,94,0.14)' : D.border
 
   const shadow = isDark
     ? hovered
-      ? '0 16px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(56,189,248,0.12), inset 0 1px 0 rgba(255,255,255,0.08)'
+      ? '0 16px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(34,197,94,0.12), inset 0 1px 0 rgba(255,255,255,0.08)'
       : '0 4px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)'
     : hovered
       ? '0 8px 32px rgba(0,0,0,0.12)'
@@ -127,7 +127,7 @@ const ProductorCard = ({ productor, onClick }) => {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
           {productor.certificaciones && productor.certificaciones.length > 0 ? (
             productor.certificaciones.slice(0, 2).map((cert, i) => (
-              <span key={i} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 4, background: `rgba(56,189,248,0.1)`, border: `1px solid rgba(56,189,248,0.22)`, color: D.primary }}>
+              <span key={i} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 4, background: `rgba(34,197,94,0.1)`, border: `1px solid rgba(34,197,94,0.22)`, color: D.primary }}>
                 <Award size={10} /> {cert.nombre}
               </span>
             ))

@@ -92,9 +92,9 @@ svg, img, canvas, video,
 [data-theme="light"] .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(14,116,193,0.06) 0%,
-    rgba(14,116,193,0.12) 40%,
-    rgba(14,116,193,0.06) 80%
+    rgba(22,163,74,0.06) 0%,
+    rgba(22,163,74,0.12) 40%,
+    rgba(22,163,74,0.06) 80%
   );
   background-size: 200% 100%;
   animation: shimmerSweep 1.6s ease-in-out infinite;
@@ -199,7 +199,7 @@ input:focus, select:focus, textarea:focus {
 .np-hover:active { transform: translateY(-1px) scale(0.99) !important; }
 
 /* ── Glow utilities ── */
-.glow-cyan   { box-shadow: 0 0 24px rgba(56,189,248,0.3),  0 0 64px rgba(56,189,248,0.1); }
+.glow-cyan   { box-shadow: 0 0 24px rgba(74,222,128,0.3),  0 0 64px rgba(74,222,128,0.1); }  /* alias → green */
 .glow-purple { box-shadow: 0 0 24px rgba(139,92,246,0.3),  0 0 64px rgba(139,92,246,0.1); }
 .glow-green  { box-shadow: 0 0 24px rgba(74,222,128,0.3),  0 0 64px rgba(74,222,128,0.1); }
 .glow-teal   { box-shadow: 0 0 24px rgba(20,184,166,0.3),  0 0 64px rgba(20,184,166,0.1); }
@@ -410,7 +410,7 @@ p    { line-height: 1.7; max-width: 70ch; }
     rgba(34,197,94,0) 0%,
     rgba(34,197,94,0.15) 30%,
     rgba(167,139,250,0.1) 60%,
-    rgba(56,189,248,0.08) 100%
+    rgba(74,222,128,0.08) 100%
   );
   opacity: 0;
   transition: opacity 0.3s ease;

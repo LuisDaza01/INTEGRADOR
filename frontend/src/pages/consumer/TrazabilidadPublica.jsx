@@ -294,8 +294,8 @@ const TrazabilidadPublica = () => {
                 <p className="text-3xl font-black text-teal-700">{estadisticas.totalPedidos}</p>
                 <p className="text-xs text-gray-500 mt-1">pedidos completados</p>
               </div>
-              <div className="text-center p-3 bg-blue-50 rounded-xl">
-                <p className="text-3xl font-black text-blue-700">{estadisticas.unidadesVendidas}</p>
+              <div className="text-center p-3 bg-green-50 rounded-xl">
+                <p className="text-3xl font-black text-green-700">{estadisticas.unidadesVendidas}</p>
                 <p className="text-xs text-gray-500 mt-1">unidades vendidas</p>
               </div>
             </div>

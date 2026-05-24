@@ -16,7 +16,7 @@ const PedidoConsumidor = ({ pedido }) => {
       case "pendiente":
         return { icon: Clock, color: "text-yellow-500", bg: "bg-yellow-100" }
       case "procesando":
-        return { icon: Package, color: "text-blue-500", bg: "bg-blue-100" }
+        return { icon: Package, color: "text-green-500", bg: "bg-green-100" }
       case "enviado":
         return { icon: Truck, color: "text-purple-500", bg: "bg-purple-100" }
       case "entregado":
@@ -83,7 +83,7 @@ const PedidoConsumidor = ({ pedido }) => {
                 {productos.map((producto) => (
                   <div key={producto.id} className="flex justify-between text-sm">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 rounded bg-blue-50 overflow-hidden mr-2">
+                      <div className="w-10 h-10 rounded bg-green-50 overflow-hidden mr-2">
                         <img
                           src={producto.imagen || "/placeholder.svg?height=40&width=40"}
                           alt={producto.nombre}
@@ -139,13 +139,13 @@ const PedidoConsumidor = ({ pedido }) => {
               )}
 
               {estado === "enviado" && (
-                <button className="px-4 py-2 text-sm bg-blue-600 rounded-lg text-white hover:bg-blue-700 transition-colors">
+                <button className="px-4 py-2 text-sm bg-green-600 rounded-lg text-white hover:bg-green-700 transition-colors">
                   Seguir envío
                 </button>
               )}
 
               {estado === "entregado" && (
-                <button className="px-4 py-2 text-sm bg-blue-600 rounded-lg text-white hover:bg-blue-700 transition-colors">
+                <button className="px-4 py-2 text-sm bg-green-600 rounded-lg text-white hover:bg-green-700 transition-colors">
                   Valorar productos
                 </button>
               )}

@@ -64,7 +64,7 @@ const CategoriasAdmin = () => {
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500" />
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500" />
     </div>
   )
 
@@ -77,7 +77,7 @@ const CategoriasAdmin = () => {
         </div>
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
           onClick={() => setAdding(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors shadow-sm">
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors shadow-sm">
           <Plus size={16} />
           Nueva categoría
         </motion.button>
@@ -103,17 +103,17 @@ const CategoriasAdmin = () => {
       <AnimatePresence>
         {adding && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-            className="bg-white border border-blue-200 rounded-2xl p-5 space-y-3 shadow-sm">
+            className="bg-white border border-green-200 rounded-2xl p-5 space-y-3 shadow-sm">
             <p className="text-gray-800 font-semibold text-sm">Nueva categoría</p>
             <input value={newName} onChange={e => setNewName(e.target.value)}
               placeholder="Nombre de la categoría"
-              className="w-full bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400" />
+              className="w-full bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 placeholder-gray-400" />
             <input value={newDesc} onChange={e => setNewDesc(e.target.value)}
               placeholder="Descripción (opcional)"
-              className="w-full bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400" />
+              className="w-full bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 placeholder-gray-400" />
             <div className="flex gap-2">
               <button onClick={handleAdd}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors">
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors">
                 <Check size={14} /> Guardar
               </button>
               <button onClick={() => { setAdding(false); setNewName(""); setNewDesc("") }}
@@ -133,9 +133,9 @@ const CategoriasAdmin = () => {
             {editId === cat.id ? (
               <div className="flex items-center gap-2">
                 <input value={editName} onChange={e => setEditName(e.target.value)} autoFocus
-                  className="flex-1 bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue-500" />
+                  className="flex-1 bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-green-500" />
                 <button onClick={() => handleEdit(cat.id)}
-                  className="p-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                  className="p-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors">
                   <Check size={14} />
                 </button>
                 <button onClick={() => setEditId(null)}
@@ -146,8 +146,8 @@ const CategoriasAdmin = () => {
             ) : (
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-cyan-50 border border-cyan-100 flex items-center justify-center">
-                    <Tag size={15} className="text-cyan-600" />
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                    <Tag size={15} className="text-green-600" />
                   </div>
                   <div>
                     <p className="text-gray-800 text-sm font-semibold">{cat.nombre}</p>
@@ -156,7 +156,7 @@ const CategoriasAdmin = () => {
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => { setEditId(cat.id); setEditName(cat.nombre) }}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors">
                     <Edit2 size={13} />
                   </button>
                   <button onClick={() => setConfirmDelete(cat)}

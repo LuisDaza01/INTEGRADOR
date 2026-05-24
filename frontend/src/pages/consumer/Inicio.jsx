@@ -345,7 +345,7 @@ const Inicio = () => {
                     </span>
                     <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all"
-                      style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)' }}>
+                      style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)' }}>
                       <ShoppingCart className="h-3.5 w-3.5" />
                       Añadir
                     </motion.button>
@@ -424,7 +424,7 @@ const Inicio = () => {
               <p className="text-sm">No tienes pedidos recientes</p>
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 className="mt-3 px-4 py-2 text-white rounded-xl text-sm"
-                style={{ background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)' }}>
+                style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)' }}>
                 Explorar productos
               </motion.button>
             </div>

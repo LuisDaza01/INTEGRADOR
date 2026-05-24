@@ -1,76 +1,115 @@
 "use client"
 import { motion } from "framer-motion"
 import { ShoppingCart, Heart, Info } from "lucide-react"
+import { useTheme } from "../../contexts/ThemeContext"
 
 const ProductoTienda = ({ producto, onAddToCart, onToggleFavorite, onViewDetails }) => {
+  const { D } = useTheme()
   const { id, nombre, imagen, precio, descripcion, categoria, disponible, calificacion, esFavorito } = producto
 
   return (
     <motion.div
-      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       whileHover={{ y: -5 }}
+      style={{
+        background: D.card,
+        border: `1px solid ${D.border}`,
+        borderRadius: 14,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+        overflow: 'hidden',
+        transition: 'all 0.3s',
+      }}
     >
-      <div className="relative">
+      <div style={{ position: 'relative' }}>
         {/* Badge de categoría */}
-        <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        <div style={{
+          position: 'absolute', top: 8, left: 8, zIndex: 2,
+          background: `linear-gradient(135deg, ${D.primary}, #16a34a)`,
+          color: '#fff', fontSize: 11, fontWeight: 700,
+          padding: '4px 10px', borderRadius: 999,
+          boxShadow: '0 2px 8px rgba(34,197,94,0.4)',
+        }}>
           {categoria}
         </div>
 
         {/* Badge de disponibilidad */}
         {!disponible && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+          <div style={{
+            position: 'absolute', top: 8, right: 8, zIndex: 2,
+            background: D.red, color: '#fff', fontSize: 11, fontWeight: 700,
+            padding: '4px 10px', borderRadius: 999,
+            boxShadow: `0 2px 8px ${D.red}60`,
+          }}>
             Agotado
           </div>
         )}
 
         {/* Imagen del producto */}
-        <div className="h-48 w-full overflow-hidden bg-blue-50">
+        <div style={{ height: 192, width: '100%', overflow: 'hidden', background: 'rgba(34,197,94,0.05)' }}>
           <img
             src={typeof imagen === "string" && imagen.startsWith("/images/") ? imagen : `/images/${imagen || "default.jpg"}`}
-
             alt={nombre}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
           />
         </div>
       </div>
 
-      <div className="p-4">
+      <div style={{ padding: 16 }}>
         {/* Nombre y calificación */}
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-semibold text-gray-800 truncate">{nombre}</h3>
-          <div className="flex items-center">
-            <span className="text-yellow-500">★</span>
-            <span className="text-sm text-gray-600 ml-1">{calificacion}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, gap: 8 }}>
+          <h3 style={{
+            fontSize: 16, fontWeight: 700, color: D.text, margin: 0,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+          }}>{nombre}</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+            <span style={{ color: '#fbbf24' }}>★</span>
+            <span style={{ fontSize: 13, color: D.muted }}>{calificacion}</span>
           </div>
         </div>
 
         {/* Descripción corta */}
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{descripcion}</p>
+        <p style={{
+          color: D.muted, fontSize: 13, marginBottom: 12, margin: '0 0 12px',
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}>{descripcion}</p>
 
         {/* Precio y botones */}
-        <div className="flex justify-between items-center mt-4">
-        <span className="font-bold text-lg">Bs{Number(precio).toFixed(2)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+          <span style={{ fontWeight: 700, fontSize: 17, color: D.primary }}>Bs {Number(precio).toFixed(2)}</span>
 
-          <div className="flex space-x-2">
+          <div style={{ display: 'flex', gap: 6 }}>
             {/* Botón de favorito */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => onToggleFavorite(id)}
-              className={`p-1.5 rounded-full ${esFavorito ? "bg-red-100 text-red-500" : "bg-gray-100 text-gray-500"}`}
               aria-label="Añadir a favoritos"
+              style={{
+                padding: 6, borderRadius: '50%',
+                background: esFavorito ? `${D.red}20` : D.surface,
+                color: esFavorito ? D.red : D.muted,
+                border: `1px solid ${esFavorito ? D.red + '40' : D.border}`,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
             >
-              <Heart size={18} className={esFavorito ? "fill-current" : ""} />
+              <Heart size={18} fill={esFavorito ? 'currentColor' : 'none'} />
             </motion.button>
 
             {/* Botón de detalles */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => onViewDetails(id)}
-              className="p-1.5 rounded-full bg-gray-100 text-gray-500"
               aria-label="Ver detalles"
+              style={{
+                padding: 6, borderRadius: '50%',
+                background: D.surface, color: D.muted,
+                border: `1px solid ${D.border}`, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
             >
               <Info size={18} />
             </motion.button>
@@ -80,8 +119,17 @@ const ProductoTienda = ({ producto, onAddToCart, onToggleFavorite, onViewDetails
               whileTap={{ scale: 0.9 }}
               onClick={() => onAddToCart(id)}
               disabled={!disponible}
-              className={`p-1.5 rounded-full ${disponible ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
               aria-label="Añadir al carrito"
+              style={{
+                padding: 6, borderRadius: '50%',
+                background: disponible ? `linear-gradient(135deg, ${D.primary}, #16a34a)` : D.surface,
+                color: disponible ? '#fff' : D.dim || D.muted,
+                border: 'none',
+                cursor: disponible ? 'pointer' : 'not-allowed',
+                opacity: disponible ? 1 : 0.5,
+                boxShadow: disponible ? `0 2px 8px ${D.primary}50` : 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
             >
               <ShoppingCart size={18} />
             </motion.button>

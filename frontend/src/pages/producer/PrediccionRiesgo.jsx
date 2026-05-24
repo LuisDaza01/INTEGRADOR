@@ -287,7 +287,7 @@ const ParameterRow = ({ sensorKey, breakdown, currentValue, pred2h, pred4h }) =>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: D.muted }}>
           <span>Ahora: <strong style={{ color: D.text }}>{currentValue?.toFixed(1)}{cfg.unit}</strong></span>
-          <span style={{ color: '#38bdf8' }}>+2h: <strong>{pred2h[sensorKey]?.predictedValue ?? "--"}{cfg.unit}</strong></span>
+          <span style={{ color: '#22C55E' }}>+2h: <strong>{pred2h[sensorKey]?.predictedValue ?? "--"}{cfg.unit}</strong></span>
           <span style={{ color: '#a78bfa' }}>+4h: <strong>{pred4h[sensorKey]?.predictedValue ?? "--"}{cfg.unit}</strong></span>
         </div>
       </div>

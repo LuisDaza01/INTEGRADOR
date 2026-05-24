@@ -108,7 +108,7 @@ const ReservaForm = ({ productor, producto, onClose }) => {
           </p>
           <button
             onClick={onClose}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           >
             Cerrar
           </button>
@@ -157,7 +157,7 @@ const ReservaForm = ({ productor, producto, onClose }) => {
                     <label
                       className={`
                       flex items-center justify-center p-3 rounded-lg border-2 cursor-pointer
-                      ${!formData.es_cocinado ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"}
+                      ${!formData.es_cocinado ? "border-green-500 bg-green-50" : "border-gray-200 hover:border-gray-300"}
                     `}
                     >
                       <input
@@ -169,9 +169,9 @@ const ReservaForm = ({ productor, producto, onClose }) => {
                       />
                       <ShoppingBag
                         size={18}
-                        className={`mr-2 ${!formData.es_cocinado ? "text-blue-500" : "text-gray-500"}`}
+                        className={`mr-2 ${!formData.es_cocinado ? "text-green-500" : "text-gray-500"}`}
                       />
-                      <span className={!formData.es_cocinado ? "text-blue-800" : "text-gray-700"}>
+                      <span className={!formData.es_cocinado ? "text-green-800" : "text-gray-700"}>
                         Productos frescos
                       </span>
                     </label>
@@ -304,7 +304,7 @@ const ReservaForm = ({ productor, producto, onClose }) => {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-colors ${
-                  formData.es_cocinado ? "bg-orange-500 hover:bg-orange-600" : "bg-blue-600 hover:bg-blue-700"
+                  formData.es_cocinado ? "bg-orange-500 hover:bg-orange-600" : "bg-green-600 hover:bg-green-700"
                 } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
               >
                 {loading ? "Procesando..." : "Confirmar reserva"}

@@ -303,7 +303,7 @@ const ConfiguracionPerfilProductor = () => {
                     onClick={handleSave}
                     disabled={!unsavedChanges || loading}
                     className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
-                      unsavedChanges && !loading ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+                      unsavedChanges && !loading ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
                     }`}
                   >
                     {loading ? (
@@ -343,7 +343,7 @@ const ConfiguracionPerfilProductor = () => {
                       onClick={() => setActiveSection(section.id)}
                       className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 whitespace-nowrap ${
                         activeSection === section.id
-                          ? "border-blue-500 text-blue-600"
+                          ? "border-green-500 text-green-600"
                           : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                       }`}
                     >
@@ -374,7 +374,7 @@ const ConfiguracionPerfilProductor = () => {
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700">
+                          <button className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
                             <Upload size={16} />
                           </button>
                         </div>
@@ -585,7 +585,7 @@ const ConfiguracionPerfilProductor = () => {
                             type="checkbox"
                             checked={formData.especialidades.includes(especialidad)}
                             onChange={() => handleToggleEspecialidad(especialidad)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="ml-2 text-sm text-gray-700">{especialidad}</span>
                         </label>
@@ -604,7 +604,7 @@ const ConfiguracionPerfilProductor = () => {
                     {/* Horario de atención */}
                     <div>
                       <h3 className="text-md font-semibold text-gray-900 mb-4">
-                        <Clock size={20} className="inline mr-2 text-blue-600" />
+                        <Clock size={20} className="inline mr-2 text-green-600" />
                         Horario de Atención
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -675,7 +675,7 @@ const ConfiguracionPerfilProductor = () => {
                     {/* Días de envío */}
                     <div>
                       <h3 className="text-md font-semibold text-gray-900 mb-4">
-                        <Truck size={20} className="inline mr-2 text-blue-600" />
+                        <Truck size={20} className="inline mr-2 text-green-600" />
                         Días de Envío
                       </h3>
                       <p className="text-sm text-gray-600 mb-4">
@@ -687,7 +687,7 @@ const ConfiguracionPerfilProductor = () => {
                             key={dia.key}
                             className={`flex flex-col items-center p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                               formData.dias_envio[dia.key]
-                                ? "border-blue-500 bg-blue-50 text-blue-800"
+                                ? "border-green-500 bg-green-50 text-green-800"
                                 : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
                             }`}
                           >
@@ -714,7 +714,7 @@ const ConfiguracionPerfilProductor = () => {
                     <h2 className="text-lg font-semibold text-gray-900">Galería del Criadero</h2>
                     <button
                       onClick={handleAddImage}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                     >
                       <Plus size={16} className="mr-2" />
                       Agregar Imagen
@@ -736,7 +736,7 @@ const ConfiguracionPerfilProductor = () => {
                           >
                             <X size={16} />
                           </button>
-                          <button className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700">
+                          <button className="absolute bottom-2 right-2 bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
                             <Upload size={16} />
                           </button>
                         </div>
@@ -811,7 +811,7 @@ const ConfiguracionPerfilProductor = () => {
                               id={`principal-${imagen.id}`}
                               checked={imagen.es_principal}
                               onChange={(e) => handleUpdateImage(imagen.id, "es_principal", e.target.checked)}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                             />
                             <label htmlFor={`principal-${imagen.id}`} className="ml-2 text-sm text-gray-700">
                               Imagen principal del criadero
@@ -831,7 +831,7 @@ const ConfiguracionPerfilProductor = () => {
                     <h2 className="text-lg font-semibold text-gray-900">Certificaciones</h2>
                     <button
                       onClick={handleAddCertification}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                     >
                       <Plus size={16} className="mr-2" />
                       Agregar Certificación
@@ -939,7 +939,7 @@ const ConfiguracionPerfilProductor = () => {
                                 type="checkbox"
                                 checked={metodo.activo}
                                 onChange={(e) => handleUpdateMetodoEnvio(metodo.id, "activo", e.target.checked)}
-                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                               />
                               <span className="ml-2 text-sm text-gray-700">Activo</span>
                             </label>
@@ -966,7 +966,7 @@ const ConfiguracionPerfilProductor = () => {
                             type="checkbox"
                             checked={formData.perfil_publico}
                             onChange={(e) => handleInputChange("perfil_publico", e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="ml-3">
                             <span className="text-sm font-medium text-gray-700">Perfil público</span>
@@ -979,7 +979,7 @@ const ConfiguracionPerfilProductor = () => {
                             type="checkbox"
                             checked={formData.mostrar_telefono}
                             onChange={(e) => handleInputChange("mostrar_telefono", e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="ml-3">
                             <span className="text-sm font-medium text-gray-700">Mostrar teléfono</span>
@@ -992,7 +992,7 @@ const ConfiguracionPerfilProductor = () => {
                             type="checkbox"
                             checked={formData.mostrar_email}
                             onChange={(e) => handleInputChange("mostrar_email", e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="ml-3">
                             <span className="text-sm font-medium text-gray-700">Mostrar email</span>
@@ -1005,7 +1005,7 @@ const ConfiguracionPerfilProductor = () => {
                             type="checkbox"
                             checked={formData.mostrar_direccion}
                             onChange={(e) => handleInputChange("mostrar_direccion", e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="ml-3">
                             <span className="text-sm font-medium text-gray-700">Mostrar dirección</span>

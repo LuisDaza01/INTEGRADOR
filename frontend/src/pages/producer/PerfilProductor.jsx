@@ -422,7 +422,7 @@ const PerfilProductor = () => {
               {/* QR de pago */}
               <div>
                 <p style={labelSt}>QR de Pago</p>
-                <div style={{ border: `2px dashed ${D.border}`, borderRadius: 12, padding: 16, textAlign: 'center', background: 'rgba(56,189,248,0.02)' }}>
+                <div style={{ border: `2px dashed ${D.border}`, borderRadius: 12, padding: 16, textAlign: 'center', background: 'rgba(34,197,94,0.02)' }}>
                   {formData.qr_pago_url ? (
                     <img src={formData.qr_pago_url} alt="QR de pago" style={{ width: 120, height: 120, objectFit: 'contain', borderRadius: 8, marginBottom: 8 }} />
                   ) : (
@@ -536,7 +536,7 @@ const PerfilProductor = () => {
             {/* Días de venta */}
             {[
               { type: "dias_venta", title: "Días de Venta",  desc: "Selecciona los días en que aceptas pedidos", activeColor: '#4ade80', activeBg: 'rgba(74,222,128,0.1)', icon: <Calendar size={18} style={{ color: '#4ade80' }} /> },
-              { type: "dias_envio", title: "Días de Envío",  desc: "Selecciona los días en que realizas entregas",  activeColor: D.primary, activeBg: `rgba(56,189,248,0.1)`, icon: <Truck size={18} style={{ color: D.primary }} /> },
+              { type: "dias_envio", title: "Días de Envío",  desc: "Selecciona los días en que realizas entregas",  activeColor: D.primary, activeBg: `rgba(34,197,94,0.1)`, icon: <Truck size={18} style={{ color: D.primary }} /> },
             ].map(({ type, title, desc, activeColor, activeBg, icon }) => (
               <div key={type}>
                 <h3 style={sectionTitleSt}>{icon} {title}</h3>
@@ -579,7 +579,7 @@ const PerfilProductor = () => {
                   <span>{cat.icono}</span>
                   <span>{cat.label}</span>
                   {count > 0 && (
-                    <span style={{ background: 'rgba(56,189,248,0.15)', color: D.primary, borderRadius: 20, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>{count}</span>
+                    <span style={{ background: 'rgba(34,197,94,0.15)', color: D.primary, borderRadius: 20, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>{count}</span>
                   )}
                 </button>
               )
@@ -587,7 +587,7 @@ const PerfilProductor = () => {
           </div>
 
           {/* Zona de upload */}
-          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: 120, border: `2px dashed ${uploadingMedia ? D.primary : D.border}`, borderRadius: 12, cursor: uploadingMedia ? 'not-allowed' : 'pointer', marginBottom: 20, background: uploadingMedia ? 'rgba(56,189,248,0.05)' : 'transparent', transition: 'all 0.2s' }}>
+          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: 120, border: `2px dashed ${uploadingMedia ? D.primary : D.border}`, borderRadius: 12, cursor: uploadingMedia ? 'not-allowed' : 'pointer', marginBottom: 20, background: uploadingMedia ? 'rgba(34,197,94,0.05)' : 'transparent', transition: 'all 0.2s' }}>
             {uploadingMedia ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: D.primary }}>
                 <div style={{ width: 22, height: 22, border: `2px solid ${D.primary}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />

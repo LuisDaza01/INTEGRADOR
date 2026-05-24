@@ -17,16 +17,16 @@ const PEDIDOS_REC_QK = ['pedidos', 'recibidos'];
 const PRECIO_KG = 35
 
 const STATUS_HEX = {
-  yellow: '#f59e0b', blue: '#38bdf8', purple: '#a855f7',
-  sky: '#0ea5e9', orange: '#fb923c', teal: '#14b8a6',
+  yellow: '#f59e0b', blue: '#22C55E', purple: '#a855f7',
+  sky: '#16a34a', orange: '#fb923c', teal: '#14b8a6',
   green: '#22c55e', red: '#ef4444', gray: '#64748b',
 }
 
 const ORDER_STATES = {
   pendiente:              { label: 'Pendiente',           hex: '#f59e0b' },
-  confirmado:             { label: 'Confirmado',          hex: '#38bdf8' },
+  confirmado:             { label: 'Confirmado',          hex: '#22C55E' },
   preparando:             { label: 'En Preparación',      hex: '#a855f7' },
-  pesado:                 { label: 'Pesado',              hex: '#0ea5e9' },
+  pesado:                 { label: 'Pesado',              hex: '#16a34a' },
   esperando_confirmacion: { label: 'Esp. confirmación',   hex: '#fb923c' },
   listo_para_recoger:     { label: 'Listo para recoger',  hex: '#fb923c' },
   en_camino:              { label: 'En Camino',           hex: '#14b8a6' },
@@ -211,7 +211,7 @@ const PedidoRow = ({ pedido, onConfirmar, onPesar, onRefresh }) => {
           )}
           {pedido.estado === 'preparando' && (
             <button onClick={e => { e.stopPropagation(); onPesar(pedido) }}
-              style={{ padding: '6px 12px', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
+              style={{ padding: '6px 12px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
               <Scale size={12} /> Pesar
             </button>
           )}
@@ -239,7 +239,7 @@ const PedidoRow = ({ pedido, onConfirmar, onPesar, onRefresh }) => {
                   </div>
                 </div>
                 {pedido.codigo_retiro && (
-                  <div style={{ marginTop: 10, background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.2)', borderRadius: 10, padding: '10px 14px' }}>
+                  <div style={{ marginTop: 10, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 10, padding: '10px 14px' }}>
                     <p style={{ fontSize: 11, color: D.primary, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}>
                       <Key size={11} /> Código para el conductor
                     </p>
@@ -328,7 +328,7 @@ const PedidoRow = ({ pedido, onConfirmar, onPesar, onRefresh }) => {
 
                 {pedido.estado === 'preparando' && (
                   <button onClick={() => onPesar(pedido)}
-                    style={{ width: '100%', padding: '10px 0', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    style={{ width: '100%', padding: '10px 0', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                     <Scale size={16} /> ⚖️ Registrar peso y calcular precio
                   </button>
                 )}
@@ -435,7 +435,7 @@ const Pedidos = () => {
 
   const statCards = [
     { label: 'Pendientes',        value: counts.pendiente,              hex: '#f59e0b', icon: Clock        },
-    { label: 'Confirmados',       value: counts.confirmado,             hex: '#38bdf8', icon: CheckCircle  },
+    { label: 'Confirmados',       value: counts.confirmado,             hex: '#22C55E', icon: CheckCircle  },
     { label: 'Preparando',        value: counts.preparando,             hex: '#a855f7', icon: Package      },
     { label: 'Esp. conf.',        value: counts.esperando_confirmacion, hex: '#fb923c', icon: Hourglass    },
     { label: 'En camino',         value: counts.en_camino,             hex: '#14b8a6', icon: Truck        },

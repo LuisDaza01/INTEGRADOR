@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search, UserX, UserCheck, Shield, ShoppingBag, Fish, AlertCircle, Edit2, Eye, EyeOff, X, Save, Trash2 } from "lucide-react"
 import axiosInstance from "../../api/config/axios"
 
-const rolColor = { 1: "bg-purple-100 text-purple-700", 2: "bg-cyan-100 text-cyan-700", 3: "bg-blue-100 text-blue-700" }
+const rolColor = { 1: "bg-purple-100 text-purple-700", 2: "bg-green-100 text-green-700", 3: "bg-emerald-100 text-emerald-700" }
 const rolNombre = { 1: "Admin", 2: "Productor", 3: "Consumidor" }
 const rolIcon = { 1: Shield, 2: Fish, 3: ShoppingBag }
 
@@ -110,7 +110,7 @@ const UsuariosAdmin = () => {
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500" />
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500" />
     </div>
   )
 
@@ -147,7 +147,7 @@ const UsuariosAdmin = () => {
         {[["todos", "Todos"], ["1", "Admin"], ["2", "Productores"], ["3", "Consumidores"]].map(([val, label]) => (
           <button key={val} onClick={() => setFiltroRol(val)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-              ${filtroRol === val ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"}`}>
+              ${filtroRol === val ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"}`}>
             {label}
           </button>
         ))}
@@ -178,8 +178,8 @@ const UsuariosAdmin = () => {
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0
                         ${u.rol_id === 1 ? "bg-gradient-to-br from-purple-500 to-purple-600"
-                          : u.rol_id === 2 ? "bg-gradient-to-br from-cyan-500 to-blue-500"
-                          : "bg-gradient-to-br from-blue-400 to-blue-500"}`}>
+                          : u.rol_id === 2 ? "bg-gradient-to-br from-green-500 to-green-600"
+                          : "bg-gradient-to-br from-emerald-400 to-emerald-500"}`}>
                         {iniciales}
                       </div>
                       <div>
@@ -206,7 +206,7 @@ const UsuariosAdmin = () => {
                     <div className="flex items-center justify-end gap-1">
                       {/* Editar */}
                       <button onClick={() => openEdit(u)} title="Editar"
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors">
                         <Edit2 size={15} />
                       </button>
                       {/* Dar de baja / reactivar — solo no admins */}
@@ -300,7 +300,7 @@ const UsuariosAdmin = () => {
                   Cancelar
                 </button>
                 <button type="submit" disabled={editLoading}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium">
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium">
                   {editLoading
                     ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Guardando...</>
                     : <><Save size={14} />Guardar cambios</>}

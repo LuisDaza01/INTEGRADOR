@@ -183,7 +183,7 @@ const AyudaConsumidor = () => {
   )
 
   const catColors = {
-    blue:   { color: D.primary, glow: 'rgba(56,189,248,0.15)' },
+    blue:   { color: D.primary, glow: 'rgba(34,197,94,0.15)' },
     green:  { color: D.teal,    glow: 'rgba(20,184,166,0.15)' },
     purple: { color: '#a78bfa', glow: 'rgba(167,139,250,0.15)' },
     orange: { color: D.orange,  glow: 'rgba(251,146,60,0.15)' },
@@ -204,7 +204,7 @@ const AyudaConsumidor = () => {
           <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: D.primary, pointerEvents: 'none' }} size={18} />
           <input type="text" placeholder="Busca una pregunta..." value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            style={{ width: '100%', paddingLeft: 44, paddingRight: 16, paddingTop: 12, paddingBottom: 12, background: 'rgba(56,189,248,0.05)', border: `1px solid ${D.border}`, borderRadius: 12, color: D.text, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+            style={{ width: '100%', paddingLeft: 44, paddingRight: 16, paddingTop: 12, paddingBottom: 12, background: 'rgba(34,197,94,0.05)', border: `1px solid ${D.border}`, borderRadius: 12, color: D.text, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
             onFocus={e => e.target.style.borderColor = D.primary}
             onBlur={e => e.target.style.borderColor = D.border}
           />
@@ -221,7 +221,7 @@ const AyudaConsumidor = () => {
             <motion.button key={cat.id}
               onClick={() => { setActiveCategory(cat.id); setSearchQuery("") }}
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-              style={{ background: isActive ? glow : 'rgba(56,189,248,0.04)', border: `1.5px solid ${isActive ? color : D.border}`, borderRadius: 12, padding: '14px 8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: isActive ? color : D.muted, transition: 'all 0.2s' }}>
+              style={{ background: isActive ? glow : 'rgba(34,197,94,0.04)', border: `1.5px solid ${isActive ? color : D.border}`, borderRadius: 12, padding: '14px 8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 12, color: isActive ? color : D.muted, transition: 'all 0.2s' }}>
               <Icon size={20} style={{ color }} />
               {cat.name}
             </motion.button>
@@ -250,7 +250,7 @@ const AyudaConsumidor = () => {
 
               {expandedFAQ === faq.id && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
-                  style={{ borderTop: `1px solid ${D.border}`, padding: 16, background: 'rgba(56,189,248,0.03)' }}>
+                  style={{ borderTop: `1px solid ${D.border}`, padding: 16, background: 'rgba(34,197,94,0.03)' }}>
                   <p style={{ color: D.muted, fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-line', margin: 0 }}>{faq.answer}</p>
                 </motion.div>
               )}
@@ -266,7 +266,7 @@ const AyudaConsumidor = () => {
       </motion.div>
 
       {/* Contact section */}
-      <motion.div variants={itemVariants} style={{ marginTop: 40, background: 'linear-gradient(135deg,rgba(56,189,248,0.08),rgba(20,184,166,0.06))', border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
+      <motion.div variants={itemVariants} style={{ marginTop: 40, background: 'linear-gradient(135deg,rgba(34,197,94,0.10),rgba(20,184,166,0.06))', border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
         <h3 style={{ fontSize: 22, fontWeight: 800, color: D.text, marginBottom: 20 }}>¿No encontraste tu respuesta?</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16 }}>
           {[

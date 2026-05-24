@@ -204,26 +204,26 @@ const MisPedidos = () => {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case "entregado":              return <CheckCircle className="h-5 w-5 text-green-500" />
-      case "en_camino":              return <Truck className="h-5 w-5 text-blue-500" />
-      case "esperando_confirmacion": return <Scale className="h-5 w-5 text-orange-500" />
-      case "pesado":                 return <Scale className="h-5 w-5 text-sky-500" />
+      case "entregado":              return <CheckCircle size={20} style={{ color: D.green }} />
+      case "en_camino":              return <Truck size={20} style={{ color: D.primary }} />
+      case "esperando_confirmacion": return <Scale size={20} style={{ color: D.orange }} />
+      case "pesado":                 return <Scale size={20} style={{ color: D.primary }} />
       case "preparando": case "confirmado": case "listo_para_recoger":
-        return <Package className="h-5 w-5 text-purple-500" />
-      case "pendiente":              return <Clock className="h-5 w-5 text-yellow-500" />
-      default:                       return <ClipboardList className="h-5 w-5 text-gray-500" />
+        return <Package size={20} style={{ color: D.primary }} />
+      case "pendiente":              return <Clock size={20} style={{ color: D.orange }} />
+      default:                       return <ClipboardList size={20} style={{ color: D.muted }} />
     }
   }
 
   const getStatusStyle = (status) => {
     const map = {
-      entregado:              { bg: 'rgba(74,222,128,0.12)',  color: '#4ade80',  border: 'rgba(74,222,128,0.3)' },
-      en_camino:              { bg: 'rgba(56,189,248,0.12)',  color: '#38bdf8',  border: 'rgba(56,189,248,0.3)' },
-      esperando_confirmacion: { bg: 'rgba(251,146,60,0.12)', color: '#fb923c',  border: 'rgba(251,146,60,0.3)' },
-      pesado:                 { bg: 'rgba(56,189,248,0.12)',  color: '#7dd3fc',  border: 'rgba(56,189,248,0.3)' },
-      preparando:             { bg: 'rgba(167,139,250,0.12)', color: '#a78bfa',  border: 'rgba(167,139,250,0.3)' },
-      confirmado:             { bg: 'rgba(167,139,250,0.12)', color: '#a78bfa',  border: 'rgba(167,139,250,0.3)' },
-      listo_para_recoger:     { bg: 'rgba(167,139,250,0.12)', color: '#a78bfa',  border: 'rgba(167,139,250,0.3)' },
+      entregado:              { bg: 'rgba(34,197,94,0.12)',   color: '#22C55E',  border: 'rgba(34,197,94,0.3)' },
+      en_camino:              { bg: 'rgba(74,222,128,0.12)',  color: '#4ade80',  border: 'rgba(74,222,128,0.3)' },
+      esperando_confirmacion: { bg: 'rgba(251,146,60,0.12)',  color: '#fb923c',  border: 'rgba(251,146,60,0.3)' },
+      pesado:                 { bg: 'rgba(34,197,94,0.12)',   color: '#22C55E',  border: 'rgba(34,197,94,0.3)' },
+      preparando:             { bg: 'rgba(34,197,94,0.10)',   color: '#4ade80',  border: 'rgba(34,197,94,0.28)' },
+      confirmado:             { bg: 'rgba(34,197,94,0.10)',   color: '#4ade80',  border: 'rgba(34,197,94,0.28)' },
+      listo_para_recoger:     { bg: 'rgba(34,197,94,0.10)',   color: '#4ade80',  border: 'rgba(34,197,94,0.28)' },
       pendiente:              { bg: 'rgba(251,191,36,0.12)',  color: '#fbbf24',  border: 'rgba(251,191,36,0.3)' },
       cancelado:              { bg: 'rgba(248,113,113,0.12)', color: '#f87171',  border: 'rgba(248,113,113,0.3)' },
     }
@@ -272,7 +272,7 @@ const MisPedidos = () => {
               <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: D.primary, pointerEvents: 'none' }} size={15} />
               <input type="text" placeholder="Buscar pedido..." value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                style={{ paddingLeft: 34, paddingRight: 12, paddingTop: 8, paddingBottom: 8, background: 'rgba(56,189,248,0.05)', border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 13, outline: 'none', width: 200 }}
+                style={{ paddingLeft: 34, paddingRight: 12, paddingTop: 8, paddingBottom: 8, background: 'rgba(34,197,94,0.05)', border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 13, outline: 'none', width: 200 }}
                 onFocus={e => e.target.style.borderColor = D.primary}
                 onBlur={e => e.target.style.borderColor = D.border}
               />
@@ -312,7 +312,7 @@ const MisPedidos = () => {
                   {/* Header */}
                   <div style={{ padding: 16, cursor: 'pointer' }}
                     onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(56,189,248,0.03)'}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(34,197,94,0.04)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

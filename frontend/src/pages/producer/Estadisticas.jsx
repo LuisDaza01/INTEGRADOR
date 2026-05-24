@@ -10,7 +10,7 @@ import { useTheme } from "../../contexts/ThemeContext"
 // ── Marketing KPI card con comparación real vs período anterior ────
 const MarketingKPI = ({ label, value, prefix = "", suffix = "", cambio, icon: Icon, color = "blue", D }) => {
   const palette = {
-    blue:   { glow: "#38bdf8", accent: "#0ea5e9" },
+    blue:   { glow: "#22C55E", accent: "#16a34a" },
     green:  { glow: "#4ade80", accent: "#22c55e" },
     purple: { glow: "#c084fc", accent: "#a855f7" },
     orange: { glow: "#fb923c", accent: "#f97316" },
@@ -55,7 +55,7 @@ const InsightCard = ({ insight, D }) => {
   const colores = {
     positivo: { bg: "rgba(34,197,94,0.10)", border: "rgba(34,197,94,0.3)", icon: "#22c55e" },
     alerta:   { bg: "rgba(251,146,60,0.10)", border: "rgba(251,146,60,0.3)", icon: "#fb923c" },
-    info:     { bg: "rgba(56,189,248,0.10)", border: "rgba(56,189,248,0.3)", icon: "#38bdf8" },
+    info:     { bg: "rgba(34,197,94,0.10)", border: "rgba(34,197,94,0.3)", icon: "#22C55E" },
   }
   const c = colores[insight.tipo] || colores.info
   const Icon = {
@@ -86,7 +86,7 @@ const SalesByDayChart = ({ data, D }) => {
         const lbl = `${fecha.getDate()}/${fecha.getMonth() + 1}`
         return (
           <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 26 }} title={`${d.fecha}: Bs ${d.ventas.toFixed(2)} (${d.pedidos} pedidos)`}>
-            <div style={{ width: 18, height: altura, background: "linear-gradient(to top, #0ea5e9, #22d3ee)", borderRadius: "4px 4px 0 0" }} />
+            <div style={{ width: 18, height: altura, background: "linear-gradient(to top, #16a34a, #22C55E)", borderRadius: "4px 4px 0 0" }} />
             <span style={{ fontSize: 9, color: D.dim, transform: "rotate(-45deg)", whiteSpace: "nowrap" }}>{lbl}</span>
           </div>
         )
@@ -161,7 +161,7 @@ const PredictionChart = ({ historico, prediccion, D }) => {
       )}
 
       {/* Historical line */}
-      <path d={histPath} fill="none" stroke="#38bdf8" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+      <path d={histPath} fill="none" stroke="#22C55E" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
 
       {/* Prediction line */}
       {predPath && (
@@ -171,7 +171,7 @@ const PredictionChart = ({ historico, prediccion, D }) => {
 
       {/* Historical dots */}
       {historico.map((p, i) => (
-        <circle key={i} cx={xS(i)} cy={yS(p.valor)} r={3} fill="#38bdf8" />
+        <circle key={i} cx={xS(i)} cy={yS(p.valor)} r={3} fill="#22C55E" />
       ))}
 
       {/* Prediction dots */}
@@ -244,11 +244,11 @@ const exportPDF = (stats) => {
       h1{font-size:22px;margin-bottom:4px}
       .sub{color:#666;font-size:13px;margin-bottom:28px}
       table{width:100%;border-collapse:collapse;margin-bottom:24px}
-      th{background:#0284c7;color:#fff;padding:8px 12px;text-align:left;font-size:13px}
+      th{background:#16a34a;color:#fff;padding:8px 12px;text-align:left;font-size:13px}
       td{padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px}
       tr:nth-child(even) td{background:#f8fafc}
-      .kpi{display:inline-block;background:#f0f7ff;border:1px solid #bae6fd;border-radius:8px;padding:14px 20px;margin:0 12px 12px 0;min-width:140px}
-      .kpi .val{font-size:22px;font-weight:700;color:#0284c7}
+      .kpi{display:inline-block;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 20px;margin:0 12px 12px 0;min-width:140px}
+      .kpi .val{font-size:22px;font-weight:700;color:#16a34a}
       .kpi .lbl{font-size:12px;color:#666;margin-top:2px}
       @media print{button{display:none}}
     </style></head><body>
@@ -379,7 +379,7 @@ const Estadisticas = () => {
           <motion.div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
             initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1, transition: { delay: index * 0.05 } }}>
             <motion.div
-              style={{ width: 28, background: 'linear-gradient(to top, #0ea5e9, #22d3ee)', borderRadius: '4px 4px 0 0', minHeight: 4,
+              style={{ width: 28, background: 'linear-gradient(to top, #16a34a, #22C55E)', borderRadius: '4px 4px 0 0', minHeight: 4,
                 height: item.valor > 0 ? `${Math.max((item.valor / maxValue) * 180, 4)}px` : '4px' }}
               whileHover={{ scale: 1.05 }} title={`${item.mes}: Bs${item.valor.toFixed(2)}`} />
             <span style={{ fontSize: 10, marginTop: 4, color: D.muted }}>{item.mes}</span>
@@ -400,7 +400,7 @@ const Estadisticas = () => {
     }
     const distribucionProductos = stats.distribucionProductos
     let cumulativePercentage = 0
-    const colors = ["#38bdf8", "#06B6D4", "#10B981", "#6366F1", "#8B5CF6"]
+    const colors = ["#22C55E", "#06B6D4", "#10B981", "#6366F1", "#8B5CF6"]
     return (
       <div style={{ position: 'relative', width: 200, height: 200, margin: '16px auto 0' }}>
         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
@@ -458,7 +458,7 @@ const Estadisticas = () => {
   }
 
   const kpiCards = [
-    { label: 'Ventas Totales', value: `Bs ${stats?.ventasTotales?.toFixed(2) || "0.00"}`, icon: BarChart3, accent: D.primary, glow: 'rgba(56,189,248,0.15)' },
+    { label: 'Ventas Totales', value: `Bs ${stats?.ventasTotales?.toFixed(2) || "0.00"}`, icon: BarChart3, accent: D.primary, glow: 'rgba(34,197,94,0.15)' },
     { label: 'Producción Total', value: `${stats?.produccionTotal || 0} kg`, icon: TrendingUp, accent: D.teal, glow: 'rgba(20,184,166,0.15)' },
     { label: 'Clientes Activos', value: stats?.clientesActivos || 0, icon: PieChart, accent: '#a78bfa', glow: 'rgba(167,139,250,0.15)' },
   ]
@@ -588,11 +588,11 @@ const Estadisticas = () => {
               <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: D.text, margin: 0 }}>Momentos pico</h3>
                 {marketing.hora_pico ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'rgba(56,189,248,0.08)', borderRadius: 10, border: '1px solid rgba(56,189,248,0.2)' }}>
-                    <Clock size={28} style={{ color: '#0ea5e9' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'rgba(34,197,94,0.08)', borderRadius: 10, border: '1px solid rgba(34,197,94,0.2)' }}>
+                    <Clock size={28} style={{ color: '#16a34a' }} />
                     <div>
                       <p style={{ fontSize: 11, color: D.muted, margin: '0 0 2px' }}>Hora pico</p>
-                      <p style={{ fontSize: 18, fontWeight: 800, color: '#0ea5e9', margin: '0 0 2px' }}>
+                      <p style={{ fontSize: 18, fontWeight: 800, color: '#16a34a', margin: '0 0 2px' }}>
                         {String(marketing.hora_pico.hora).padStart(2, '0')}:00 – {String((marketing.hora_pico.hora + 1) % 24).padStart(2, '0')}:00
                       </p>
                       <p style={{ fontSize: 11, color: D.muted, margin: 0 }}>{marketing.hora_pico.pedidos} pedidos · Bs {marketing.hora_pico.ventas.toFixed(0)}</p>
@@ -648,7 +648,7 @@ const Estadisticas = () => {
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {[
-                      { l: 'Creadas',    v: marketing.funnel_reservas.creadas,    c: '#38bdf8' },
+                      { l: 'Creadas',    v: marketing.funnel_reservas.creadas,    c: '#22C55E' },
                       { l: 'Aceptadas',  v: marketing.funnel_reservas.aceptadas,  c: '#22c55e' },
                       { l: 'Rechazadas', v: marketing.funnel_reservas.rechazadas, c: '#ef4444' },
                       { l: 'Expiradas',  v: marketing.funnel_reservas.expiradas,  c: '#fb923c' },
@@ -732,7 +732,7 @@ const Estadisticas = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
               {stats.distribucionProductos.map((item, index) => (
                 <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: ["#38bdf8","#06B6D4","#10B981","#6366F1","#8B5CF6"][index % 5], flexShrink: 0 }} />
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: ["#22C55E","#06B6D4","#10B981","#6366F1","#8B5CF6"][index % 5], flexShrink: 0 }} />
                   <span style={{ color: D.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.producto}</span>
                   <span style={{ fontWeight: 600, color: D.muted }}>{item.porcentaje}%</span>
                 </div>
@@ -772,11 +772,11 @@ const Estadisticas = () => {
                   <span style={{ color: D.muted }}>Modelo: </span>
                   <span style={{ color: '#8b5cf6', fontWeight: 600, fontFamily: 'monospace' }}>{prediccion.modelo}</span>
                 </div>
-                <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`, fontSize: 12 }}>
+                <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(34,197,94,0.08)', border: `1px solid ${D.border}`, fontSize: 12 }}>
                   <span style={{ color: D.muted }}>R² = </span>
                   <span style={{ color: D.primary, fontWeight: 700 }}>{prediccion.r2.toFixed(3)}</span>
                 </div>
-                <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`, fontSize: 12 }}>
+                <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(34,197,94,0.08)', border: `1px solid ${D.border}`, fontSize: 12 }}>
                   <span style={{ color: D.muted }}>RMSE = </span>
                   <span style={{ color: D.primary, fontWeight: 700 }}>Bs {prediccion.rmse.toFixed(2)}</span>
                 </div>
@@ -792,7 +792,7 @@ const Estadisticas = () => {
               {/* Leyenda */}
               <div style={{ display: 'flex', gap: 20, justifyContent: 'center', marginTop: 10, flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: D.muted }}>
-                  <svg width={28} height={10}><line x1={0} y1={5} x2={28} y2={5} stroke="#38bdf8" strokeWidth={2} /></svg>
+                  <svg width={28} height={10}><line x1={0} y1={5} x2={28} y2={5} stroke="#22C55E" strokeWidth={2} /></svg>
                   Ventas históricas
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: D.muted }}>

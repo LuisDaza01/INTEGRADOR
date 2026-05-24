@@ -24,7 +24,7 @@ const TrendChart = ({
   };
 
   const axisProps = { stroke: D.dim, fontSize: 11 };
-  const gridProps = { strokeDasharray: '3 3', stroke: isDark ? 'rgba(56,189,248,0.08)' : 'rgba(14,116,193,0.1)' };
+  const gridProps = { strokeDasharray: '3 3', stroke: isDark ? 'rgba(34,197,94,0.08)' : 'rgba(34,197,94,0.1)' };
 
   const renderChart = () => {
     switch (type) {

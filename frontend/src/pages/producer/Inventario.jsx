@@ -142,7 +142,7 @@ function LagunaTab({ user, D, isDark }) {
           {/* Stats */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 12 }}>
             {[
-              { icon: Droplets,  label: "Lagunas activas",  val: `${lagunaActivas} / ${lagunas.length}`, color: "#38bdf8" },
+              { icon: Droplets,  label: "Lagunas activas",  val: `${lagunaActivas} / ${lagunas.length}`, color: "#22C55E" },
               { icon: Fish,      label: "Peces en producción", val: fmtNum(totalPeces),  color: "#4ade80" },
               { icon: Layers,    label: "Biomasa total",    val: fmtKg(totalBiomasa), color: "#a78bfa" },
             ].map((s, i) => (
@@ -780,7 +780,7 @@ function ProductosTab({ user, D, isDark }) {
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 12, marginBottom: 20 }}>
         {[
-          { label: "Total productos", val: productos.length,                              color: "#38bdf8" },
+          { label: "Total productos", val: productos.length,                              color: "#22C55E" },
           { label: "Disponibles",     val: productos.filter(p => p.disponible).length,   color: "#4ade80" },
           { label: "Sin stock",       val: productos.filter(p => (p.stock || 0) === 0).length, color: "#ef4444" },
         ].map((s, i) => (

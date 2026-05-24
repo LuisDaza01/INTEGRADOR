@@ -76,7 +76,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
           <div className="overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Galería de imágenes */}
-              <div className="relative h-64 md:h-full bg-blue-50">
+              <div className="relative h-64 md:h-full bg-green-50">
                 {/* Imagen actual */}
                 <img
                   src={imagenesArray[imagenActual] || "/placeholder.svg?height=400&width=400"}
@@ -106,7 +106,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                         <button
                           key={index}
                           className={`w-2 h-2 rounded-full ${
-                            index === imagenActual ? "bg-blue-500" : "bg-white bg-opacity-50"
+                            index === imagenActual ? "bg-green-500" : "bg-white bg-opacity-50"
                           }`}
                           onClick={() => setImagenActual(index)}
                         />
@@ -116,7 +116,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                 )}
 
                 {/* Badge de categoría */}
-                <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                   {categoria}
                 </div>
               </div>
@@ -153,7 +153,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                 {/* Precio y disponibilidad */}
                 <div className="mt-4">
                   <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-blue-600">Bs{parseFloat(precio).toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-green-600">Bs{parseFloat(precio).toFixed(2)}</span>
 
                     <span className={`text-sm font-medium ${disponible ? "text-green-500" : "text-red-500"}`}>
                       {disponible ? `${stock} unidades disponibles` : "No disponible"}
@@ -167,7 +167,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                 {/* Productor */}
                 {productor.nombre && (
                   <div className="mt-4 flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 overflow-hidden mr-3">
+                    <div className="w-10 h-10 rounded-full bg-green-100 overflow-hidden mr-3">
                       <img
                         src={productor.imagen || "/placeholder.svg?height=40&width=40"}
                         alt={productor.nombre}
@@ -188,7 +188,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                     <ul className="grid grid-cols-2 gap-2">
                       {caracteristicas.map((caracteristica, index) => (
                         <li key={index} className="flex items-center text-sm text-gray-600">
-                          <Info size={14} className="mr-1 text-blue-500" />
+                          <Info size={14} className="mr-1 text-green-500" />
                           {caracteristica}
                         </li>
                       ))}
@@ -221,7 +221,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                     disabled={!disponible}
                     className={`ml-4 flex-grow py-2 px-4 rounded-lg flex items-center justify-center ${
                       disponible
-                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        ? "bg-green-600 text-white hover:bg-green-700"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                   >
@@ -257,7 +257,7 @@ const DetalleProducto = ({ producto, onClose, onAddToCart, onToggleFavorite }) =
                   ))}
                 </div>
                 {opiniones.length > 3 && (
-                  <button className="mt-2 text-blue-600 text-sm font-medium hover:underline">
+                  <button className="mt-2 text-green-600 text-sm font-medium hover:underline">
                     Ver todas las {opiniones.length} opiniones
                   </button>
                 )}

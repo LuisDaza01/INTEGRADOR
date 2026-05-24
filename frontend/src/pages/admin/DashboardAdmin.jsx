@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Outlet, useLocation } from "react-router-dom"
-import { Bell, Fish, Shield } from "lucide-react"
+import { Bell, Fish, Shield, Activity } from "lucide-react"
 import SidebarAdmin from "../../components/layout/SidebarAdmin"
 import { useAuth } from "../../contexts/AuthContext"
 import { useTheme } from "../../contexts/ThemeContext"
@@ -67,12 +67,31 @@ const DashboardAdmin = () => {
 
             {/* Acciones */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {/* Badge admin */}
+              {/* Live indicator con pulso */}
               <div className="hidden sm:flex" style={{
-                alignItems: 'center', gap: 6,
+                alignItems: 'center', gap: 8,
                 padding: '5px 12px', borderRadius: 999,
                 background: 'rgba(34,197,94,0.1)',
                 border: '1px solid rgba(34,197,94,0.3)',
+              }}>
+                <div style={{ position: 'relative', width: 7, height: 7 }}>
+                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: D.primary }} />
+                  <div style={{
+                    position: 'absolute', inset: -3, borderRadius: '50%',
+                    background: D.primary, opacity: 0.4,
+                    animation: 'admin-live-pulse 1.6s ease-out infinite',
+                  }} />
+                  <style>{`@keyframes admin-live-pulse { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(2.6); opacity: 0; } }`}</style>
+                </div>
+                <span style={{ color: D.primary, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em' }}>EN VIVO</span>
+              </div>
+
+              {/* Badge admin */}
+              <div className="hidden md:flex" style={{
+                alignItems: 'center', gap: 6,
+                padding: '5px 12px', borderRadius: 999,
+                background: 'rgba(34,197,94,0.06)',
+                border: '1px solid rgba(34,197,94,0.2)',
               }}>
                 <Shield size={12} style={{ color: D.primary }} />
                 <span style={{ color: D.primary, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em' }}>ADMIN</span>

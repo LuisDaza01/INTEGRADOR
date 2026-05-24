@@ -87,7 +87,7 @@ class Bubble {
     this.speed   = Math.random() * 0.5 + 0.15
     this.drift   = (Math.random() - 0.5) * 0.3
     this.opacity = Math.random() * 0.15 + 0.04
-    this.color   = Math.random() > 0.5 ? '#22C55E' : '#38bdf8'
+    this.color   = Math.random() > 0.5 ? '#22C55E' : '#16a34a'
   }
 
   update() {

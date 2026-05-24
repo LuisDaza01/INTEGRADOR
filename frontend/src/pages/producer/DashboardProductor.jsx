@@ -690,7 +690,7 @@ const DashboardProductor = () => {
                           isOutOfRange={isOutOfRange(sensorsData.temperatura)} />
                         <SensorCard title="pH" icon={Waves}
                           value={sensorsData.ph.value} unit={sensorsData.ph.unit}
-                          iconColor="#38bdf8" iconBg="rgba(14,165,233,0.15)"
+                          iconColor="#22C55E" iconBg="rgba(34,197,94,0.15)"
                           isOutOfRange={isOutOfRange(sensorsData.ph)} />
                         <SensorCard title="Turbidez" icon={Eye}
                           value={sensorsData.turbidez.value} unit={sensorsData.turbidez.unit}

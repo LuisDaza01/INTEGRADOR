@@ -16,7 +16,7 @@ const ProductCard = ({ producto, onEdit, onDelete, onView }) => {
       case "Disponible":   return { background: 'rgba(74,222,128,0.15)',  color: '#4ade80' }
       case "Bajo stock":   return { background: 'rgba(234,179,8,0.15)',   color: '#facc15' }
       case "Agotado":      return { background: 'rgba(248,113,113,0.15)', color: '#f87171' }
-      case "Próximamente": return { background: 'rgba(56,189,248,0.15)',  color: '#38bdf8' }
+      case "Próximamente": return { background: 'rgba(34,197,94,0.15)',  color: '#22C55E' }
       default:             return { background: 'rgba(148,163,184,0.15)', color: '#94a3b8' }
     }
   }

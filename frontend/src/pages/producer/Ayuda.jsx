@@ -25,14 +25,14 @@ const Ayuda = () => {
   ]
 
   const helpResources = [
-    { title: "Guías y tutoriales",      description: "Aprende a utilizar todas las funciones de la plataforma", icon: Book,           iconColor: D.primary,   iconBg: `rgba(56,189,248,0.12)` },
+    { title: "Guías y tutoriales",      description: "Aprende a utilizar todas las funciones de la plataforma", icon: Book,           iconColor: D.primary,   iconBg: `rgba(34,197,94,0.12)` },
     { title: "Documentación técnica",   description: "Especificaciones detalladas y manuales",                   icon: FileText,       iconColor: '#a78bfa',   iconBg: 'rgba(167,139,250,0.12)' },
     { title: "Videotutoriales",         description: "Aprende visualmente con nuestros videos",                  icon: Video,          iconColor: D.red,       iconBg: `rgba(248,113,113,0.12)` },
     { title: "Comunidad",               description: "Conecta con otros productores acuícolas",                  icon: MessageCircle,  iconColor: D.green,     iconBg: `rgba(74,222,128,0.12)`  },
   ]
 
   const contactItems = [
-    { href: "mailto:soporte@naturapiscis.com", icon: Mail,  iconColor: D.primary, iconBg: `rgba(56,189,248,0.12)`, title: 'Email',        desc: 'soporte@naturapiscis.com', note: 'Respuesta en 24-48h' },
+    { href: "mailto:soporte@naturapiscis.com", icon: Mail,  iconColor: D.primary, iconBg: `rgba(34,197,94,0.12)`, title: 'Email',        desc: 'soporte@naturapiscis.com', note: 'Respuesta en 24-48h' },
     { href: "tel:+525512345678",               icon: Phone, iconColor: D.green,   iconBg: `rgba(74,222,128,0.12)`, title: 'Teléfono',     desc: '+52 55 1234 5678',         note: 'Lun-Vie 9:00-18:00' },
     { href: "#",                               icon: Globe, iconColor: '#a78bfa', iconBg: 'rgba(167,139,250,0.12)', title: 'Chat en vivo', desc: 'Soporte en tiempo real',    note: 'Disponible ahora' },
   ]
@@ -132,7 +132,7 @@ const Ayuda = () => {
       {/* Contact */}
       <motion.div variants={itemVariants}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: D.text, marginBottom: 16 }}>¿Necesitas más ayuda?</h2>
-        <div style={{ background: `linear-gradient(135deg,rgba(56,189,248,0.08),rgba(20,184,166,0.06))`, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
+        <div style={{ background: `linear-gradient(135deg,rgba(34,197,94,0.08),rgba(22,163,74,0.06))`, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
           <div style={{ textAlign: 'center', marginBottom: 20 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: D.text, marginBottom: 6 }}>Contacta con nuestro equipo de soporte</h3>
             <p style={{ color: D.muted, fontSize: 14 }}>Estamos disponibles para ayudarte con cualquier duda o problema</p>

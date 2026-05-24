@@ -99,8 +99,8 @@ const PerfilProductorDetalle = ({ productor, productos }) => {
                 <div className="space-y-3">
                   {(showAllCertificaciones ? productor.certificaciones : productor.certificaciones.slice(0, 3)).map(
                     (cert, index) => (
-                      <div key={index} className="flex items-center bg-blue-50 p-3 rounded-lg">
-                        <Award size={20} className="text-blue-600 mr-3" />
+                      <div key={index} className="flex items-center bg-green-50 p-3 rounded-lg">
+                        <Award size={20} className="text-green-600 mr-3" />
                         <div>
                           <h4 className="font-medium text-gray-800">{cert.nombre}</h4>
                           <p className="text-sm text-gray-600">
@@ -114,7 +114,7 @@ const PerfilProductorDetalle = ({ productor, productos }) => {
                   {productor.certificaciones.length > 3 && (
                     <button
                       onClick={() => setShowAllCertificaciones(!showAllCertificaciones)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center"
+                      className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center"
                     >
                       {showAllCertificaciones ? (
                         <>
@@ -190,7 +190,7 @@ const PerfilProductorDetalle = ({ productor, productos }) => {
                 {productor.sitio_web && (
                   <div className="flex items-center">
                     <Globe size={16} className="text-gray-600 mr-2" />
-                    <a href={productor.sitio_web} target="_blank" rel="noopener noreferrer" className="text-blue-600">
+                    <a href={productor.sitio_web} target="_blank" rel="noopener noreferrer" className="text-green-600">
                       {productor.sitio_web}
                     </a>
                   </div>
@@ -204,7 +204,7 @@ const PerfilProductorDetalle = ({ productor, productos }) => {
                     href={productor.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-green-600 hover:text-green-800"
                   >
                     <Facebook size={20} />
                   </a>
@@ -224,7 +224,7 @@ const PerfilProductorDetalle = ({ productor, productos }) => {
                     href={productor.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-600"
+                    className="text-green-400 hover:text-green-600"
                   >
                     <Twitter size={20} />
                   </a>
@@ -252,7 +252,7 @@ const PerfilProductorDetalle = ({ productor, productos }) => {
                 onClick={() => setActiveTab("productos")}
                 className={`py-3 px-4 font-medium text-sm border-b-2 transition-colors ${
                   activeTab === "productos"
-                    ? "border-blue-600 text-blue-600"
+                    ? "border-green-600 text-green-600"
                     : "border-transparent text-gray-600 hover:text-gray-800"
                 }`}
               >

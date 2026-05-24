@@ -64,11 +64,11 @@ const ProductoModal = ({ producto, onClose, onCarritoUpdate }) => {
         style={{ background: isDark ? "#0a1220" : D.card, border: `1px solid ${D.border}`, borderRadius: 24, overflow: "hidden", maxWidth: 520, width: "100%", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}
       >
         {/* imagen */}
-        <div style={{ position: "relative", height: 280, background: "rgba(56,189,248,0.04)" }}>
+        <div style={{ position: "relative", height: 280, background: "rgba(34,197,94,0.04)" }}>
           {producto.imagen
             ? <img src={producto.imagen} alt={producto.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Fish size={64} style={{ color: "rgba(56,189,248,0.18)" }} />
+                <Fish size={64} style={{ color: "rgba(34,197,94,0.18)" }} />
               </div>
           }
           {/* cerrar */}
@@ -135,7 +135,7 @@ const ProductoModal = ({ producto, onClose, onCarritoUpdate }) => {
                 {/* agregar */}
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={add} disabled={agregando}
-                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 22px", borderRadius: 12, background: `linear-gradient(135deg,${D.primary},#0369a1)`, border: "none", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", opacity: agregando ? 0.7 : 1, boxShadow: "0 0 20px rgba(56,189,248,0.28)", whiteSpace: "nowrap" }}>
+                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 22px", borderRadius: 12, background: `linear-gradient(135deg,${D.primary},#15803d)`, border: "none", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", opacity: agregando ? 0.7 : 1, boxShadow: "0 0 20px rgba(34,197,94,0.28)", whiteSpace: "nowrap" }}>
                   {agregando
                     ? <div style={{ width: 15, height: 15, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite" }} />
                     : <ShoppingCart size={15} />}
@@ -181,24 +181,24 @@ const ProductoCard = ({ producto, onCarritoUpdate }) => {
       <motion.div
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
         onClick={() => setShowModal(true)}
-        whileHover={{ y: -5, boxShadow: "0 14px 36px rgba(56,189,248,0.13)" }}
+        whileHover={{ y: -5, boxShadow: "0 14px 36px rgba(34,197,94,0.13)" }}
         style={{
           borderRadius: 16,
           overflow: "hidden",
           cursor: "pointer",
           background: isDark ? "rgba(13,20,40,0.97)" : D.surface,
-          border: "1px solid rgba(56,189,248,0.1)",
+          border: "1px solid rgba(34,197,94,0.1)",
           opacity: agotado ? 0.75 : 1,
           transition: "border-color 0.2s",
         }}
-        onHoverStart={e => { e.target.style && (e.target.style.borderColor = "rgba(56,189,248,0.35)") }}
+        onHoverStart={e => { e.target.style && (e.target.style.borderColor = "rgba(34,197,94,0.35)") }}
       >
         {/* imagen cuadrada */}
-        <div style={{ aspectRatio: "1/1", background: "rgba(56,189,248,0.04)", position: "relative", overflow: "hidden" }}>
+        <div style={{ aspectRatio: "1/1", background: "rgba(34,197,94,0.04)", position: "relative", overflow: "hidden" }}>
           {producto.imagen
             ? <img src={producto.imagen} alt={producto.nombre} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.35s" }} />
             : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Fish size={36} style={{ color: "rgba(56,189,248,0.22)" }} />
+                <Fish size={36} style={{ color: "rgba(34,197,94,0.22)" }} />
               </div>
           }
           {/* overlay éxito */}
@@ -240,8 +240,8 @@ const ProductoCard = ({ producto, onCarritoUpdate }) => {
               whileHover={{ scale: 1.18 }} whileTap={{ scale: 0.88 }}
               onClick={add} disabled={agotado || agregando}
               style={{ width: 32, height: 32, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                background: agotado ? "rgba(255,255,255,0.06)" : `linear-gradient(135deg,${D.primary},#0369a1)`,
-                boxShadow: agotado ? "none" : "0 0 10px rgba(56,189,248,0.28)", border: "none", cursor: agotado ? "default" : "pointer" }}>
+                background: agotado ? "rgba(255,255,255,0.06)" : `linear-gradient(135deg,${D.primary},#15803d)`,
+                boxShadow: agotado ? "none" : "0 0 10px rgba(34,197,94,0.28)", border: "none", cursor: agotado ? "default" : "pointer" }}>
               {agregando
                 ? <div style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite" }} />
                 : <ShoppingCart size={14} color={agotado ? D.dim : "#fff"} />}
@@ -460,7 +460,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
             <motion.button initial={{ scale:0 }} animate={{ scale:1 }} exit={{ scale:0 }}
               whileHover={{ scale:1.1 }} whileTap={{ scale:0.9 }}
               onClick={() => { window.dispatchEvent(new CustomEvent("carritoActualizado")); navigate("/dashboard-consumidor/carrito") }}
-              style={{ position:"fixed", bottom:28, right:28, zIndex:50, width:56, height:56, borderRadius:"50%", background:"linear-gradient(135deg,#0ea5e9,#0369a1)", boxShadow:"0 0 28px rgba(56,189,248,0.45)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              style={{ position:"fixed", bottom:28, right:28, zIndex:50, width:56, height:56, borderRadius:"50%", background:"linear-gradient(135deg,#16a34a,#15803d)", boxShadow:"0 0 28px rgba(34,197,94,0.45)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
               <ShoppingCart size={22} color="#fff" />
               <span style={{ position:"absolute", top:-6, right:-6, width:22, height:22, borderRadius:"50%", background:"#ef4444", color:"#fff", fontSize:11, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 8px rgba(239,68,68,0.5)" }}>
                 {cartCount}
@@ -475,14 +475,14 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
 
           {/* Banner */}
           <div style={{ height:200, position:"relative", background:"linear-gradient(135deg,#0a1428,#061230,#080e24)", overflow:"hidden" }}>
-            <div style={{ position:"absolute", top:-40, right:-40, width:260, height:260, borderRadius:"50%", background:"radial-gradient(circle,rgba(56,189,248,0.14),transparent)", filter:"blur(50px)" }} />
+            <div style={{ position:"absolute", top:-40, right:-40, width:260, height:260, borderRadius:"50%", background:"radial-gradient(circle,rgba(34,197,94,0.14),transparent)", filter:"blur(50px)" }} />
             <div style={{ position:"absolute", bottom:-20, left:-20, width:200, height:200, borderRadius:"50%", background:"radial-gradient(circle,rgba(20,184,166,0.12),transparent)", filter:"blur(40px)" }} />
-            <div style={{ position:"absolute", inset:0, opacity:0.04, backgroundImage:"repeating-linear-gradient(0deg,rgba(56,189,248,1) 0,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(56,189,248,1) 0,transparent 1px,transparent 48px)" }} />
-            <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,transparent,#38bdf8,#14b8a6,transparent)" }} />
+            <div style={{ position:"absolute", inset:0, opacity:0.04, backgroundImage:"repeating-linear-gradient(0deg,rgba(34,197,94,1) 0,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(34,197,94,1) 0,transparent 1px,transparent 48px)" }} />
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,transparent,#22C55E,#14b8a6,transparent)" }} />
             {productor.foto_portada && (
               <img src={productor.foto_portada} alt="portada" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", opacity:0.35 }} />
             )}
-            <div style={{ position:"absolute", bottom:14, left:20, display:"flex", alignItems:"center", gap:7, color:"rgba(56,189,248,0.75)", fontSize:13, fontWeight:500 }}>
+            <div style={{ position:"absolute", bottom:14, left:20, display:"flex", alignItems:"center", gap:7, color:"rgba(34,197,94,0.75)", fontSize:13, fontWeight:500 }}>
               <Fish size={16} /> Productor de Acuicultura
             </div>
           </div>
@@ -493,11 +493,11 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
               <div style={{ display:"flex", flexWrap:"wrap", gap:20, alignItems:"flex-end" }}>
                 {/* Avatar */}
                 <div style={{ position:"relative", flexShrink:0, zIndex:10 }}>
-                  <div style={{ width:120, height:120, borderRadius:"50%", padding:3, background:"linear-gradient(135deg,#38bdf8,#14b8a6)", boxShadow:"0 0 28px rgba(56,189,248,0.4)" }}>
+                  <div style={{ width:120, height:120, borderRadius:"50%", padding:3, background:"linear-gradient(135deg,#22C55E,#14b8a6)", boxShadow:"0 0 28px rgba(34,197,94,0.4)" }}>
                     <div style={{ width:"100%", height:"100%", borderRadius:"50%", overflow:"hidden", background: isDark ? "#0f172a" : D.surface, border: `3px solid ${isDark ? "#0f172a" : D.surface}` }}>
                       {productor.foto_perfil
                         ? <img src={productor.foto_perfil} alt={productor.nombre} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                        : <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,rgba(56,189,248,0.2),rgba(20,184,166,0.15))" }}>
+                        : <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,rgba(34,197,94,0.2),rgba(20,184,166,0.15))" }}>
                             <span style={{ fontSize:40, fontWeight:800, color:D.primary }}>{initials}</span>
                           </div>
                       }
@@ -605,9 +605,9 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                     const on = esDia(productor.dias_venta, d.key)
                     return (
                       <div key={d.key} style={{ flex:1, height:32, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700,
-                        background: on ? "rgba(56,189,248,0.18)" : isDark ? "rgba(255,255,255,0.04)" : D.bg,
+                        background: on ? "rgba(34,197,94,0.18)" : isDark ? "rgba(255,255,255,0.04)" : D.bg,
                         color:      on ? D.primary : D.dim,
-                        border:     on ? "1px solid rgba(56,189,248,0.38)" : `1px solid ${D.border}` }}>
+                        border:     on ? "1px solid rgba(34,197,94,0.38)" : `1px solid ${D.border}` }}>
                         {d.label}
                       </div>
                     )
@@ -618,17 +618,17 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
 
             {/* Contacto */}
             <motion.div initial={{ opacity:0, x:-16 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.22 }}
-              style={{ ...sideCard("#38bdf8"), borderTopWidth:2, borderTopColor:"#38bdf8" }}>
+              style={{ ...sideCard("#22C55E"), borderTopWidth:2, borderTopColor:"#22C55E" }}>
               <div style={{ padding:18 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                  <div style={{ width:30, height:30, borderRadius:9, background:"rgba(56,189,248,0.12)", border:"1px solid rgba(56,189,248,0.28)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <div style={{ width:30, height:30, borderRadius:9, background:"rgba(34,197,94,0.12)", border:"1px solid rgba(34,197,94,0.28)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                     <Phone size={15} color={D.primary} />
                   </div>
                   <span style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:D.muted }}>Contacto</span>
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
                   {[
-                    { label:"Llamar",   fn:handleCall,     color:D.primary,  bg:"rgba(56,189,248,0.08)",  bd:"rgba(56,189,248,0.28)",  icon:<Phone size={18} color={D.primary} /> },
+                    { label:"Llamar",   fn:handleCall,     color:D.primary,  bg:"rgba(34,197,94,0.08)",  bd:"rgba(34,197,94,0.28)",  icon:<Phone size={18} color={D.primary} /> },
                     { label:"WhatsApp", fn:handleWhatsApp, color:"#25d366",  bg:"rgba(37,211,102,0.08)", bd:"rgba(37,211,102,0.28)",  icon:<svg viewBox="0 0 24 24" width="18" height="18" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.532 5.852L.057 23.527a.75.75 0 0 0 .916.917l5.733-1.48A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.856 0-3.596-.5-5.088-1.372l-.364-.217-3.764.97.998-3.68-.237-.381A9.937 9.937 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg> },
                     { label:"Email",    fn:handleEmail,    color:"#14b8a6",  bg:"rgba(20,184,166,0.08)",  bd:"rgba(20,184,166,0.28)",  icon:<Mail size={18} color="#14b8a6" /> },
                     { label:"Chat",     fn:handleChat,     color:"#818cf8",  bg:"rgba(129,140,248,0.08)", bd:"rgba(129,140,248,0.28)", icon:<MessageSquare size={18} color="#818cf8" /> },
@@ -757,9 +757,9 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                     {galeriaCats.map(cat => (
                       <button key={cat.id} onClick={() => setGaleriaTab(cat.id)}
                         style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:600, cursor:"pointer",
-                          background: galeriaTab===cat.id ? "rgba(56,189,248,0.18)" : isDark ? "rgba(255,255,255,0.05)" : D.bg,
+                          background: galeriaTab===cat.id ? "rgba(34,197,94,0.18)" : isDark ? "rgba(255,255,255,0.05)" : D.bg,
                           color:      galeriaTab===cat.id ? D.primary : D.muted,
-                          border:     galeriaTab===cat.id ? "1px solid rgba(56,189,248,0.4)" : `1px solid ${D.border}` }}>
+                          border:     galeriaTab===cat.id ? "1px solid rgba(34,197,94,0.4)" : `1px solid ${D.border}` }}>
                         {cat.icono} {cat.label}
                       </button>
                     ))}
@@ -791,7 +791,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                   const on = tab === key
                   return (
                     <button key={key} onClick={() => setTab(key)}
-                      style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:6, padding:"14px 8px", fontSize:13, fontWeight:600, cursor:"pointer", position:"relative", background: on ? "rgba(56,189,248,0.05)" : "transparent", border:"none",
+                      style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:6, padding:"14px 8px", fontSize:13, fontWeight:600, cursor:"pointer", position:"relative", background: on ? "rgba(34,197,94,0.05)" : "transparent", border:"none",
                         color: on ? D.primary : D.muted }}>
                       <Icon size={15} />
                       {label}
@@ -824,8 +824,8 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                     {productos.length === 0
                       ? (
                         <div style={{ textAlign:"center", padding:"56px 0", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
-                          <div style={{ width:56, height:56, borderRadius:"50%", background:"rgba(56,189,248,0.07)", border:"1px solid rgba(56,189,248,0.15)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                            <Store size={24} style={{ color:"rgba(56,189,248,0.4)" }} />
+                          <div style={{ width:56, height:56, borderRadius:"50%", background:"rgba(34,197,94,0.07)", border:"1px solid rgba(34,197,94,0.15)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                            <Store size={24} style={{ color:"rgba(34,197,94,0.4)" }} />
                           </div>
                           <p style={{ color:D.muted, fontSize:14 }}>Este productor aún no tiene productos disponibles</p>
                         </div>
@@ -847,7 +847,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
                       <span style={{ fontSize:15, fontWeight:700, color:D.text }}>Mi Carrito</span>
                       {cartCount > 0 && (
-                        <span style={{ fontSize:12, padding:"4px 12px", borderRadius:20, background:"rgba(56,189,248,0.12)", color:D.primary, border:"1px solid rgba(56,189,248,0.25)", fontWeight:600 }}>
+                        <span style={{ fontSize:12, padding:"4px 12px", borderRadius:20, background:"rgba(34,197,94,0.12)", color:D.primary, border:"1px solid rgba(34,197,94,0.25)", fontWeight:600 }}>
                           {cartCount} prod. — Bs {cartTotal.toFixed(2)}
                         </span>
                       )}
@@ -856,8 +856,8 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                         {cartItems.slice(0,5).map(item => (
                           <motion.div key={item.id} initial={{ opacity:0,y:10 }} animate={{ opacity:1,y:0 }}
-                            style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:14, background: isDark ? "rgba(56,189,248,0.04)" : D.bg, border:`1px solid ${D.border}` }}>
-                            <div style={{ width:46, height:46, borderRadius:10, overflow:"hidden", flexShrink:0, background:"rgba(56,189,248,0.08)" }}>
+                            style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:14, background: isDark ? "rgba(34,197,94,0.04)" : D.bg, border:`1px solid ${D.border}` }}>
+                            <div style={{ width:46, height:46, borderRadius:10, overflow:"hidden", flexShrink:0, background:"rgba(34,197,94,0.08)" }}>
                               <img src={item.imagen||"/placeholder.svg"} alt={item.nombre} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                             </div>
                             <div style={{ flex:1 }}>
@@ -870,7 +870,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                         {cartItems.length > 5 && (
                           <p style={{ textAlign:"center", fontSize:13, color:D.primary, padding:"10px 0" }}>+{cartItems.length-5} productos más</p>
                         )}
-                        <div style={{ marginTop:8, padding:"16px", borderRadius:14, background:"rgba(56,189,248,0.06)", border:"1px solid rgba(56,189,248,0.15)" }}>
+                        <div style={{ marginTop:8, padding:"16px", borderRadius:14, background:"rgba(34,197,94,0.06)", border:"1px solid rgba(34,197,94,0.15)" }}>
                           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
                             <span style={{ fontSize:13, color:D.muted }}>Total:</span>
                             <span style={{ fontSize:22, fontWeight:800, color:D.primary }}>Bs {cartTotal.toFixed(2)}</span>
@@ -884,15 +884,15 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                       </div>
                     ) : (
                       <div style={{ textAlign:"center", padding:"48px 0", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
-                        <div style={{ width:56, height:56, borderRadius:"50%", background:"rgba(56,189,248,0.06)", border:"1px solid rgba(56,189,248,0.15)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                          <ShoppingCart size={24} style={{ color:"rgba(56,189,248,0.4)" }} />
+                        <div style={{ width:56, height:56, borderRadius:"50%", background:"rgba(34,197,94,0.06)", border:"1px solid rgba(34,197,94,0.15)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                          <ShoppingCart size={24} style={{ color:"rgba(34,197,94,0.4)" }} />
                         </div>
                         <div>
                           <p style={{ fontWeight:600, color:D.text, margin:"0 0 4px", fontSize:14 }}>Tu carrito está vacío</p>
                           <p style={{ fontSize:12, color:D.muted, margin:0 }}>Agrega productos desde la pestaña Productos</p>
                         </div>
                         <button onClick={() => setTab("productos")}
-                          style={{ padding:"8px 18px", borderRadius:10, background:"rgba(56,189,248,0.1)", color:D.primary, border:`1px solid ${D.border}`, cursor:"pointer", fontSize:13, fontWeight:600 }}>
+                          style={{ padding:"8px 18px", borderRadius:10, background:"rgba(34,197,94,0.1)", color:D.primary, border:`1px solid ${D.border}`, cursor:"pointer", fontSize:13, fontWeight:600 }}>
                           Ver Productos
                         </button>
                       </div>
@@ -915,7 +915,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                             <div>
                               <label style={{ display:"block", fontSize:11, fontWeight:600, color:D.muted, marginBottom:5 }}>Producto</label>
                               <select value={reviewForm.producto_id} onChange={e => setReviewForm(p => ({ ...p, producto_id:e.target.value }))}
-                                style={{ width:"100%", padding:"8px 10px", background: isDark ? "rgba(56,189,248,0.05)" : D.bg, border:`1px solid ${D.border}`, borderRadius:9, color:D.text, fontSize:13, outline:"none" }}>
+                                style={{ width:"100%", padding:"8px 10px", background: isDark ? "rgba(34,197,94,0.05)" : D.bg, border:`1px solid ${D.border}`, borderRadius:9, color:D.text, fontSize:13, outline:"none" }}>
                                 <option value="">Selecciona un producto</option>
                                 {productos.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
                               </select>
@@ -934,7 +934,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                           </div>
                           <textarea value={reviewForm.comentario} onChange={e => setReviewForm(p => ({ ...p, comentario:e.target.value }))}
                             placeholder="Cuéntanos tu experiencia…" rows={3}
-                            style={{ width:"100%", padding:"8px 10px", background: isDark ? "rgba(56,189,248,0.05)" : D.bg, border:`1px solid ${D.border}`, borderRadius:9, color:D.text, fontSize:13, outline:"none", resize:"vertical", boxSizing:"border-box", marginBottom:12 }} />
+                            style={{ width:"100%", padding:"8px 10px", background: isDark ? "rgba(34,197,94,0.05)" : D.bg, border:`1px solid ${D.border}`, borderRadius:9, color:D.text, fontSize:13, outline:"none", resize:"vertical", boxSizing:"border-box", marginBottom:12 }} />
                           <button type="submit" disabled={submitting}
                             style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"9px 18px", borderRadius:10, background:`linear-gradient(135deg,${D.primary},#14b8a6)`, color:"#fff", border:"none", cursor:"pointer", fontWeight:700, fontSize:13, opacity:submitting ? 0.6 : 1 }}>
                             {submitting ? <Loader size={13} style={{ animation:"spin 1s linear infinite" }} /> : <Send size={13} />}
@@ -965,7 +965,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                                   </div>
                                   {r.comentario && <p style={{ fontSize:13, color:D.muted, margin:0, lineHeight:1.55 }}>{r.comentario}</p>}
                                   {r.respuesta && (
-                                    <div style={{ marginTop:8, padding:"8px 10px", background: isDark ? "rgba(56,189,248,0.06)" : "rgba(56,189,248,0.05)", borderRadius:8, borderLeft:`3px solid ${D.primary}` }}>
+                                    <div style={{ marginTop:8, padding:"8px 10px", background: isDark ? "rgba(34,197,94,0.06)" : "rgba(34,197,94,0.05)", borderRadius:8, borderLeft:`3px solid ${D.primary}` }}>
                                       <p style={{ fontSize:11, fontWeight:700, color:D.primary, margin:"0 0 3px" }}>Respuesta del productor</p>
                                       <p style={{ fontSize:11, color:D.muted, margin:0 }}>{r.respuesta}</p>
                                     </div>
@@ -1005,9 +1005,9 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                             const on = esDia(productor.dias_envio, d.key)
                             return (
                               <div key={d.key} style={{ width:36, height:36, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700,
-                                background: on ? "rgba(56,189,248,0.18)" : isDark ? "rgba(255,255,255,0.04)" : D.bg,
+                                background: on ? "rgba(34,197,94,0.18)" : isDark ? "rgba(255,255,255,0.04)" : D.bg,
                                 color: on ? D.primary : D.dim,
-                                border: on ? "1px solid rgba(56,189,248,0.4)" : `1px solid ${D.border}` }}>
+                                border: on ? "1px solid rgba(34,197,94,0.4)" : `1px solid ${D.border}` }}>
                                 {d.label}
                               </div>
                             )
@@ -1023,7 +1023,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                         </p>
                         <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
                           {productor.metodos_envio.map((m,i) => (
-                            <span key={i} style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", borderRadius:10, fontSize:12, fontWeight:500, background: isDark ? "rgba(56,189,248,0.05)" : D.bg, border:`1px solid ${D.border}`, color:D.text }}>
+                            <span key={i} style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", borderRadius:10, fontSize:12, fontWeight:500, background: isDark ? "rgba(34,197,94,0.05)" : D.bg, border:`1px solid ${D.border}`, color:D.text }}>
                               <Truck size={12} color={D.primary} />{typeof m === "object" ? m.nombre : m}
                             </span>
                           ))}

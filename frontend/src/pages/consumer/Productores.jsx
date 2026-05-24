@@ -232,7 +232,7 @@ const Productores = () => {
                 <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: D.primary, pointerEvents: 'none' }} size={16} />
                 <input type="text" placeholder="Buscar productores, ciudades..."
                   value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                  style={{ paddingLeft: 36, paddingRight: searchTerm ? 36 : 12, paddingTop: 9, paddingBottom: 9, background: 'rgba(56,189,248,0.05)', border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 13, outline: 'none', width: 240 }}
+                  style={{ paddingLeft: 36, paddingRight: searchTerm ? 36 : 12, paddingTop: 9, paddingBottom: 9, background: 'rgba(34,197,94,0.05)', border: `1px solid ${D.border}`, borderRadius: 10, color: D.text, fontSize: 13, outline: 'none', width: 240 }}
                   onFocus={e => e.target.style.borderColor = D.primary}
                   onBlur={e => e.target.style.borderColor = D.border}
                 />
@@ -255,7 +255,7 @@ const Productores = () => {
 
               {/* Filters button */}
               <button onClick={() => setShowFilters(!showFilters)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', borderRadius: 10, border: `1px solid ${hasActiveFilters ? D.primary : D.border}`, background: hasActiveFilters ? `rgba(56,189,248,0.1)` : 'rgba(56,189,248,0.04)', color: hasActiveFilters ? D.primary : D.muted, cursor: 'pointer', fontWeight: 600, fontSize: 13 }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', borderRadius: 10, border: `1px solid ${hasActiveFilters ? D.primary : D.border}`, background: hasActiveFilters ? `rgba(34,197,94,0.1)` : 'rgba(34,197,94,0.04)', color: hasActiveFilters ? D.primary : D.muted, cursor: 'pointer', fontWeight: 600, fontSize: 13 }}>
                 <Filter size={16} />
                 Filtros
                 {hasActiveFilters && (
@@ -268,7 +268,7 @@ const Productores = () => {
 
               {/* Mapa button */}
               <button onClick={() => navigate('/dashboard-consumidor/mapa-productores')}
-                style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 14px', borderRadius: 10, border: `1px solid rgba(56,189,248,0.35)`, background: 'rgba(56,189,248,0.08)', color: D.primary, cursor: 'pointer', fontWeight: 600, fontSize: 13 }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 14px', borderRadius: 10, border: `1px solid rgba(34,197,94,0.35)`, background: 'rgba(34,197,94,0.08)', color: D.primary, cursor: 'pointer', fontWeight: 600, fontSize: 13 }}>
                 <MapPin size={15} /> Ver mapa
               </button>
             </div>
@@ -278,7 +278,7 @@ const Productores = () => {
           <AnimatePresence>
             {showFilters && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                style={{ marginTop: 16, padding: 20, background: 'rgba(56,189,248,0.04)', borderRadius: 14, border: `1px solid ${D.border}`, overflow: 'hidden' }}>
+                style={{ marginTop: 16, padding: 20, background: 'rgba(34,197,94,0.04)', borderRadius: 14, border: `1px solid ${D.border}`, overflow: 'hidden' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 16 }}>
                   {[
                     { label: 'Especialidad', value: selectedSpecialty, onChange: setSelectedSpecialty, options: [['', 'Todas las especialidades'], ...especialidades.map(e => [e, e])] },
@@ -312,7 +312,7 @@ const Productores = () => {
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16, marginBottom: 24 }}>
           {[
-            { icon: Users, label: 'Productores Activos', value: stats.total, color: D.primary, glow: 'rgba(56,189,248,0.15)' },
+            { icon: Users, label: 'Productores Activos', value: stats.total, color: D.primary, glow: 'rgba(34,197,94,0.15)' },
             { icon: Clock, label: 'Disponibles Hoy', value: stats.disponibles, color: D.teal, glow: 'rgba(20,184,166,0.15)' },
             { icon: Package, label: 'Productos Totales', value: stats.productos, color: '#4ade80', glow: 'rgba(74,222,128,0.15)' },
             { icon: Star, label: 'Calificación Promedio', value: stats.rating.toFixed(1), color: '#fbbf24', glow: 'rgba(251,191,36,0.15)' },
@@ -400,7 +400,7 @@ const Productores = () => {
 
                     {/* Pills */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: D.muted, background: `rgba(56,189,248,0.08)`, border: `1px solid ${D.border}`, padding: '3px 8px', borderRadius: 20 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: D.muted, background: `rgba(34,197,94,0.08)`, border: `1px solid ${D.border}`, padding: '3px 8px', borderRadius: 20 }}>
                         <MapPin size={9} /> {productor.ciudad || "Bolivia"}
                       </span>
                       {productor.especialidad && (
@@ -447,7 +447,7 @@ const Productores = () => {
           {totalPages > 1 && (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 24 }}>
               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
-                style={{ padding: '8px 16px', borderRadius: 10, border: `1px solid ${D.border}`, background: currentPage === 1 ? 'transparent' : `rgba(56,189,248,0.08)`, color: currentPage === 1 ? D.dim : D.primary, cursor: currentPage === 1 ? 'default' : 'pointer', fontWeight: 600, fontSize: 13 }}>
+                style={{ padding: '8px 16px', borderRadius: 10, border: `1px solid ${D.border}`, background: currentPage === 1 ? 'transparent' : `rgba(34,197,94,0.08)`, color: currentPage === 1 ? D.dim : D.primary, cursor: currentPage === 1 ? 'default' : 'pointer', fontWeight: 600, fontSize: 13 }}>
                 ← Anterior
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
@@ -457,7 +457,7 @@ const Productores = () => {
                 </button>
               ))}
               <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                style={{ padding: '8px 16px', borderRadius: 10, border: `1px solid ${D.border}`, background: currentPage === totalPages ? 'transparent' : `rgba(56,189,248,0.08)`, color: currentPage === totalPages ? D.dim : D.primary, cursor: currentPage === totalPages ? 'default' : 'pointer', fontWeight: 600, fontSize: 13 }}>
+                style={{ padding: '8px 16px', borderRadius: 10, border: `1px solid ${D.border}`, background: currentPage === totalPages ? 'transparent' : `rgba(34,197,94,0.08)`, color: currentPage === totalPages ? D.dim : D.primary, cursor: currentPage === totalPages ? 'default' : 'pointer', fontWeight: 600, fontSize: 13 }}>
                 Siguiente →
               </button>
             </div>

@@ -72,6 +72,8 @@ async function startServer() {
        )`,
       `CREATE INDEX IF NOT EXISTS idx_reserva_items_reserva ON reserva_items(reserva_id)`,
       `ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS pago_verificado BOOLEAN DEFAULT false`,
+      `ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS resumen_mensual_ia TEXT`,
+      `ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS resumen_mensual_at TIMESTAMP`,
     ];
     for (const sql of safeMigrations) {
       try {

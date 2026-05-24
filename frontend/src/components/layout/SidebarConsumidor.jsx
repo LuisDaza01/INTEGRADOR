@@ -37,18 +37,25 @@ const SidebarConsumidor = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
 
+  // Breakpoints responsive:
+  //  < 900 px   → mobile: drawer con hamburguesa (incluye tablets en vertical y celulares en horizontal).
+  //  900-1279px → desktop con sidebar colapsada (solo iconos, 72px).
+  //  ≥ 1280 px  → desktop con sidebar expandida (260px + labels).
   useEffect(() => {
+    let raf = null
     const check = () => {
-      const mobile = window.innerWidth < 768
-      setIsMobile(mobile)
-      if (!mobile && isMobileMenuOpen) setIsMobileMenuOpen(false)
-      if (window.innerWidth >= 768 && window.innerWidth < 1024) setIsCollapsed(true)
-      else if (window.innerWidth >= 1024) setIsCollapsed(false)
+      const w = window.innerWidth
+      const mobile = w < 900
+      setIsMobile(prev => prev !== mobile ? mobile : prev)
+      if (!mobile) setIsMobileMenuOpen(false)
+      if (w >= 900 && w < 1280) setIsCollapsed(true)
+      else if (w >= 1280) setIsCollapsed(false)
     }
+    const debounced = () => { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(check) }
     check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [isMobileMenuOpen])
+    window.addEventListener('resize', debounced)
+    return () => { window.removeEventListener('resize', debounced); if (raf) cancelAnimationFrame(raf) }
+  }, [])
 
   useEffect(() => {
     const esc = e => { if (e.key === 'Escape' && isMobileMenuOpen) setIsMobileMenuOpen(false) }
@@ -188,7 +195,7 @@ const SidebarConsumidor = () => {
               background: 'linear-gradient(135deg,#16a34a,#22C55E)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 14, fontWeight: 700, color: '#fff',
-              boxShadow: '0 0 10px rgba(56,189,248,0.25)',
+              boxShadow: '0 0 10px rgba(34,197,94,0.25)',
             }}>
               {iniciales}
             </div>
@@ -244,13 +251,22 @@ const SidebarConsumidor = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
             onClick={e => e.stopPropagation()}
+            className="np-logout-modal"
             style={{
               background: 'rgba(10,15,30,0.98)',
               border: `1px solid rgba(248,113,113,0.3)`,
-              borderRadius: 18, padding: 28, maxWidth: 360, width: '100%',
+              borderRadius: 18, maxWidth: 360, width: '100%',
               boxShadow: '0 0 40px rgba(248,113,113,0.15)',
             }}
           >
+            <style>{`
+              .np-logout-modal { padding: 28px; }
+              .np-logout-modal .np-logout-actions { display: flex; gap: 12px; }
+              @media (max-width: 420px) {
+                .np-logout-modal { padding: 20px; border-radius: 16px; }
+                .np-logout-modal .np-logout-actions { flex-direction: column-reverse; gap: 8px; }
+              }
+            `}</style>
             <div style={{ textAlign: 'center' }}>
               <div style={{
                 width: 52, height: 52, borderRadius: '50%', background: 'rgba(248,113,113,0.12)',
@@ -263,16 +279,18 @@ const SidebarConsumidor = () => {
               <p style={{ color: D.muted, fontSize: 13, margin: '0 0 24px', lineHeight: 1.5 }}>
                 ¿Estás seguro? Tendrás que iniciar sesión nuevamente.
               </p>
-              <div style={{ display: 'flex', gap: 12 }}>
+              <div className="np-logout-actions">
                 <button onClick={() => setShowLogoutModal(false)} style={{
-                  flex: 1, padding: '11px 0', borderRadius: 10, border: `1px solid ${D.border}`,
+                  flex: 1, padding: '12px 0', borderRadius: 10, border: `1px solid ${D.border}`,
                   background: 'rgba(34,197,94,0.06)', color: D.text, fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  minHeight: 44,
                 }}>
                   Cancelar
                 </button>
                 <button onClick={() => { logout(); setShowLogoutModal(false) }} style={{
-                  flex: 1, padding: '11px 0', borderRadius: 10, border: 'none',
+                  flex: 1, padding: '12px 0', borderRadius: 10, border: 'none',
                   background: 'linear-gradient(135deg,#dc2626,#ef4444)', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  minHeight: 44,
                 }}>
                   Cerrar Sesión
                 </button>
@@ -319,7 +337,8 @@ const SidebarConsumidor = () => {
               initial={{ x: -300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
               style={{
-                position: 'fixed', left: 0, top: 0, bottom: 0, width: 300,
+                position: 'fixed', left: 0, top: 0, bottom: 0,
+                width: 'min(300px, 86vw)', maxWidth: 320,
                 background: D.surface,
                 border: `1px solid ${D.border}`,
                 borderLeft: 'none',

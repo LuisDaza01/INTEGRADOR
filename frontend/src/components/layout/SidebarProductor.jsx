@@ -45,21 +45,26 @@ const SidebarProductor = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
 
+  // Breakpoints alineados con el sidebar del consumidor:
+  //  < 900 px   → mobile (drawer + hamburguesa).
+  //  900-1279px → tablet/desktop colapsado (icon-only).
+  //  ≥ 1280 px  → desktop expandido (label + icon).
   useEffect(() => {
+    let raf = null
     const updateScreenSize = () => {
-      const width = window.innerWidth
-      const mobile = width < 768
-      setIsMobile(mobile)
-      if (width < 768) { setScreenSize('mobile'); setExpanded(false) }
-      else if (width < 1024) { setScreenSize('tablet'); setExpanded(false) }
-      else if (width < 1280) { setScreenSize('desktop'); setExpanded(true) }
-      else { setScreenSize('large'); setExpanded(true) }
-      if (!mobile && isMobileMenuOpen) setIsMobileMenuOpen(false)
+      const w = window.innerWidth
+      const mobile = w < 900
+      setIsMobile(prev => prev !== mobile ? mobile : prev)
+      if (w < 900)       { setScreenSize('mobile');  setExpanded(false) }
+      else if (w < 1280) { setScreenSize('tablet');  setExpanded(false) }
+      else               { setScreenSize('desktop'); setExpanded(true)  }
+      if (!mobile) setIsMobileMenuOpen(false)
     }
+    const debounced = () => { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(updateScreenSize) }
     updateScreenSize()
-    window.addEventListener("resize", updateScreenSize)
-    return () => window.removeEventListener("resize", updateScreenSize)
-  }, [isMobileMenuOpen])
+    window.addEventListener("resize", debounced)
+    return () => { window.removeEventListener("resize", debounced); if (raf) cancelAnimationFrame(raf) }
+  }, [])
 
   useEffect(() => {
     const handleEscKey = (event) => {
@@ -566,9 +571,17 @@ const LogoutModal = ({ showLogoutModal, confirmLogout, cancelLogout }) => {
         style={{ background: 'rgba(0,0,0,0.7)' }} onClick={cancelLogout}>
         <motion.div initial={{ scale: 0.85, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.85, opacity: 0, y: 20 }} transition={{ duration: 0.3, ease: "easeOut" }}
-          className="rounded-2xl p-6 max-w-sm w-full"
+          className="np-logout-modal-p rounded-2xl max-w-sm w-full"
           style={{ background: D.card, border: '1px solid rgba(239,68,68,0.2)', boxShadow: '0 0 40px rgba(239,68,68,0.15)' }}
           onClick={e => e.stopPropagation()}>
+          <style>{`
+            .np-logout-modal-p { padding: 24px; }
+            .np-logout-modal-p .np-logout-actions-p { display: flex; gap: 12px; }
+            @media (max-width: 420px) {
+              .np-logout-modal-p { padding: 18px; border-radius: 14px; }
+              .np-logout-modal-p .np-logout-actions-p { flex-direction: column-reverse; gap: 8px; }
+            }
+          `}</style>
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-full mb-4"
               style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', boxShadow: '0 0 20px rgba(239,68,68,0.2)' }}>
@@ -578,15 +591,15 @@ const LogoutModal = ({ showLogoutModal, confirmLogout, cancelLogout }) => {
             <p className="text-sm mb-6 leading-relaxed" style={{ color: D.muted }}>
               Tendrás que iniciar sesión nuevamente para acceder al panel de productor.
             </p>
-            <div className="flex gap-3">
+            <div className="np-logout-actions-p">
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={cancelLogout}
-                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors"
-                style={{ background: D.surface, color: D.muted, border: `1px solid ${D.border}` }}>
+                className="flex-1 text-sm font-semibold rounded-xl transition-colors"
+                style={{ background: D.surface, color: D.muted, border: `1px solid ${D.border}`, padding: '12px 16px', minHeight: 44 }}>
                 Cancelar
               </motion.button>
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={confirmLogout}
-                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all"
-                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', color: '#fff', boxShadow: '0 0 16px rgba(220,38,38,0.3)' }}>
+                className="flex-1 text-sm font-semibold rounded-xl transition-all"
+                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', color: '#fff', boxShadow: '0 0 16px rgba(220,38,38,0.3)', padding: '12px 16px', minHeight: 44 }}>
                 Cerrar Sesión
               </motion.button>
             </div>

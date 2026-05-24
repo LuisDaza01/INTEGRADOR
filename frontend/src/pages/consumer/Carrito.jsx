@@ -46,7 +46,7 @@ const StepIndicator = ({ step }) => {
                 background: done ? D.teal : 'transparent',
                 border: `2px solid ${done ? D.teal : current ? D.primary : D.dim}`,
                 color: done ? '#fff' : current ? D.primary : D.dim,
-                boxShadow: current ? `0 0 14px rgba(56,189,248,0.4)` : 'none',
+                boxShadow: current ? `0 0 14px rgba(34,197,94,0.4)` : 'none',
                 transition: 'all 0.3s',
               }}>
                 {done ? <Check size={16} /> : num}
@@ -78,7 +78,7 @@ const ModoToggle = ({ modo, onModo }) => {
   return (
   <div style={{
     display: 'flex', borderRadius: 10, overflow: 'hidden',
-    background: 'rgba(56,189,248,0.05)',
+    background: 'rgba(34,197,94,0.05)',
     border: `1px solid ${D.border}`,
     marginTop: 12,
   }}>
@@ -126,7 +126,7 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
         ) : (
           <div style={{
             width: 64, height: 64, borderRadius: 10, flexShrink: 0,
-            background: 'rgba(56,189,248,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Fish size={26} color={D.primary} />
           </div>
@@ -160,7 +160,7 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 10,
-              background: 'rgba(56,189,248,0.06)', borderRadius: 10, padding: '6px 12px',
+              background: 'rgba(34,197,94,0.06)', borderRadius: 10, padding: '6px 12px',
               border: `1px solid ${D.border}`,
             }}>
               <button onClick={() => onQuantity(item.id, item.cantidad - 1)}
@@ -194,7 +194,7 @@ const CartItemRow = ({ item, modo, pesoKg, onModo, onPesoKg, onQuantity, onRemov
               display: 'flex', alignItems: 'center', gap: 8,
               border: `1.5px solid ${pesoKg && !pesoValido ? D.red : D.border}`,
               borderRadius: 10, padding: '8px 12px',
-              background: 'rgba(56,189,248,0.04)',
+              background: 'rgba(34,197,94,0.04)',
               flex: 1,
             }}>
               <Scale size={15} color={D.muted} />
@@ -411,7 +411,7 @@ const Carrito = () => {
         background: ctaDisabled ? D.dim : `linear-gradient(135deg, ${D.teal}, ${D.primary})`,
         color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0',
         fontSize: 15, fontWeight: 700, cursor: ctaDisabled ? 'not-allowed' : 'pointer',
-        boxShadow: ctaDisabled ? 'none' : `0 0 20px rgba(56,189,248,0.3)`,
+        boxShadow: ctaDisabled ? 'none' : `0 0 20px rgba(34,197,94,0.3)`,
         transition: 'all 0.2s',
       }}>
         {ctaLabel}
@@ -426,7 +426,7 @@ const Carrito = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <h2 style={{ color: D.text, fontWeight: 800, fontSize: 22, margin: 0 }}>Mi reserva</h2>
         <button onClick={fetchCarrito} style={{
-          background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`,
+          background: 'rgba(34,197,94,0.08)', border: `1px solid ${D.border}`,
           borderRadius: 10, padding: '7px 10px', cursor: 'pointer', color: D.muted,
         }}>
           <RefreshCw size={16} />
@@ -462,12 +462,13 @@ const Carrito = () => {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
+        <div className="cart-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
+          <style>{`@media (max-width: 900px) { .cart-grid { grid-template-columns: 1fr !important; } }`}</style>
           <div>
             {/* Banner info */}
             <div style={{
               display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px',
-              background: 'rgba(56,189,248,0.06)', border: `1px solid rgba(56,189,248,0.2)`,
+              background: 'rgba(34,197,94,0.06)', border: `1px solid rgba(34,197,94,0.2)`,
               borderRadius: 12, marginBottom: 16, fontSize: 13, color: D.muted,
             }}>
               <Info size={16} color={D.primary} style={{ flexShrink: 0, marginTop: 1 }} />
@@ -517,7 +518,7 @@ const Carrito = () => {
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
         <button onClick={() => setStep(1)} style={{
-          background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`,
+          background: 'rgba(34,197,94,0.08)', border: `1px solid ${D.border}`,
           borderRadius: 10, padding: '8px 10px', cursor: 'pointer', color: D.muted,
         }}>
           <ArrowLeft size={18} />
@@ -586,7 +587,7 @@ const Carrito = () => {
           background: fechaSel ? `linear-gradient(135deg, ${D.teal}, ${D.primary})` : D.dim,
           color: '#fff', border: 'none', borderRadius: 14, padding: '14px 0',
           fontSize: 16, fontWeight: 700, cursor: fechaSel ? 'pointer' : 'not-allowed',
-          boxShadow: fechaSel ? `0 0 24px rgba(56,189,248,0.3)` : 'none', transition: 'all 0.2s',
+          boxShadow: fechaSel ? `0 0 24px rgba(34,197,94,0.3)` : 'none', transition: 'all 0.2s',
         }}>
         Continuar <ArrowRight size={20} />
       </button>
@@ -618,7 +619,7 @@ const Carrito = () => {
 
             {reservasCreadas.map((r, i) => (
               <div key={i} style={{
-                background: 'rgba(56,189,248,0.06)', border: `1px solid ${D.border}`,
+                background: 'rgba(34,197,94,0.06)', border: `1px solid ${D.border}`,
                 borderRadius: 16, padding: 16, marginBottom: 12,
               }}>
                 <div style={{ fontSize: 12, color: D.muted, marginBottom: 4 }}>{r.productor}</div>
@@ -637,7 +638,7 @@ const Carrito = () => {
               background: `linear-gradient(135deg, ${D.teal}, ${D.primary})`,
               color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0',
               fontSize: 15, fontWeight: 700, cursor: 'pointer',
-              boxShadow: `0 0 20px rgba(56,189,248,0.3)`,
+              boxShadow: `0 0 20px rgba(34,197,94,0.3)`,
             }}>
               <Package size={18} /> Ver mis reservas
             </button>
@@ -650,7 +651,7 @@ const Carrito = () => {
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <button onClick={() => setStep(2)} style={{
-            background: 'rgba(56,189,248,0.08)', border: `1px solid ${D.border}`,
+            background: 'rgba(34,197,94,0.08)', border: `1px solid ${D.border}`,
             borderRadius: 10, padding: '8px 10px', cursor: 'pointer', color: D.muted,
           }}>
             <ArrowLeft size={18} />
@@ -661,7 +662,7 @@ const Carrito = () => {
         {/* Fecha elegida */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 12, padding: 16,
-          background: 'rgba(56,189,248,0.08)', border: `1px solid rgba(56,189,248,0.25)`,
+          background: 'rgba(34,197,94,0.08)', border: `1px solid rgba(34,197,94,0.25)`,
           borderRadius: 14, marginBottom: 14,
         }}>
           <Calendar size={20} color={D.primary} />
@@ -740,7 +741,7 @@ const Carrito = () => {
         <div style={{
           position: 'absolute', top: '-15%', left: '10%',
           width: 500, height: 500, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(56,189,248,0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(34,197,94,0.05) 0%, transparent 70%)',
         }} />
         <div style={{
           position: 'absolute', bottom: '5%', right: '5%',

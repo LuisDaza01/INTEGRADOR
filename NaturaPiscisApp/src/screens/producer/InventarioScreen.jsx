@@ -54,6 +54,25 @@ export default function InventarioScreen() {
   const [productoModal,   setProductoModal]   = useState(false);
   const [editandoProd,    setEditandoProd]    = useState(null); // producto o null
   const [productoForm,    setProductoForm]    = useState({ nombre: '', descripcion: '', precio: '', stock: '', categoria_id: '' });
+  const [iaGenerando,     setIaGenerando]     = useState(false);
+
+  // Genera descripción del producto con IA (Claude). Reusa nombre + categoría seleccionada.
+  const generarDescripcionIA = async () => {
+    if (!productoForm.nombre.trim()) { Alert.alert('Escribe primero el nombre del producto'); return; }
+    setIaGenerando(true);
+    try {
+      const catNombre = categorias.find(c => String(c.id) === String(productoForm.categoria_id))?.nombre || '';
+      const res = await api.post('/productos/generar-descripcion', {
+        nombre:    productoForm.nombre.trim(),
+        categoria: catNombre,
+      });
+      const desc = res.data?.data?.descripcion || res.data?.descripcion;
+      if (desc) setProductoForm(f => ({ ...f, descripcion: desc }));
+      else Alert.alert('Sin respuesta', 'La IA no devolvió texto. Intenta de nuevo.');
+    } catch (e) {
+      Alert.alert('Error', e?.response?.data?.message || 'No se pudo generar la descripción.');
+    } finally { setIaGenerando(false); }
+  };
   const [imagenesProd,    setImagenesProd]    = useState([]);   // [{ id, url?, uri?, nuevo }]
   const [savingProducto,  setSavingProducto]  = useState(false);
   const [togglingId,      setTogglingId]      = useState(null);
@@ -1010,7 +1029,27 @@ export default function InventarioScreen() {
                 onChangeText={t => setProductoForm(f => ({ ...f, nombre: t }))}
                 placeholder="Ej. Trucha fresca" placeholderTextColor={C.textSecondary} />
 
-              <Text style={S.inputLabel}>Descripción</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={S.inputLabel}>Descripción</Text>
+                <TouchableOpacity
+                  onPress={generarDescripcionIA}
+                  disabled={iaGenerando || !productoForm.nombre.trim()}
+                  style={{
+                    flexDirection: 'row', alignItems: 'center', gap: 4,
+                    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8,
+                    backgroundColor: productoForm.nombre.trim() ? C.primary + '22' : 'transparent',
+                    borderWidth: 1, borderColor: productoForm.nombre.trim() ? C.primary + '55' : C.border,
+                    opacity: productoForm.nombre.trim() ? 1 : 0.5,
+                    marginBottom: 4,
+                  }}>
+                  {iaGenerando
+                    ? <ActivityIndicator size="small" color={C.primary} />
+                    : <Ionicons name="sparkles" size={12} color={C.primary} />}
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: C.primary }}>
+                    {iaGenerando ? 'Generando…' : 'Generar IA'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <TextInput style={[S.input, { height: 64, textAlignVertical: 'top' }]} multiline
                 value={productoForm.descripcion}
                 onChangeText={t => setProductoForm(f => ({ ...f, descripcion: t }))}

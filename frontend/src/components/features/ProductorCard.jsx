@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, memo } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Award, Calendar, ChevronRight, Fish, Star } from "lucide-react"
 import { useTheme } from "../../contexts/ThemeContext"
@@ -168,4 +168,5 @@ const ProductorCard = ({ productor, onClick }) => {
   )
 }
 
-export default ProductorCard
+// memo evita re-renders de toda la lista cuando solo cambia el filtro
+export default memo(ProductorCard)

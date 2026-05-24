@@ -194,7 +194,7 @@ const DashboardConsumidor = () => {
                     transition={{ duration: 0.15 }}
                     style={{
                       position: 'absolute', right: 0, top: 'calc(100% + 8px)',
-                      width: 320,
+                      width: 'min(320px, 92vw)', maxHeight: '70vh',
                       background: isDark ? 'rgba(10,15,30,0.98)' : 'rgba(255,255,255,0.98)',
                       border: `1px solid ${D.border}`,
                       borderRadius: 14,

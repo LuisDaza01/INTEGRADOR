@@ -111,17 +111,17 @@ const Tienda = () => {
       {/* ── Hero banner (kept dark as brand element) ──────────────── */}
       <div style={{ position: 'relative', overflow: 'hidden', minHeight: 140 }}>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #0c1e45 0%, #0a1835 40%, #060d1f 100%)' }} />
-        <div style={{ position: 'absolute', top: -40, left: '15%', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 70%)', filter: 'blur(30px)' }} />
+        <div style={{ position: 'absolute', top: -40, left: '15%', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 70%)', filter: 'blur(30px)' }} />
         <div style={{ position: 'absolute', top: -20, right: '10%', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(20,184,166,0.1) 0%, transparent 70%)', filter: 'blur(24px)' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40, background: `linear-gradient(to bottom, transparent, ${heroFade})` }} />
 
         <div style={{ position: 'relative', zIndex: 10, padding: '32px 24px 24px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(56,189,248,0.12)', border: '1px solid rgba(56,189,248,0.25)' }}>
-              <Store size={20} color="#38bdf8" />
+            <div style={{ width: 40, height: 40, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)' }}>
+              <Store size={20} color="#22C55E" />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, background: 'linear-gradient(90deg, #e2e8f0, #38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, background: 'linear-gradient(90deg, #e2e8f0, #22C55E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Productores
               </h1>
               <p style={{ color: '#64748b', fontSize: 12, margin: 0 }}>Acuicultura sostenible · Productos frescos</p>
@@ -135,11 +135,11 @@ const Tienda = () => {
               placeholder="Buscar productores..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              style={{ width: '100%', paddingLeft: 36, paddingRight: 32, paddingTop: 10, paddingBottom: 10, borderRadius: 12, fontSize: 14, outline: 'none', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(56,189,248,0.2)', color: '#e2e8f0', backdropFilter: 'blur(8px)', boxSizing: 'border-box' }}
-              onFocus={e => e.target.style.borderColor = 'rgba(56,189,248,0.5)'}
-              onBlur={e  => e.target.style.borderColor = 'rgba(56,189,248,0.2)'}
+              style={{ width: '100%', paddingLeft: 36, paddingRight: 32, paddingTop: 10, paddingBottom: 10, borderRadius: 12, fontSize: 14, outline: 'none', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#e2e8f0', backdropFilter: 'blur(8px)', boxSizing: 'border-box' }}
+              onFocus={e => e.target.style.borderColor = 'rgba(34,197,94,0.5)'}
+              onBlur={e  => e.target.style.borderColor = 'rgba(34,197,94,0.2)'}
             />
-            <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#38bdf8', pointerEvents: 'none' }} />
+            <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#22C55E', pointerEvents: 'none' }} />
             {searchTerm && (
               <button onClick={() => setSearchTerm('')} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 <X size={14} style={{ color: '#64748b' }} />
@@ -153,7 +153,9 @@ const Tienda = () => {
 
         {/* ── Stats strip ──────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="np-stats-grid"
           style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 16, marginTop: 16 }}>
+          <style>{`@media (max-width: 600px) { .np-stats-grid { grid-template-columns: 1fr !important; } }`}</style>
           {[
             { label: 'Productores activos',   value: loading ? '…' : productores.length + (hasMore ? '+' : '') },
             { label: 'Productos disponibles', value: loading ? '…' : productores.reduce((a, p) => a + (p.total_productos || 0), 0).toString().padStart(3, '0') },
@@ -178,7 +180,7 @@ const Tienda = () => {
                 Filtros{activeFilters ? ' activos' : ''}
               </span>
               {activeFilters && (
-                <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 20, fontWeight: 700, background: `rgba(56,189,248,0.15)`, color: D.primary }}>
+                <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 20, fontWeight: 700, background: `rgba(34,197,94,0.15)`, color: D.primary }}>
                   {[filterVerificado, filterCertificados, sortBy !== ''].filter(Boolean).length}
                 </span>
               )}
@@ -206,7 +208,7 @@ const Tienda = () => {
                     {/* Verificado */}
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                       <button onClick={() => setFilterVerificado(v => !v)}
-                        style={{ width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', background: filterVerificado ? 'rgba(56,189,248,0.2)' : checkBg, border: `1.5px solid ${filterVerificado ? D.primary : checkBord}`, cursor: 'pointer' }}>
+                        style={{ width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', background: filterVerificado ? 'rgba(34,197,94,0.2)' : checkBg, border: `1.5px solid ${filterVerificado ? D.primary : checkBord}`, cursor: 'pointer' }}>
                         {filterVerificado && <CheckCircle2 size={13} color={D.primary} />}
                       </button>
                       <span style={{ fontSize: 14, color: filterVerificado ? D.primary : D.muted }}>Solo verificados</span>
@@ -215,7 +217,7 @@ const Tienda = () => {
                     {/* Certificados */}
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                       <button onClick={() => setFilterCertificados(v => !v)}
-                        style={{ width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', background: filterCertificados ? 'rgba(56,189,248,0.2)' : checkBg, border: `1.5px solid ${filterCertificados ? D.primary : checkBord}`, cursor: 'pointer' }}>
+                        style={{ width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', background: filterCertificados ? 'rgba(34,197,94,0.2)' : checkBg, border: `1.5px solid ${filterCertificados ? D.primary : checkBord}`, cursor: 'pointer' }}>
                         {filterCertificados && <CheckCircle2 size={13} color={D.primary} />}
                       </button>
                       <span style={{ fontSize: 14, color: filterCertificados ? D.primary : D.muted }}>Con certificaciones</span>

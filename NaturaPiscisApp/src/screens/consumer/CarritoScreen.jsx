@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
   Image, RefreshControl, Alert, ActivityIndicator, Dimensions, Platform, TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
@@ -594,10 +595,15 @@ const CarritoScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
       {renderStepIndicator()}
       <ScrollView
         style={styles.content}
+        keyboardShouldPersistTaps="handled"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
         showsVerticalScrollIndicator={false}
       >
@@ -638,7 +644,7 @@ const CarritoScreen = ({ navigation }) => {
           </View>
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -2,11 +2,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  RefreshControl, ActivityIndicator, Dimensions, Image, TextInput,
+  RefreshControl, ActivityIndicator, Dimensions, Image, TextInput, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import Svg, { Rect, Text as SvgText, Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import api from '../../api/axios.config';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -239,6 +241,39 @@ const EstadisticasScreen = ({ navigation }) => {
   const [error,               setError]               = useState(null);
   const [productosConResenas, setProductosConResenas] = useState([]);
   const [loadingResenas,      setLoadingResenas]      = useState(false);
+  const [descargandoExcel,    setDescargandoExcel]    = useState(false);
+
+  // Descarga el reporte Excel del backend y abre el "share sheet" para guardar/enviar
+  const descargarExcel = async () => {
+    setDescargandoExcel(true);
+    try {
+      const res = await api.get('/estadisticas/excel', { responseType: 'arraybuffer' });
+      // arraybuffer → base64 (Hermes / RN moderno proveen btoa global)
+      const bytes = new Uint8Array(res.data);
+      let binary = '';
+      const CHUNK = 0x8000;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+      }
+      const base64 = global.btoa ? global.btoa(binary) : btoa(binary);
+
+      const filename = `naturapiscis-reporte-${new Date().toISOString().slice(0,10)}.xlsx`;
+      const fileUri  = FileSystem.cacheDirectory + filename;
+      await FileSystem.writeAsStringAsync(fileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          dialogTitle: 'Reporte NaturaPiscis',
+          UTI: 'com.microsoft.excel.xlsx',
+        });
+      } else {
+        Alert.alert('Archivo guardado', `Ubicación: ${fileUri}`);
+      }
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo descargar el Excel. Intenta de nuevo.');
+    } finally { setDescargandoExcel(false); }
+  };
   const [replyState,          setReplyState]          = useState({});
   // Marketing analytics
   const [marketing,           setMarketing]           = useState(null);
@@ -415,12 +450,23 @@ const EstadisticasScreen = ({ navigation }) => {
             Resumen de tu negocio
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={onRefresh}
-          style={[styles.refreshBtn, { backgroundColor: colors.surface }]}
-        >
-          <Ionicons name="refresh-outline" size={20} color={colors.text} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TouchableOpacity
+            onPress={descargarExcel}
+            disabled={descargandoExcel}
+            style={[styles.refreshBtn, { backgroundColor: '#22c55e22', borderWidth: 1, borderColor: '#22c55e55' }]}
+          >
+            {descargandoExcel
+              ? <ActivityIndicator size="small" color="#22c55e" />
+              : <Ionicons name="document-text-outline" size={20} color="#22c55e" />}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onRefresh}
+            style={[styles.refreshBtn, { backgroundColor: colors.surface }]}
+          >
+            <Ionicons name="refresh-outline" size={20} color={colors.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView

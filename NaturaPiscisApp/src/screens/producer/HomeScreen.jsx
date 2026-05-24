@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Switch,
   Animated,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,6 +24,79 @@ import { LoadingSpinner } from '../../components/common/Loading';
 import { SPACING } from '../../constants/theme';
 import { FishIndicator } from '../../components/ui/FishRefreshControl';
 import api from '../../api/axios.config';
+
+// ─── Tarjeta de Resumen Mensual generado por Claude ──────────────
+const ResumenMensualIA = ({ C, styles }) => {
+  const [data, setData]           = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [generando, setGenerando] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await api.get('/estadisticas/resumen-mensual');
+        const d = res.data?.data || res.data;
+        if (alive) setData(d || { texto: null });
+      } catch { if (alive) setData({ texto: null }); }
+      finally { if (alive) setLoading(false); }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const regenerar = async () => {
+    setGenerando(true);
+    try {
+      const res = await api.post('/estadisticas/resumen-mensual/generar');
+      setData(res.data?.data || res.data);
+    } catch (e) {
+      Alert.alert('Error', e?.response?.data?.message || 'No se pudo generar el resumen');
+    } finally { setGenerando(false); }
+  };
+
+  if (loading) return null;
+
+  return (
+    <View style={{
+      backgroundColor: C.surface,
+      borderRadius: 16,
+      padding: 16,
+      marginHorizontal: SPACING.md,
+      marginTop: SPACING.md,
+      borderWidth: 1,
+      borderColor: C.primary + '40',
+      shadowColor: C.primary, shadowOpacity: 0.15, shadowRadius: 12, shadowOffset: { width: 0, height: 4 },
+      elevation: 3,
+    }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+        <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: C.primary + '22', alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="sparkles" size={18} color={C.primary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 15, fontWeight: '700', color: C.text }}>Resumen del mes</Text>
+          <Text style={{ fontSize: 11, color: C.sub, marginTop: 2 }}>
+            {data?.generado_at
+              ? `Actualizado ${new Date(data.generado_at).toLocaleDateString('es-BO', { day: '2-digit', month: 'short' })}`
+              : 'Aún no generado'}
+          </Text>
+        </View>
+        <TouchableOpacity onPress={regenerar} disabled={generando}
+          style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: C.primary + '55', backgroundColor: C.primary + '15' }}>
+          {generando
+            ? <ActivityIndicator size="small" color={C.primary} />
+            : <Text style={{ fontSize: 11, fontWeight: '700', color: C.primary }}>{data?.texto ? '🔄' : '✨ Generar'}</Text>}
+        </TouchableOpacity>
+      </View>
+      {data?.texto ? (
+        <Text style={{ color: C.text, fontSize: 13, lineHeight: 19 }}>{data.texto}</Text>
+      ) : (
+        <Text style={{ color: C.sub, fontSize: 12, fontStyle: 'italic' }}>
+          Toca "Generar" para un resumen narrativo del mes con tus ventas, comparación y producto top.
+        </Text>
+      )}
+    </View>
+  );
+};
 
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme();
@@ -211,6 +286,9 @@ const HomeScreen = ({ navigation }) => {
             <GlowStatCard icon="pulse"        label="Sensores" value={summary.sensoresOk}       glow={C.green} />
             <GlowStatCard icon="water-outline" label="Bombas"   value={summary.bombasActivas}    glow={C.teal} />
           </View>
+
+          {/* ─── Resumen mensual IA ─── */}
+          <ResumenMensualIA C={C} styles={styles} />
 
           {/* ─── Loading ─── */}
           {isLoading && (

@@ -82,7 +82,7 @@ const ModalRegistrarPeso = ({ pedido, onClose, onSuccess }) => {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 16 }}>
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-        style={{ background: D.card, borderRadius: 20, width: '100%', maxWidth: 440, border: `1px solid ${D.border}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+        style={{ background: D.card, borderRadius: 20, width: '100%', maxWidth: 'min(440px, 92vw)', maxHeight: '90vh', overflowY: 'auto', border: `1px solid ${D.border}`, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: `1px solid ${D.border}` }}>
           <div>

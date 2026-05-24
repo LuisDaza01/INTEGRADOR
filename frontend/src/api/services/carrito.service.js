@@ -62,13 +62,19 @@ export async function obtenerCarrito() {
     const response = await fetch(url, fetchOpts({ method: 'GET', headers: baseHeaders }));
 
     if (!response.ok) {
-      return { items: [], total: 0, authenticated: false };
+      // 401/403 = sesión inválida → forzar limpieza + recarga al login
+      if (response.status === 401 || response.status === 403) {
+        try { localStorage.removeItem('auth_token'); } catch (_) {}
+        window.dispatchEvent(new CustomEvent('auth:expired'));
+      }
+      return { items: [], total: 0, authenticated: false, status: response.status };
     }
 
     const result = await response.json();
     return result.data || result;
   } catch (error) {
-    return { items: [], total: 0, authenticated: false, error: error.message };
+    // Errores de red/timeout — distinguir del "carrito vacío"
+    return { items: [], total: 0, authenticated: false, networkError: true, error: error.message };
   }
 }
 

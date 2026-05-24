@@ -53,7 +53,7 @@ const SensorCard = ({
       <div style={{ padding: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ flexShrink: 0, borderRadius: 8, padding: 12, background: iconBg || 'rgba(56,189,248,0.12)' }}>
+            <div style={{ flexShrink: 0, borderRadius: 8, padding: 12, background: iconBg || 'rgba(34,197,94,0.12)' }}>
               <Icon style={{ width: 24, height: 24, color: iconColor || D.primary }} />
             </div>
             <div style={{ marginLeft: 20 }}>

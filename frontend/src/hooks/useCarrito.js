@@ -21,11 +21,9 @@ export const useCarrito = () => {
       const data = await obtenerCarrito();
       setCartItems(data?.items || []);
       setLastUpdate(new Date());
-      
-      console.log('🪝 useCarrito - Carrito cargado:', data?.items?.length || 0, 'productos');
     } catch (err) {
-      console.error('🪝 useCarrito - Error:', err);
-      
+      if (import.meta.env.DEV) console.error('useCarrito error:', err);
+
       if (err.message === 'AUTH_REQUIRED' || err.message?.includes('iniciar sesión')) {
         setCartItems([]);
         setError('no_auth');
@@ -44,24 +42,9 @@ export const useCarrito = () => {
 
   // Escuchar eventos de actualización del carrito
   useEffect(() => {
-    const handleCarritoUpdate = () => {
-      console.log('🪝 useCarrito - Detectado evento carritoActualizado');
-      cargarCarrito(false); // No mostrar loading en actualizaciones automáticas
-    };
-
-    const handleStorageChange = (e) => {
-      if (e.key === 'carrito_updated') {
-        console.log('🪝 useCarrito - Detectado cambio en localStorage');
-        cargarCarrito(false);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        console.log('🪝 useCarrito - Página visible, actualizando...');
-        cargarCarrito(false);
-      }
-    };
+    const handleCarritoUpdate = () => cargarCarrito(false);
+    const handleStorageChange = (e) => { if (e.key === 'carrito_updated') cargarCarrito(false); };
+    const handleVisibilityChange = () => { if (document.visibilityState === 'visible') cargarCarrito(false); };
 
     // Registrar eventos
     window.addEventListener('carritoActualizado', handleCarritoUpdate);
@@ -76,13 +59,9 @@ export const useCarrito = () => {
     };
   }, []);
 
-  // Auto-refresh cada 30 segundos (opcional)
+  // Auto-refresh cada 30s (silent)
   useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('🪝 useCarrito - Auto-refresh');
-      cargarCarrito(false);
-    }, 30000);
-
+    const interval = setInterval(() => cargarCarrito(false), 30000);
     return () => clearInterval(interval);
   }, []);
 

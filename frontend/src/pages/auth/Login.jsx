@@ -96,7 +96,7 @@ const Login = () => {
         {/* Heading */}
         <div className="z-10 relative">
           <motion.h1
-            className="text-5xl font-bold text-white mb-4 leading-tight"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight"
             style={{ fontFamily: "'Fira Code', monospace", letterSpacing: '-0.03em' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,7 +156,7 @@ const Login = () => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           {/* Card */}
-          <div className="rounded-2xl p-8" style={{
+          <div className="rounded-2xl p-5 sm:p-8" style={{
             background: 'rgba(17,30,51,0.72)',
             backdropFilter: 'blur(20px) saturate(180%)',
             WebkitBackdropFilter: 'blur(20px) saturate(180%)',

@@ -129,7 +129,15 @@ export const useLagunas = ({ enabled = true } = {}) => {
 
         ruleStateRef.current.set(key, 'active');
       } catch (e) {
+        // Errores de automation son críticos (puede comprometer al cultivo). Notificar al productor además de loggear.
         if (__DEV__) console.warn(`Error automatización ${ruleId}:`, e?.message);
+        try {
+          notifRef.current?.(
+            '⚠️ Error en automatización',
+            `No se pudo ejecutar "${ruleId}" en ${laguna?.nombre || 'una laguna'}. Revisa manualmente.`,
+            { type: 'automation_error', rule: ruleId, priority: 'high' }
+          );
+        } catch (_) { /* notif no disponible */ }
       }
     }
   }, [canNotify]);

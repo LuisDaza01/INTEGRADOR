@@ -80,7 +80,7 @@ const MapaProductores = () => {
       }).addTo(map)
 
       const icon = L.divIcon({
-        html: `<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#38bdf8,#0ea5e9);transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 2px 10px rgba(56,189,248,0.55)"></div>`,
+        html: `<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#22C55E,#16a34a);transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 2px 10px rgba(34,197,94,0.55)"></div>`,
         className: '',
         iconSize: [28, 28],
         iconAnchor: [14, 28],
@@ -98,7 +98,7 @@ const MapaProductores = () => {
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
               ${p.foto_perfil
                 ? `<img src="${p.foto_perfil}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0">`
-                : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(56,189,248,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;color:#38bdf8;font-size:16px;flex-shrink:0">${(p.nombre || '?')[0].toUpperCase()}</div>`}
+                : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;color:#22C55E;font-size:16px;flex-shrink:0">${(p.nombre || '?')[0].toUpperCase()}</div>`}
               <div style="min-width:0">
                 <p style="margin:0;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.nombre || ''}</p>
                 ${p.nombre_empresa ? `<p style="margin:0;font-size:11px;color:#888">${p.nombre_empresa}</p>` : ''}
@@ -107,7 +107,7 @@ const MapaProductores = () => {
             ${p.ubicacion ? `<p style="margin:0 0 3px;font-size:12px;color:#666">📍 ${p.ubicacion}</p>` : ''}
             ${p.especialidad ? `<p style="margin:0 0 10px;font-size:12px;color:#666">🐟 ${p.especialidad}</p>` : '<div style="margin-bottom:10px"></div>'}
             <button onclick="window._navToProductor(${p.id})"
-              style="width:100%;padding:8px 0;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px">
+              style="width:100%;padding:8px 0;background:linear-gradient(135deg,#22C55E,#16a34a);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px">
               Ver perfil →
             </button>
           </div>

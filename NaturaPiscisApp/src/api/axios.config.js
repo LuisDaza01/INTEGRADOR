@@ -72,6 +72,13 @@ api.interceptors.response.use(
       } catch (e) {
         if (__DEV__) console.log('Error limpiando sesión:', e);
       }
+      // Forzar navegación a Login para evitar app en estado roto con token inválido.
+      try {
+        const { navigationRef } = require('../navigation/navigationRef');
+        if (navigationRef?.isReady?.()) {
+          navigationRef.reset({ index: 0, routes: [{ name: 'Login' }] });
+        }
+      } catch (_) { /* navigation no disponible aún */ }
     }
 
     return Promise.reject(error);

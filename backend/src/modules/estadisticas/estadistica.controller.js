@@ -72,7 +72,42 @@ class EstadisticaController {
     }
   }
 
+  // Resumen mensual IA — obtiene el cacheado en BD
+  async obtenerResumenMensual(req, res) {
+    try {
+      const { id: productorId } = req.user;
+      const data = await estadisticaService.obtenerResumenMensual(productorId);
+      return successResponse(res, data, 'Resumen mensual obtenido');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
 
+  // Resumen mensual IA — regenera (manual desde el dashboard o cron mensual)
+  async regenerarResumenMensual(req, res) {
+    try {
+      const { id: productorId } = req.user;
+      const data = await estadisticaService.generarResumenMensual(productorId);
+      return successResponse(res, data, 'Resumen mensual regenerado');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
+
+  // Descarga el reporte de estadísticas del productor como archivo .xlsx
+  async exportarExcel(req, res) {
+    try {
+      const { id: productorId } = req.user;
+      const buffer = await estadisticaService.exportarExcel(productorId);
+      const ymd = new Date().toISOString().slice(0, 10);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="naturapiscis-reporte-${ymd}.xlsx"`);
+      res.setHeader('Content-Length', buffer.length);
+      return res.end(buffer);
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
 }
 
 module.exports = new EstadisticaController();

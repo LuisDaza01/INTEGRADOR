@@ -82,7 +82,10 @@ app.use(apiLimiter);
 // ARCHIVOS ESTÁTICOS
 // ============================================
 
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Assets legacy: requieren autenticación para evitar enumeración pública.
+// Los uploads nuevos van a Cloudinary (multer-storage-cloudinary).
+const { isAuthenticated } = require('./middlewares/auth.middleware');
+app.use('/uploads', isAuthenticated, express.static(path.join(__dirname, '../uploads')));
 
 // ============================================
 // HEADER PERSONALIZADO

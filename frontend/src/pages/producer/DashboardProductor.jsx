@@ -268,6 +268,77 @@ const TrendChart = ({ title, data = [], dataKey, type = 'line', color = '#3b82f6
 };
 
 // ============================================
+// RESUMEN MENSUAL IA — tarjeta del dashboard
+// ============================================
+const ResumenMensualIA = ({ D, isDark }) => {
+  const [data, setData]           = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [generando, setGenerando] = useState(false);
+  const [error, setError]         = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await api.get('/estadisticas/resumen-mensual');
+        const d = res.data?.data || res.data;
+        if (alive) setData(d || { texto: null });
+      } catch { if (alive) setData({ texto: null }); }
+      finally { if (alive) setLoading(false); }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const regenerar = async () => {
+    setGenerando(true); setError(null);
+    try {
+      const res = await api.post('/estadisticas/resumen-mensual/generar');
+      setData(res.data?.data || res.data);
+    } catch (e) {
+      setError(e.response?.data?.message || 'No se pudo generar el resumen');
+    } finally { setGenerando(false); }
+  };
+
+  if (loading) return null;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+      className="np-hover rounded-xl p-5 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, rgba(34,197,94,0.10), rgba(74,222,128,0.04))',
+        border: '1px solid rgba(34,197,94,0.25)',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+      }}>
+      <div className="flex items-start gap-3 mb-3">
+        <div className="p-2 rounded-lg flex-shrink-0" style={{ background: 'rgba(34,197,94,0.18)', border: '1px solid rgba(34,197,94,0.3)' }}>
+          <span style={{ fontSize: 18 }}>✨</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-semibold" style={{ color: D.text }}>Resumen del mes (IA)</h4>
+          <p style={{ fontSize: 11, color: D.muted, margin: 0 }}>
+            {data?.generado_at
+              ? `Actualizado el ${new Date(data.generado_at).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })}`
+              : 'Aún no has generado un resumen este mes'}
+          </p>
+        </div>
+        <button onClick={regenerar} disabled={generando}
+          style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(34,197,94,0.4)', color: '#22c55e', background: 'transparent', fontSize: 12, fontWeight: 700, cursor: generando ? 'wait' : 'pointer', whiteSpace: 'nowrap' }}>
+          {generando ? '⏳ Generando…' : (data?.texto ? '🔄 Regenerar' : '✨ Generar')}
+        </button>
+      </div>
+      {data?.texto ? (
+        <p style={{ color: D.text, fontSize: 14, lineHeight: 1.55, margin: 0 }}>{data.texto}</p>
+      ) : (
+        <p style={{ color: D.muted, fontSize: 13, margin: 0, fontStyle: 'italic' }}>
+          Genera un resumen narrativo del mes con datos clave: ventas, comparación con el mes anterior y producto top.
+        </p>
+      )}
+      {error && <p style={{ color: '#f87171', fontSize: 12, marginTop: 8 }}>{error}</p>}
+    </motion.div>
+  );
+};
+
+// ============================================
 // DASHBOARD PRODUCTOR COMPONENT
 // ============================================
 
@@ -520,6 +591,9 @@ const DashboardProductor = () => {
                       </div>
                     </div>
                   </motion.div>
+
+                  {/* ── Resumen mensual IA ── */}
+                  <ResumenMensualIA D={D} isDark={isDark} />
 
                   {/* KPI Stats */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

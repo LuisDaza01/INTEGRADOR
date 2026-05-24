@@ -15,9 +15,7 @@ export const FIREBASE_CONFIG = {
   appId: "1:123456789:web:abcdef123456"
 };
 
-// Roles de usuario
-// ✅ BUG 2 CORREGIDO: agregado REPARTIDOR: 4 para que el JWT con rol_id=4
-// no quede sin mapear y el AppNavigator lo enrute correctamente
+
 export const USER_ROLES = {
   ADMIN:      1,
   PRODUCER:   2,

@@ -31,6 +31,9 @@ const uploadProductoImgs = upload.fields([
 
 router.post('/', isAuthenticated, isProductor, createLimiter, uploadProductoImgs, validateProducto, validateRequest, productoController.create);
 
+// IA: genera una descripción comercial a partir de nombre/categoría/imagen opcional (Vision si hay foto)
+router.post('/generar-descripcion', isAuthenticated, isProductor, createLimiter, productoController.generarDescripcion);
+
 // PUT - productor dueño O admin
 router.put(
   '/:id',

@@ -22,3 +22,6 @@ node_modules/
 # Database dumps / backups (no versionar datos reales)
 *.sql.bak
 backend/backup.sql
+
+# Backups locales (datos reales — nunca al repo)
+backups/

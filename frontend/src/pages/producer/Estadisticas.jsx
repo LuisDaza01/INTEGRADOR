@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import api from "../../api/config/axios"
 import { motion } from "framer-motion"
-import { BarChart3, PieChart, TrendingUp, TrendingDown, Calendar, Filter, Download, FileText, RefreshCw, AlertCircle, Star, ChevronDown, Clock, Heart, Award, Users, Target, Zap, ShoppingBag } from "lucide-react"
+import { BarChart3, PieChart, TrendingUp, TrendingDown, Calendar, Filter, Download, FileText, FileSpreadsheet, RefreshCw, AlertCircle, Star, ChevronDown, Clock, Heart, Award, Users, Target, Zap, ShoppingBag } from "lucide-react"
 import { API_ENDPOINTS } from '../../config/apiConfig'
 import { useTheme } from "../../contexts/ThemeContext"
 
@@ -486,6 +486,22 @@ const Estadisticas = () => {
             title="Descargar CSV"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: D.card, border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>
             <Download size={15} style={{ color: D.teal }} />CSV
+          </motion.button>
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            onClick={async () => {
+              try {
+                const res = await api.get('/estadisticas/excel', { responseType: 'blob' })
+                const url = URL.createObjectURL(new Blob([res.data]))
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `naturapiscis-reporte-${new Date().toISOString().slice(0,10)}.xlsx`
+                document.body.appendChild(a); a.click(); a.remove()
+                URL.revokeObjectURL(url)
+              } catch { alert('No se pudo generar el Excel') }
+            }}
+            title="Descargar reporte completo en Excel"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: D.card, border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>
+            <FileSpreadsheet size={15} style={{ color: '#22c55e' }} />Excel
           </motion.button>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => exportPDF(stats)}

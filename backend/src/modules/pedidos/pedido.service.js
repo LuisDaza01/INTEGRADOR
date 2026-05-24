@@ -345,7 +345,7 @@ class PedidoService {
   // \u2500\u2500 Verificaci\u00f3n de pago por el productor \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   async verificarPago(pedidoId, productorId) {
     const pedido = await pedidoRepository.verificarPago(pedidoId, productorId);
-    if (!pedido) throw new AppError('Pedido no encontrado o no te pertenece.', 404);
+    if (!pedido) throw new AppError('No se puede verificar: el pedido no existe, no es tuyo, no tiene comprobante o el pago ya fue verificado.', 400);
 
     notifService.crear({
       usuario_id: pedido.consumidor_id,
@@ -368,7 +368,7 @@ class PedidoService {
 
   async rechazarPago(pedidoId, productorId, motivo) {
     const pedido = await pedidoRepository.rechazarPago(pedidoId, productorId);
-    if (!pedido) throw new AppError('Pedido no encontrado o no te pertenece.', 404);
+    if (!pedido) throw new AppError('No se puede rechazar: el pedido no existe, no es tuyo o no hay un comprobante pendiente.', 400);
 
     const detalle = motivo ? `: ${motivo}` : '';
     notifService.crear({

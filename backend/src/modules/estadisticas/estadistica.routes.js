@@ -10,6 +10,11 @@ router.get('/ventas',     isAuthenticated, hasRole('productor'), estadisticaCont
 router.get('/productos',  isAuthenticated, hasRole('productor'), estadisticaController.obtenerEstadisticasProductos);
 router.get('/prediccion', isAuthenticated, hasRole('productor'), estadisticaController.obtenerPrediccionVentas);
 router.get('/marketing',  isAuthenticated, hasRole('productor'), estadisticaController.obtenerMarketingAnalytics);
+router.get('/excel',      isAuthenticated, hasRole('productor'), estadisticaController.exportarExcel);
+
+// Resumen mensual IA (Claude)
+router.get ('/resumen-mensual',         isAuthenticated, hasRole('productor'), estadisticaController.obtenerResumenMensual);
+router.post('/resumen-mensual/generar', isAuthenticated, hasRole('productor'), estadisticaController.regenerarResumenMensual);
 
 // Rutas admin
 router.get('/admin/productores', isAuthenticated, hasRole('admin'), estadisticaController.obtenerVentasPorProductor);

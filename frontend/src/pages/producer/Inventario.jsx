@@ -657,6 +657,7 @@ function ProductosTab({ user, D, isDark }) {
   const [current,   setCurrent]   = useState(null);
   const [saving,    setSaving]    = useState(false);
   const [form,      setForm]      = useState({ nombre: "", descripcion: "", precio: 0, stock: 0, categoria_id: "" });
+  const [iaGenerando, setIaGenerando] = useState(false);
   // Galería: array de { id, url?, file?, preview }
   const [imagenes,  setImagenes]  = useState([]);
   const [togglingId, setTogglingId] = useState(null);
@@ -953,7 +954,37 @@ function ProductosTab({ user, D, isDark }) {
               </div>
 
               <input style={inp} placeholder="Nombre" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
-              <textarea style={{ ...inp, height: 70, resize: "vertical" }} placeholder="Descripción" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
+              <div style={{ position: 'relative' }}>
+                <textarea style={{ ...inp, height: 70, resize: "vertical", paddingRight: 110 }} placeholder="Descripción" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} />
+                <button
+                  type="button"
+                  disabled={!form.nombre?.trim() || iaGenerando}
+                  onClick={async () => {
+                    if (!form.nombre?.trim()) { alert('Escribe primero el nombre del producto'); return; }
+                    setIaGenerando(true);
+                    try {
+                      const catNombre = categorias.find(c => String(c.id) === String(form.categoria_id))?.nombre || '';
+                      const res = await api.post(`${API}/productos/generar-descripcion`, { nombre: form.nombre, categoria: catNombre });
+                      const desc = res.data?.data?.descripcion || res.data?.descripcion;
+                      if (desc) setForm(f => ({ ...f, descripcion: desc }));
+                    } catch {
+                      alert('No se pudo generar la descripción. Intenta de nuevo.');
+                    } finally { setIaGenerando(false); }
+                  }}
+                  title="Generar descripción con IA"
+                  style={{
+                    position: 'absolute', top: 6, right: 6,
+                    background: iaGenerando ? D.surface : 'linear-gradient(135deg, #16a34a, #22c55e)',
+                    color: '#fff', border: 'none', borderRadius: 8,
+                    padding: '5px 10px', fontSize: 11, fontWeight: 700,
+                    cursor: form.nombre?.trim() ? 'pointer' : 'not-allowed',
+                    opacity: form.nombre?.trim() ? 1 : 0.5,
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                  }}
+                >
+                  {iaGenerando ? '⏳ Generando…' : '✨ Generar IA'}
+                </button>
+              </div>
 
               {/* Selector de categoría real */}
               <div>

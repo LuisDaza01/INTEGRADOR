@@ -94,7 +94,10 @@ const analizarFrescura = async (req, res) => {
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 600,
-      system: SYSTEM_FRESCURA,
+      // Prompt caching: system es estático y largo → se cachea (ephemeral 5 min) y abarata ~75% el segundo análisis en adelante.
+      system: [
+        { type: 'text', text: SYSTEM_FRESCURA, cache_control: { type: 'ephemeral' } },
+      ],
       messages: [
         {
           role: 'user',

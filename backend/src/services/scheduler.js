@@ -8,6 +8,7 @@ const { sendPushNotification } = require('./pushNotifications');
 const pedidoRepository = require('../modules/pedidos/pedido.repository');
 const reservaService   = require('../modules/reservas/reserva.service');
 const notifService     = require('../modules/notificaciones/notificacion.service');
+const estadisticaService = require('../modules/estadisticas/estadistica.service');
 
 // ── Helpers ───────────────────────────────────────────────────────
 const TIPOS_ALIMENTO = [
@@ -180,8 +181,17 @@ async function enviarRecordatoriosReservas() {
       // Umbral actual = el menor T de [7,3,1,0] tal que d <= T
       const T = RECORDATORIO_UMBRALES.filter(t => d <= t).sort((a, b) => a - b)[0];
       if (T === undefined) continue;                       // aún faltan más de 7 días
-      const ultimo = r.ultimo_recordatorio_dias;
-      if (ultimo !== null && ultimo !== undefined && Number(ultimo) <= T) continue; // ya recordado en este umbral o más cercano
+
+      // Claim atómico: solo envía si esta corrida es la primera en cruzar el umbral T.
+      // Si otra corrida concurrente ya actualizó ultimo_recordatorio_dias a <= T, esta UPDATE devuelve 0 filas.
+      const claimed = await db.query(
+        `UPDATE reservas SET ultimo_recordatorio_dias = $1
+         WHERE id = $2
+           AND (ultimo_recordatorio_dias IS NULL OR ultimo_recordatorio_dias > $1)
+         RETURNING id`,
+        [T, r.id]
+      );
+      if (claimed.length === 0) continue; // ya fue reclamado/enviado por otra ejecución
 
       const esHoy   = T === 0;
       const titulo  = esHoy ? '📅 ¡Hoy es tu reserva!' : '⏰ Tu reserva se acerca';
@@ -201,7 +211,6 @@ async function enviarRecordatoriosReservas() {
         ).catch(() => {});
       }
 
-      await db.query(`UPDATE reservas SET ultimo_recordatorio_dias = $1 WHERE id = $2`, [T, r.id]);
       enviados++;
     }
     if (enviados > 0) logger.info(`[scheduler] Recordatorios de reserva enviados: ${enviados}`);
@@ -214,6 +223,7 @@ async function enviarRecordatoriosReservas() {
 let lastFeedingHour  = -1;
 let lastAlertDay     = -1;
 let lastReminderDay  = -1;
+let lastResumenMes   = -1;
 
 function tickLento() {
   const now    = new Date();
@@ -237,6 +247,19 @@ function tickLento() {
   if (hour === 9 && minute < 5 && lastReminderDay !== day) {
     lastReminderDay = day;
     enviarRecordatoriosReservas();
+  }
+
+  // Resumen mensual IA: el día 1 de cada mes a las 08:00
+  if (day === 1 && hour === 8 && minute < 5 && lastResumenMes !== now.getMonth()) {
+    lastResumenMes = now.getMonth();
+    (async () => {
+      try {
+        const ok = await estadisticaService.regenerarTodosLosResumenes();
+        logger.info(`[scheduler] Resumen mensual IA regenerado para ${ok} productores`);
+      } catch (e) {
+        logger.error('[scheduler] Error resumen mensual IA:', e.message);
+      }
+    })();
   }
 }
 

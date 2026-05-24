@@ -4,6 +4,7 @@
 // Este archivo maneja las peticiones HTTP
 // Extrae datos, llama al service, y retorna respuestas
 
+const Anthropic = require('@anthropic-ai/sdk');
 const productoService = require('./producto.service');
 const { asyncHandler } = require('../../middlewares/error.middleware');
 const {
@@ -15,6 +16,52 @@ const {
 const { extractPaginationParams } = require('../../utils/pagination');
 const { SUCCESS_MESSAGES } = require('../../constants/messages');
 const logger = require('../../utils/logger');
+
+// ── Cliente Claude para generación de descripciones de producto (con prompt caching) ──
+const aiClient = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const SYSTEM_DESCRIPCION = `Eres un copywriter experto en productos de acuicultura artesanal boliviana.
+Tu tarea: escribir una descripción comercial breve y honesta (2-3 oraciones, máximo 320 caracteres) para un producto que un acuicultor ofrece en la app NaturaPiscis.
+Tono: cálido, directo, profesional. Sin exageraciones ni claims médicos.
+Menciona naturalmente el producto, su frescura/origen y cualquier detalle relevante (si te dan una foto, descríbela brevemente).
+Responde SOLO con la descripción, sin prefijos, comillas ni explicaciones adicionales.`;
+
+const generarDescripcion = async (req, res) => {
+  try {
+    const nombre    = String(req.body?.nombre || '').trim().slice(0, 120);
+    const categoria = String(req.body?.categoria || '').trim().slice(0, 80);
+    const imagen    = req.body?.imagen; // dataURL opcional (image/jpeg|png|webp;base64,...)
+    if (!nombre) return res.status(400).json({ success: false, message: 'El campo "nombre" es requerido.' });
+
+    const userContent = [
+      { type: 'text', text: `Producto: ${nombre}\nCategoría: ${categoria || 'pescado fresco'}` },
+    ];
+
+    let usaVision = false;
+    if (typeof imagen === 'string') {
+      const m = imagen.match(/^data:(image\/(jpeg|png|webp));base64,(.+)$/);
+      if (m) {
+        const base64 = m[3];
+        if (base64.length * 0.75 < 5 * 1024 * 1024) { // ~5 MB decoded
+          userContent.unshift({ type: 'image', source: { type: 'base64', media_type: m[1], data: base64 } });
+          usaVision = true;
+        }
+      }
+    }
+
+    const response = await aiClient.messages.create({
+      model: usaVision ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001',
+      max_tokens: 220,
+      system: [{ type: 'text', text: SYSTEM_DESCRIPCION, cache_control: { type: 'ephemeral' } }],
+      messages: [{ role: 'user', content: userContent }],
+    });
+
+    const descripcion = (response.content?.[0]?.text || '').trim();
+    return successResponse(res, { descripcion }, 'Descripción generada');
+  } catch (e) {
+    logger.logError?.('generarDescripcion error', e) || logger.error?.(e);
+    return res.status(500).json({ success: false, message: 'No se pudo generar la descripción.' });
+  }
+};
 
 // ============================================
 // CONTROLADORES PÚBLICOS
@@ -379,4 +426,5 @@ module.exports = {
   toggleDisponibilidad,
   toggleDestacado,
   updatePrecio,
+  generarDescripcion,
 };

@@ -796,11 +796,14 @@ class PedidoRepository {
   }
 
   // ── VERIFICACIÓN DE PAGO (productor) ───────────────────────────
-  // Verifica que el pedido tenga al menos un producto del productor antes de actualizar.
+  // Verifica que el pedido tenga al menos un producto del productor + tenga comprobante subido.
+  // No re-verifica si ya estaba verificado (evita notificaciones repetidas).
   async verificarPago(pedidoId, productorId) {
     const result = await db.query(
       `UPDATE pedidos SET pago_verificado = true
        WHERE id = $1
+         AND comprobante_url IS NOT NULL
+         AND pago_verificado = false
          AND EXISTS (
            SELECT 1 FROM detalles_pedido dp JOIN productos pr ON pr.id = dp.producto_id
            WHERE dp.pedido_id = pedidos.id AND pr.productor_id = $2
@@ -811,10 +814,14 @@ class PedidoRepository {
     return result[0] || null;
   }
 
+  // Rechaza el comprobante actual (requiere uno presente y aún no verificado).
+  // Tras rechazar, comprobante_url queda NULL → no se puede re-rechazar (anti-spam).
   async rechazarPago(pedidoId, productorId) {
     const result = await db.query(
       `UPDATE pedidos SET pago_verificado = false, comprobante_url = NULL
        WHERE id = $1
+         AND comprobante_url IS NOT NULL
+         AND pago_verificado = false
          AND EXISTS (
            SELECT 1 FROM detalles_pedido dp JOIN productos pr ON pr.id = dp.producto_id
            WHERE dp.pedido_id = pedidos.id AND pr.productor_id = $2

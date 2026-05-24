@@ -19,6 +19,9 @@ const HORAS_VIGENCIA = repo.HORAS_VIGENCIA_DEFAULT;
 // Peso promedio por pescado para estimar (modo 'cantidad'). Sincronizado con la app.
 const PESO_PROMEDIO_KG = 0.9;
 const PESO_MIN_KG = 0.8;
+// Cotas anti-abuso (validación de inputs)
+const PESO_MAX_KG     = 1000;
+const CANTIDAD_MAX    = 10000;
 
 class ReservaService {
 
@@ -115,9 +118,11 @@ class ReservaService {
       if (modo === 'peso') {
         peso = parseFloat(it.peso_solicitado_kg) || 0;
         if (peso < PESO_MIN_KG) throw new AppError(`El mínimo es ${PESO_MIN_KG} kg por producto (un pescado)`, 400);
+        if (peso > PESO_MAX_KG) throw new AppError(`El máximo es ${PESO_MAX_KG} kg por producto`, 400);
         estimado = peso * precioKg;
       } else {
         cantidad = Math.max(1, Math.ceil(parseFloat(it.cantidad) || 0));
+        if (cantidad > CANTIDAD_MAX) throw new AppError(`El máximo es ${CANTIDAD_MAX} unidades por producto`, 400);
         estimado = cantidad * PESO_PROMEDIO_KG * precioKg;
       }
       estimado = parseFloat(estimado.toFixed(2));

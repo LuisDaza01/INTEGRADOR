@@ -156,9 +156,13 @@ const ProductoCard = ({ producto, onCarritoUpdate }) => {
   const [agregando, setAgregando] = useState(false)
   const [ok, setOk]               = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [hovered, setHovered]     = useState(false)
 
   const agotado = !producto.disponible || !producto.stock || producto.stock <= 0
   const esPorKg = ["kg", "Kg", "KG"].includes(producto.unidad)
+  const stockBajo = !agotado && producto.stock != null && producto.stock <= 10
+  const rating  = parseFloat(producto.calificacion ?? producto.promedio_valoracion ?? 0)
+  const categoria = producto.categoria_nombre || producto.categoria
 
   const add = async (e) => {
     e.stopPropagation()
@@ -181,70 +185,119 @@ const ProductoCard = ({ producto, onCarritoUpdate }) => {
       <motion.div
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
         onClick={() => setShowModal(true)}
-        whileHover={{ y: -5, boxShadow: "0 14px 36px rgba(34,197,94,0.13)" }}
+        onHoverStart={() => setHovered(true)}
+        onHoverEnd={() => setHovered(false)}
+        whileHover={{ y: -6, boxShadow: "0 18px 48px rgba(34,197,94,0.22)" }}
         style={{
-          borderRadius: 16,
-          overflow: "hidden",
-          cursor: "pointer",
+          borderRadius: 16, overflow: "hidden", cursor: "pointer",
           background: isDark ? "rgba(13,20,40,0.97)" : D.surface,
-          border: "1px solid rgba(34,197,94,0.1)",
+          border: `1.5px solid ${hovered && !agotado ? D.primary : 'rgba(34,197,94,0.12)'}`,
           opacity: agotado ? 0.75 : 1,
           transition: "border-color 0.2s",
-        }}
-        onHoverStart={e => { e.target.style && (e.target.style.borderColor = "rgba(34,197,94,0.35)") }}
-      >
+        }}>
         {/* imagen cuadrada */}
         <div style={{ aspectRatio: "1/1", background: "rgba(34,197,94,0.04)", position: "relative", overflow: "hidden" }}>
+          {/* shimmer top */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 2, zIndex: 3,
+            background: 'linear-gradient(90deg, transparent, #22C55E, transparent)',
+            opacity: hovered && !agotado ? 1 : 0, transition: 'opacity 0.25s',
+          }} />
           {producto.imagen
-            ? <img src={producto.imagen} alt={producto.nombre} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.35s" }} />
-            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Fish size={36} style={{ color: "rgba(34,197,94,0.22)" }} />
+            ? <img src={producto.imagen} alt={producto.nombre}
+                onError={e => { e.currentTarget.style.display = 'none' }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s", transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
+            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center",
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(13,71,40,0.6))' }}>
+                <Fish size={48} style={{ color: "rgba(255,255,255,0.4)" }} />
               </div>
           }
+
+          {/* Badge categoría */}
+          {categoria && !agotado && (
+            <div style={{
+              position: 'absolute', top: 8, left: 8, padding: '3px 10px', borderRadius: 999, zIndex: 2,
+              background: 'linear-gradient(135deg, rgba(34,197,94,0.95), rgba(22,163,74,0.95))',
+              color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
+              boxShadow: '0 4px 10px rgba(34,197,94,0.35)',
+            }}>{categoria}</div>
+          )}
+
+          {/* Badge rating */}
+          {rating > 0 && (
+            <div style={{
+              position: 'absolute', top: 8, right: 8, padding: '3px 8px', borderRadius: 999, zIndex: 2,
+              background: 'rgba(0,0,0,0.55)', color: '#fbbf24', fontSize: 11, fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: 3, backdropFilter: 'blur(6px)',
+            }}>
+              <Star size={10} fill="#fbbf24" />{rating.toFixed(1)}
+            </div>
+          )}
+
           {/* overlay éxito */}
           <AnimatePresence>
             {ok && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(74,222,128,0.2)" }}>
-                <CheckCircle size={34} color="#4ade80" />
+                style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(74,222,128,0.25)", zIndex: 4 }}>
+                <CheckCircle size={42} color="#4ade80" />
               </motion.div>
             )}
           </AnimatePresence>
+
           {/* agotado overlay */}
           {agotado && (
-            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.38)" }}>
-              <span style={{ padding: "4px 12px", borderRadius: 20, background: "rgba(239,68,68,0.78)", color: "#fff", fontSize: 10, fontWeight: 800 }}>Agotado</span>
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)", zIndex: 2 }}>
+              <span style={{ padding: "5px 14px", borderRadius: 20, background: "rgba(239,68,68,0.85)", color: "#fff", fontSize: 11, fontWeight: 800, letterSpacing: 1 }}>AGOTADO</span>
             </div>
           )}
-          {/* badge kilo */}
+
+          {/* Stock bajo */}
+          {stockBajo && (
+            <div style={{
+              position: "absolute", bottom: 8, right: 8, padding: "3px 8px", borderRadius: 8, zIndex: 2,
+              fontSize: 10, fontWeight: 700, background: "rgba(251,146,60,0.85)", color: "#fff",
+              boxShadow: '0 2px 8px rgba(251,146,60,0.4)',
+            }}>
+              ⚡ Últimos {producto.stock}
+            </div>
+          )}
+
+          {/* Badge kilo */}
           {esPorKg && !agotado && (
-            <div style={{ position: "absolute", bottom: 7, left: 7, padding: "2px 7px", borderRadius: 8, fontSize: 9, fontWeight: 700, background: "rgba(251,146,60,0.22)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.4)" }}>
-              ⚖ x kilo
+            <div style={{ position: "absolute", bottom: 8, left: 8, padding: "3px 8px", borderRadius: 8, zIndex: 2,
+              fontSize: 10, fontWeight: 700, background: "rgba(251,146,60,0.22)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.45)", backdropFilter: 'blur(4px)' }}>
+              ⚖ por kilo
             </div>
           )}
         </div>
 
         {/* info */}
-        <div style={{ padding: "10px 12px 12px" }}>
-          <p style={{ fontWeight: 600, fontSize: 13, color: D.text, margin: "0 0 7px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ padding: "12px 14px 14px" }}>
+          <p style={{ fontWeight: 700, fontSize: 14, color: D.text, margin: "0 0 8px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {producto.nombre}
           </p>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
-            <div>
-              <span style={{ fontWeight: 800, fontSize: 15, color: agotado ? D.dim : D.primary }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <div style={{ minWidth: 0 }}>
+              <span style={{ fontWeight: 800, fontSize: 17, color: agotado ? D.dim : D.primary }}>
                 Bs {Number(producto.precio).toFixed(2)}
               </span>
-              {producto.unidad && <span style={{ fontSize: 10, color: D.muted, marginLeft: 3 }}>/{producto.unidad}</span>}
+              {producto.unidad && <span style={{ fontSize: 11, color: D.muted, marginLeft: 3 }}>/{producto.unidad}</span>}
             </div>
             <motion.button
-              whileHover={{ scale: 1.18 }} whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
               onClick={add} disabled={agotado || agregando}
-              style={{ width: 32, height: 32, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                background: agotado ? "rgba(255,255,255,0.06)" : `linear-gradient(135deg,${D.primary},#15803d)`,
-                boxShadow: agotado ? "none" : "0 0 10px rgba(34,197,94,0.28)", border: "none", cursor: agotado ? "default" : "pointer" }}>
-              {agregando
-                ? <div style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite" }} />
-                : <ShoppingCart size={14} color={agotado ? D.dim : "#fff"} />}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 10, flexShrink: 0,
+                background: agotado ? "rgba(255,255,255,0.06)" : `linear-gradient(135deg, #22C55E, #16a34a)`,
+                boxShadow: agotado ? "none" : "0 4px 14px rgba(34,197,94,0.4)",
+                border: "none", cursor: agotado ? "default" : "pointer",
+                color: agotado ? D.dim : '#fff', fontWeight: 700, fontSize: 12,
+              }}>
+              {agregando ? (
+                <div style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite" }} />
+              ) : (
+                <><Plus size={14} strokeWidth={2.6} /><span>Reservar</span></>
+              )}
             </motion.button>
           </div>
         </div>

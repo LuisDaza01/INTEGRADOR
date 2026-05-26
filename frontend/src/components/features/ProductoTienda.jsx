@@ -1,139 +1,176 @@
 "use client"
+import { useState } from "react"
 import { motion } from "framer-motion"
-import { ShoppingCart, Heart, Info } from "lucide-react"
+import { Plus, Heart, Star, Fish } from "lucide-react"
 import { useTheme } from "../../contexts/ThemeContext"
 
+// Resuelve la URL de la imagen sin romper con Cloudinary u otras URLs absolutas.
+// El bug anterior prefijaba `/images/` a cualquier valor que no empezara con `/images/`,
+// rompiendo cualquier URL https.
+const resolverImagen = (img) => {
+  if (!img || typeof img !== 'string') return null
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('//')) return img
+  if (img.startsWith('/')) return img
+  return `/images/${img}`
+}
+
 const ProductoTienda = ({ producto, onAddToCart, onToggleFavorite, onViewDetails }) => {
-  const { D } = useTheme()
-  const { id, nombre, imagen, precio, descripcion, categoria, disponible, calificacion, esFavorito } = producto
+  const { D, isDark } = useTheme()
+  const [hovered, setHovered] = useState(false)
+
+  const {
+    id, nombre, imagen, precio, categoria, unidad,
+    disponible = true, stock, calificacion, esFavorito,
+  } = producto || {}
+
+  const agotado    = !disponible || (stock != null && stock <= 0)
+  const esPorKg    = ['kg', 'Kg', 'KG'].includes(unidad)
+  const stockBajo  = !agotado && stock != null && stock <= 10
+  const imgUrl     = resolverImagen(imagen)
+  const rating     = parseFloat(calificacion ?? 0)
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ y: -5 }}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      whileHover={{ y: -6, boxShadow: '0 18px 48px rgba(34,197,94,0.22)' }}
       style={{
-        background: D.card,
-        border: `1px solid ${D.border}`,
-        borderRadius: 14,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-        overflow: 'hidden',
-        transition: 'all 0.3s',
-      }}
-    >
-      <div style={{ position: 'relative' }}>
-        {/* Badge de categoría */}
-        <div style={{
-          position: 'absolute', top: 8, left: 8, zIndex: 2,
-          background: `linear-gradient(135deg, ${D.primary}, #16a34a)`,
-          color: '#fff', fontSize: 11, fontWeight: 700,
-          padding: '4px 10px', borderRadius: 999,
-          boxShadow: '0 2px 8px rgba(34,197,94,0.4)',
-        }}>
-          {categoria}
-        </div>
+        background: isDark ? 'rgba(13,20,40,0.97)' : D.card,
+        border: `1.5px solid ${hovered && !agotado ? D.primary : 'rgba(34,197,94,0.12)'}`,
+        borderRadius: 14, overflow: 'hidden',
+        opacity: agotado ? 0.78 : 1,
+        transition: 'border-color 0.2s',
+      }}>
 
-        {/* Badge de disponibilidad */}
-        {!disponible && (
+      {/* ── Imagen + badges ── */}
+      <div style={{ position: 'relative', aspectRatio: '1/1', overflow: 'hidden', background: 'rgba(34,197,94,0.05)' }}>
+        {/* shimmer top */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 2, zIndex: 3,
+          background: 'linear-gradient(90deg, transparent, #22C55E, transparent)',
+          opacity: hovered && !agotado ? 1 : 0, transition: 'opacity 0.25s',
+        }} />
+
+        {imgUrl ? (
+          <img src={imgUrl} alt={nombre}
+            onError={e => { e.currentTarget.style.display = 'none' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover',
+              transition: 'transform 0.4s', transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
+        ) : (
           <div style={{
-            position: 'absolute', top: 8, right: 8, zIndex: 2,
-            background: D.red, color: '#fff', fontSize: 11, fontWeight: 700,
-            padding: '4px 10px', borderRadius: 999,
-            boxShadow: `0 2px 8px ${D.red}60`,
+            width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(13,71,40,0.6))',
           }}>
-            Agotado
+            <Fish size={56} style={{ color: 'rgba(255,255,255,0.4)' }} />
           </div>
         )}
 
-        {/* Imagen del producto */}
-        <div style={{ height: 192, width: '100%', overflow: 'hidden', background: 'rgba(34,197,94,0.05)' }}>
-          <img
-            src={typeof imagen === "string" && imagen.startsWith("/images/") ? imagen : `/images/${imagen || "default.jpg"}`}
-            alt={nombre}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-          />
-        </div>
+        {/* Badge categoría (top-left) */}
+        {categoria && !agotado && (
+          <div style={{
+            position: 'absolute', top: 8, left: 8, padding: '4px 11px', borderRadius: 999, zIndex: 2,
+            background: 'linear-gradient(135deg, rgba(34,197,94,0.95), rgba(22,163,74,0.95))',
+            color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
+            boxShadow: '0 4px 10px rgba(34,197,94,0.35)',
+          }}>{categoria}</div>
+        )}
+
+        {/* Rating (top-right) */}
+        {rating > 0 && (
+          <div style={{
+            position: 'absolute', top: 8, right: 8, padding: '3px 8px', borderRadius: 999, zIndex: 2,
+            background: 'rgba(0,0,0,0.55)', color: '#fbbf24', fontSize: 11, fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 3, backdropFilter: 'blur(6px)',
+          }}>
+            <Star size={10} fill="#fbbf24" />{rating.toFixed(1)}
+          </div>
+        )}
+
+        {/* Agotado overlay */}
+        {agotado && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 2,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+          }}>
+            <span style={{
+              padding: '6px 16px', borderRadius: 999, fontSize: 11, fontWeight: 800, letterSpacing: 1,
+              background: 'rgba(239,68,68,0.9)', color: '#fff',
+            }}>AGOTADO</span>
+          </div>
+        )}
+
+        {/* Stock bajo (bottom-right) */}
+        {stockBajo && (
+          <div style={{
+            position: 'absolute', bottom: 8, right: 8, padding: '3px 8px', borderRadius: 8, zIndex: 2,
+            fontSize: 10, fontWeight: 700, background: 'rgba(251,146,60,0.9)', color: '#fff',
+            boxShadow: '0 2px 8px rgba(251,146,60,0.4)',
+          }}>⚡ Últimos {stock}</div>
+        )}
+
+        {/* Badge por kilo (bottom-left) */}
+        {esPorKg && !agotado && (
+          <div style={{
+            position: 'absolute', bottom: 8, left: 8, padding: '3px 8px', borderRadius: 8, zIndex: 2,
+            fontSize: 10, fontWeight: 700,
+            background: 'rgba(251,146,60,0.22)', color: '#fb923c',
+            border: '1px solid rgba(251,146,60,0.45)', backdropFilter: 'blur(4px)',
+          }}>⚖ por kilo</div>
+        )}
+
+        {/* Heart (favorito) — flotante en bottom-right cuando no hay stock-bajo */}
+        {onToggleFavorite && !agotado && !stockBajo && (
+          <motion.button
+            whileTap={{ scale: 0.85 }}
+            onClick={e => { e.stopPropagation(); onToggleFavorite(id) }}
+            aria-label="Añadir a favoritos"
+            style={{
+              position: 'absolute', bottom: 8, right: 8, zIndex: 2,
+              width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
+              background: esFavorito ? 'rgba(239,68,68,0.9)' : 'rgba(0,0,0,0.55)',
+              color: '#fff', backdropFilter: 'blur(6px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            }}>
+            <Heart size={16} fill={esFavorito ? 'currentColor' : 'none'} />
+          </motion.button>
+        )}
       </div>
 
-      <div style={{ padding: 16 }}>
-        {/* Nombre y calificación */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, gap: 8 }}>
-          <h3 style={{
-            fontSize: 16, fontWeight: 700, color: D.text, margin: 0,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-          }}>{nombre}</h3>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-            <span style={{ color: '#fbbf24' }}>★</span>
-            <span style={{ fontSize: 13, color: D.muted }}>{calificacion}</span>
-          </div>
-        </div>
-
-        {/* Descripción corta */}
+      {/* ── Info + CTA ── */}
+      <div style={{ padding: '12px 14px 14px' }}>
         <p style={{
-          color: D.muted, fontSize: 13, marginBottom: 12, margin: '0 0 12px',
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}>{descripcion}</p>
+          fontWeight: 700, fontSize: 14, color: D.text, margin: '0 0 8px',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>{nombre}</p>
 
-        {/* Precio y botones */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-          <span style={{ fontWeight: 700, fontSize: 17, color: D.primary }}>Bs {Number(precio).toFixed(2)}</span>
-
-          <div style={{ display: 'flex', gap: 6 }}>
-            {/* Botón de favorito */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => onToggleFavorite(id)}
-              aria-label="Añadir a favoritos"
-              style={{
-                padding: 6, borderRadius: '50%',
-                background: esFavorito ? `${D.red}20` : D.surface,
-                color: esFavorito ? D.red : D.muted,
-                border: `1px solid ${esFavorito ? D.red + '40' : D.border}`,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-            >
-              <Heart size={18} fill={esFavorito ? 'currentColor' : 'none'} />
-            </motion.button>
-
-            {/* Botón de detalles */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => onViewDetails(id)}
-              aria-label="Ver detalles"
-              style={{
-                padding: 6, borderRadius: '50%',
-                background: D.surface, color: D.muted,
-                border: `1px solid ${D.border}`, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-            >
-              <Info size={18} />
-            </motion.button>
-
-            {/* Botón de añadir al carrito */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => onAddToCart(id)}
-              disabled={!disponible}
-              aria-label="Añadir al carrito"
-              style={{
-                padding: 6, borderRadius: '50%',
-                background: disponible ? `linear-gradient(135deg, ${D.primary}, #16a34a)` : D.surface,
-                color: disponible ? '#fff' : D.dim || D.muted,
-                border: 'none',
-                cursor: disponible ? 'pointer' : 'not-allowed',
-                opacity: disponible ? 1 : 0.5,
-                boxShadow: disponible ? `0 2px 8px ${D.primary}50` : 'none',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-            >
-              <ShoppingCart size={18} />
-            </motion.button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontWeight: 800, fontSize: 17, color: agotado ? D.dim : D.primary }}>
+              Bs {Number(precio || 0).toFixed(2)}
+            </span>
+            {unidad && <span style={{ fontSize: 11, color: D.muted, marginLeft: 3 }}>/{unidad}</span>}
           </div>
+
+          <motion.button
+            whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+            onClick={e => { e.stopPropagation(); !agotado && (onAddToCart?.(id) || onViewDetails?.(id)) }}
+            disabled={agotado}
+            aria-label={agotado ? 'Producto agotado' : 'Reservar producto'}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 10,
+              border: 'none', flexShrink: 0,
+              background: agotado ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg, #22C55E, #16a34a)',
+              boxShadow: agotado ? 'none' : '0 4px 14px rgba(34,197,94,0.4)',
+              color: agotado ? D.dim : '#fff', fontWeight: 700, fontSize: 12,
+              cursor: agotado ? 'not-allowed' : 'pointer',
+            }}>
+            <Plus size={14} strokeWidth={2.6} />
+            <span>Reservar</span>
+          </motion.button>
         </div>
       </div>
     </motion.div>

@@ -1,4 +1,5 @@
 // src/screens/consumer/HomeScreenConsumer.jsx
+// Rediseño futurista con estética neón, glassmorphism y tipografía SpaceGrotesk
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
@@ -31,6 +32,11 @@ const HomeScreenConsumer = ({ navigation }) => {
   const { user }        = useAuth();
   const { colors, isDarkMode } = useTheme();
   const { isFavorito, toggle } = useFavoritos();
+
+  // Colores neón con fallback para compatibilidad
+  const neonCyan  = colors.neonCyan  || '#00F5FF';
+  const neonGreen = colors.neonGreen || '#00FF88';
+
   const C = {
     bg:      colors.background,
     surface: colors.surface,
@@ -44,6 +50,8 @@ const HomeScreenConsumer = ({ navigation }) => {
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
+    neonCyan,
+    neonGreen,
   };
   const styles = makeStyles(C, isDarkMode);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,14 +59,32 @@ const HomeScreenConsumer = ({ navigation }) => {
   const [productos, setProductos]   = useState([]);
   const [pedidos, setPedidos]       = useState([]);
 
-  // Wave animation
+  // Animaciones de olas neón
   const wave1 = useRef(new Animated.Value(0)).current;
   const wave2 = useRef(new Animated.Value(0)).current;
   const wave3 = useRef(new Animated.Value(0)).current;
   // Parallax scroll
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  // Animaciones de entrada escalonada para secciones
+  const heroFade     = useRef(new Animated.Value(0)).current;
+  const chipsFade    = useRef(new Animated.Value(0)).current;
+  const frescuraFade = useRef(new Animated.Value(0)).current;
+  const productsFade = useRef(new Animated.Value(0)).current;
+  const ordersFade   = useRef(new Animated.Value(0)).current;
+  const heroSlide    = useRef(new Animated.Value(30)).current;
+  const chipsSlide   = useRef(new Animated.Value(30)).current;
+  const frescuraSlide = useRef(new Animated.Value(30)).current;
+  const productsSlide = useRef(new Animated.Value(30)).current;
+  const ordersSlide   = useRef(new Animated.Value(30)).current;
+
+  // Animación de pulso para el icono de frescura
+  const frescuraPulse = useRef(new Animated.Value(1)).current;
+  // Animación de rotación para el borde del card de frescura
+  const frescuraRotation = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
+    // Olas animadas con colores neón
     const makeWave = (val, duration, delay) =>
       Animated.loop(Animated.sequence([
         Animated.delay(delay),
@@ -70,8 +96,39 @@ const HomeScreenConsumer = ({ navigation }) => {
       makeWave(wave2, 2600, 500),
       makeWave(wave3, 3800, 1000),
     ]).start();
+
+    // Pulso del icono de frescura
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(frescuraPulse, { toValue: 1.15, duration: 1200, useNativeDriver: true }),
+        Animated.timing(frescuraPulse, { toValue: 1, duration: 1200, useNativeDriver: true }),
+      ])
+    ).start();
+
+    // Rotación continua del borde de frescura
+    Animated.loop(
+      Animated.timing(frescuraRotation, { toValue: 1, duration: 4000, useNativeDriver: true })
+    ).start();
+
     fetchData();
   }, []);
+
+  // Ejecutar animaciones de entrada cuando termine la carga
+  const runEntryAnimations = () => {
+    const stagger = (fade, slide, delay) =>
+      Animated.parallel([
+        Animated.timing(fade, { toValue: 1, duration: 500, delay, useNativeDriver: true }),
+        Animated.timing(slide, { toValue: 0, duration: 500, delay, useNativeDriver: true }),
+      ]);
+
+    Animated.stagger(100, [
+      stagger(heroFade, heroSlide, 0),
+      stagger(chipsFade, chipsSlide, 0),
+      stagger(frescuraFade, frescuraSlide, 0),
+      stagger(productsFade, productsSlide, 0),
+      stagger(ordersFade, ordersSlide, 0),
+    ]).start();
+  };
 
   const fetchData = async () => {
     try {
@@ -82,7 +139,10 @@ const HomeScreenConsumer = ({ navigation }) => {
       ]);
       setProductos(prodRes.data.data || prodRes.data || []);
       setPedidos(pedRes.data.data || pedRes.data || []);
-    } catch { /* ignore */ } finally { setLoading(false); }
+    } catch { /* ignorar */ } finally {
+      setLoading(false);
+      runEntryAnimations();
+    }
   };
 
   const onRefresh = useCallback(async () => {
@@ -100,29 +160,36 @@ const HomeScreenConsumer = ({ navigation }) => {
   const statusLabel = e => ({ pendiente:'Pendiente', confirmado:'Confirmado', preparando:'Preparando', listo_para_recoger:'Listo', en_camino:'En camino', entregado:'Entregado', cancelado:'Cancelado' }[e] || e);
   const puedeTracking = e => ['pendiente','confirmado','preparando','listo_para_recoger','en_camino'].includes(e);
 
+  // Interpolación de rotación para el borde de frescura
+  const frescuraRotate = frescuraRotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  // ── Estado de carga: esqueleto ──
   if (loading) return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
-      {/* Hero skeleton */}
+      {/* Esqueleto del hero */}
       <View style={[styles.hero, { paddingBottom: 20 }]}>
         <View style={{ marginBottom: 16 }}>
           <SkeletonStatCard />
         </View>
       </View>
-      {/* Feature chips skeleton */}
+      {/* Esqueleto de chips */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 4 }}>
         {Array.from({ length: 4 }).map((_, i) => (
           <View key={i} style={{ width: 90, height: 80, borderRadius: 16, marginRight: 10, backgroundColor: C.card, borderWidth: 1, borderColor: C.border }} />
         ))}
       </ScrollView>
-      {/* Products skeleton */}
+      {/* Esqueleto de productos */}
       <View style={styles.section}>
         <View style={{ height: 14, width: 160, borderRadius: 7, backgroundColor: C.card, marginBottom: 12 }} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Array.from({ length: 4 }).map((_, i) => <SkeletonProductCard key={i} />)}
         </ScrollView>
       </View>
-      {/* Orders skeleton */}
+      {/* Esqueleto de pedidos */}
       <View style={styles.section}>
         <View style={{ height: 14, width: 140, borderRadius: 7, backgroundColor: 'rgba(255,255,255,0.06)', marginBottom: 12 }} />
         {Array.from({ length: 3 }).map((_, i) => <SkeletonOrderCard key={i} />)}
@@ -138,21 +205,27 @@ const HomeScreenConsumer = ({ navigation }) => {
       scrollEventThrottle={16}>
       <FishIndicator visible={refreshing} />
 
-      {/* ── Hero (parallax) ── */}
-      <Animated.View style={{ transform: [{ translateY: Animated.multiply(scrollY, 0.4) }] }}>
+      {/* ── Hero con parallax y estética neón ── */}
+      <Animated.View style={[
+        { transform: [{ translateY: Animated.multiply(scrollY, 0.4) }] },
+        { opacity: heroFade, transform: [{ translateY: Animated.multiply(scrollY, 0.4) }, { translateY: heroSlide }] },
+      ]}>
       <LinearGradient
-        colors={isDarkMode ? ['#071228', '#0a1835', '#060f22', '#030b18'] : ['#e0f2fe', '#f0f9ff', '#f9fafb', '#e0fdfa']}
+        colors={isDarkMode
+          ? ['#030810', '#06101f', '#071228', '#040d1a']
+          : ['#e0f2fe', '#f0f9ff', '#f9fafb', '#e0fdfa']
+        }
         start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-        {/* Shimmer top line */}
-        <LinearGradient colors={['transparent', C.primary, C.teal, 'transparent']}
+        {/* Línea shimmer neón en la parte superior */}
+        <LinearGradient colors={['transparent', neonCyan, neonGreen, 'transparent']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.heroLine} />
 
-        {/* Glow orbs */}
-        <View style={styles.orb1} />
-        <View style={styles.orb2} />
-        <View style={styles.orb3} />
+        {/* Orbes de brillo flotantes con colores neón */}
+        <View style={[styles.orb1, { backgroundColor: `${neonCyan}14` }]} />
+        <View style={[styles.orb2, { backgroundColor: `${neonGreen}10` }]} />
+        <View style={[styles.orb3, { backgroundColor: `${C.purple}0C` }]} />
 
-        {/* Animated waves */}
+        {/* Olas animadas con brillo neón */}
         <Animated.View style={[styles.wave, styles.waveA, {
           transform: [{ translateY: wave1.interpolate({ inputRange: [0,1], outputRange: [0,-8] }) }],
           opacity:    wave1.interpolate({ inputRange: [0,0.5,1], outputRange: [0.3,0.5,0.3] }),
@@ -166,36 +239,37 @@ const HomeScreenConsumer = ({ navigation }) => {
           opacity:    wave3.interpolate({ inputRange: [0,0.5,1], outputRange: [0.12,0.25,0.12] }),
         }]} />
 
-        {/* Hero content */}
+        {/* Contenido del hero */}
         <View style={styles.heroRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.heroSub}>Bienvenido de vuelta</Text>
             <Text style={styles.heroName}>{firstName}</Text>
             <View style={styles.heroBadge}>
-              <Ionicons name="fish" size={12} color={C.teal} />
+              <Ionicons name="fish" size={12} color={neonCyan} />
               <Text style={styles.heroBadgeText}>Acuicultura sostenible</Text>
             </View>
           </View>
+          {/* Botones de acción con glassmorphism */}
           <View style={styles.heroActions}>
             <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Busqueda')}>
-              <Ionicons name="search-outline" size={20} color={C.primary} />
+              <Ionicons name="search-outline" size={20} color={neonCyan} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Conversaciones')}>
-              <Ionicons name="chatbubbles-outline" size={20} color={C.primary} />
+              <Ionicons name="chatbubbles-outline" size={20} color={neonCyan} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Carrito')}>
-              <Ionicons name="cart-outline" size={20} color={C.primary} />
+              <Ionicons name="cart-outline" size={20} color={neonCyan} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* CTA button */}
+        {/* Botón CTA con gradiente neón verde */}
         <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {}); navigation.navigate('Tienda'); }} style={styles.heroCta} activeOpacity={0.85}>
-          <LinearGradient colors={['#16a34a', '#22C55E']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          <LinearGradient colors={[neonGreen, '#22C55E']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.heroCtaGrad}>
-            <Ionicons name="storefront-outline" size={16} color="#fff" />
+            <Ionicons name="storefront-outline" size={16} color="#030810" />
             <Text style={styles.heroCtaText}>Explorar productores</Text>
-            <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.7)" />
+            <Ionicons name="chevron-forward" size={16} color="rgba(3,8,16,0.6)" />
           </LinearGradient>
         </TouchableOpacity>
       </LinearGradient>
@@ -203,14 +277,14 @@ const HomeScreenConsumer = ({ navigation }) => {
 
       {/* ── Banner pedido en camino ── */}
       {pedidoEnCamino && (
-        <TouchableOpacity style={[styles.activeBanner, { borderColor: 'rgba(6,182,212,0.4)' }]}
+        <TouchableOpacity style={[styles.activeBanner, { borderColor: `${neonCyan}60` }]}
           onPress={() => navigation.navigate('TrackingPedido', { pedidoId: pedidoEnCamino.rawId || pedidoEnCamino.id })}
           activeOpacity={0.88}>
-          <LinearGradient colors={['rgba(6,182,212,0.15)', 'rgba(6,182,212,0.08)']}
+          <LinearGradient colors={[`${neonCyan}20`, `${neonCyan}0A`]}
             style={StyleSheet.absoluteFill} />
           <View style={styles.activeBannerLeft}>
-            <View style={[styles.activePulse, { borderColor: '#06b6d4' }]}>
-              <Ionicons name="bicycle" size={20} color="#06b6d4" />
+            <View style={[styles.activePulse, { borderColor: neonCyan }]}>
+              <Ionicons name="bicycle" size={20} color={neonCyan} />
             </View>
             <View>
               <Text style={styles.activeBannerTitle}>Pedido en camino</Text>
@@ -221,43 +295,63 @@ const HomeScreenConsumer = ({ navigation }) => {
         </TouchableOpacity>
       )}
 
-      {/* ── Feature chips ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 4 }}>
-        {[
-          { icon: 'fish-outline',  color: C.primary, label: 'Frescos',     sub: 'Del criadero' },
-          { icon: 'leaf-outline',  color: C.green,   label: 'Sostenible',  sub: 'Eco-certif.' },
-          { icon: 'time-outline',  color: C.orange,  label: 'Entrega',     sub: '24-48h' },
-          { icon: 'shield-outline', color: C.purple,  label: 'Garantizado', sub: '100% seguro' },
-        ].map((f, i) => (
-          <View key={i} style={styles.featureChip}>
-            <View style={[styles.featureIcon, { borderColor: `${f.color}35`, backgroundColor: `${f.color}12` }]}>
-              <Ionicons name={f.icon} size={20} color={f.color} />
+      {/* ── Chips de características con glassmorphism ── */}
+      <Animated.View style={{ opacity: chipsFade, transform: [{ translateY: chipsSlide }] }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 4 }}>
+          {[
+            { icon: 'fish-outline',  color: neonCyan,  label: 'Frescos',     sub: 'Del criadero' },
+            { icon: 'leaf-outline',  color: neonGreen,  label: 'Sostenible',  sub: 'Eco-certif.' },
+            { icon: 'time-outline',  color: C.orange,  label: 'Entrega',     sub: '24-48h' },
+            { icon: 'shield-outline', color: C.purple,  label: 'Garantizado', sub: '100% seguro' },
+          ].map((f, i) => (
+            <View key={i} style={[styles.featureChip, { borderColor: `${f.color}30` }]}>
+              <View style={[styles.featureIcon, { borderColor: `${f.color}40`, backgroundColor: `${f.color}15` }]}>
+                <Ionicons name={f.icon} size={20} color={f.color} style={{
+                  // Brillo sutil del icono
+                  textShadowColor: f.color,
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 8,
+                }} />
+              </View>
+              <Text style={styles.featureLabel}>{f.label}</Text>
+              <Text style={styles.featureSub}>{f.sub}</Text>
             </View>
-            <Text style={styles.featureLabel}>{f.label}</Text>
-            <Text style={styles.featureSub}>{f.sub}</Text>
+          ))}
+        </ScrollView>
+      </Animated.View>
+
+      {/* ── Card de análisis de frescura con borde gradiente rotativo ── */}
+      <Animated.View style={{ opacity: frescuraFade, transform: [{ translateY: frescuraSlide }] }}>
+        <TouchableOpacity
+          style={styles.frescuraOuter}
+          onPress={() => navigation.navigate('AnalizarFrescura')}
+          activeOpacity={0.85}
+        >
+          {/* Borde con gradiente rotativo animado */}
+          <Animated.View style={[styles.frescuraRotatingBorder, { transform: [{ rotate: frescuraRotate }] }]}>
+            <LinearGradient
+              colors={[neonGreen, neonCyan, `${C.purple}`, neonGreen]}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+          {/* Contenido interior del card */}
+          <View style={styles.frescuraCard}>
+            <Animated.View style={[styles.frescuraIconWrap, { transform: [{ scale: frescuraPulse }] }]}>
+              <Text style={{ fontSize: 28 }}>🔬</Text>
+            </Animated.View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.frescuraTitulo, { color: C.text }]}>¿Es fresco tu pescado?</Text>
+              <Text style={[styles.frescuraSub, { color: C.sub }]}>Toma una foto y la IA lo analiza en segundos</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={neonGreen} />
           </View>
-        ))}
-      </ScrollView>
+        </TouchableOpacity>
+      </Animated.View>
 
-      {/* ── Analizar frescura ── */}
-      <TouchableOpacity
-        style={[styles.frescuraCard, { backgroundColor: C.card, borderColor: 'rgba(34,197,94,0.3)' }]}
-        onPress={() => navigation.navigate('AnalizarFrescura')}
-        activeOpacity={0.85}
-      >
-        <View style={[styles.frescuraIconWrap, { backgroundColor: 'rgba(34,197,94,0.12)' }]}>
-          <Text style={{ fontSize: 28 }}>🔬</Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.frescuraTitulo, { color: C.text }]}>¿Es fresco tu pescado?</Text>
-          <Text style={[styles.frescuraSub, { color: C.sub }]}>Toma una foto y la IA lo analiza en segundos</Text>
-        </View>
-        <Ionicons name="chevron-forward" size={20} color={C.hint} />
-      </TouchableOpacity>
-
-      {/* ── Productos destacados ── */}
-      <View style={styles.section}>
+      {/* ── Productos destacados con diseño neón ── */}
+      <Animated.View style={[styles.section, { opacity: productsFade, transform: [{ translateY: productsSlide }] }]}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Productos Destacados</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Tienda')}>
@@ -270,12 +364,12 @@ const HomeScreenConsumer = ({ navigation }) => {
             <TouchableOpacity key={p.id} style={styles.productCard}
               onPress={() => navigation.navigate('DetalleProducto', { id: p.id })}
               activeOpacity={0.88}>
-              {/* Card inner gradient */}
+              {/* Gradiente interior glassmorphism */}
               <LinearGradient
-                colors={isDarkMode ? ['rgba(30,58,100,0.22)', 'rgba(9,15,30,0.65)'] : ['transparent', 'transparent']}
+                colors={isDarkMode ? ['rgba(0,245,255,0.05)', 'rgba(10,15,30,0.85)'] : ['transparent', 'transparent']}
                 style={StyleSheet.absoluteFill} />
 
-              {/* Image */}
+              {/* Imagen del producto */}
               <View style={styles.productImgWrap}>
                 {p.imagen_url ? (
                   <ExpoImage source={{ uri: p.imagen_url }} style={styles.productImg} contentFit="cover" transition={250} placeholder={BLURHASH} />
@@ -284,17 +378,17 @@ const HomeScreenConsumer = ({ navigation }) => {
                     <Ionicons name="fish-outline" size={32} color={C.hint} />
                   </View>
                 )}
-                {/* Top gradient overlay */}
+                {/* Overlay de gradiente dramático */}
                 <LinearGradient
-                  colors={isDarkMode ? ['transparent', 'rgba(6,13,31,0.75)'] : ['transparent', 'rgba(0,0,0,0.18)']}
+                  colors={isDarkMode ? ['transparent', 'rgba(3,8,16,0.85)'] : ['transparent', 'rgba(0,0,0,0.18)']}
                   style={styles.productImgOverlay} />
-                {/* Favorite */}
+                {/* Botón de favorito */}
                 <TouchableOpacity style={styles.favBtn} onPress={() => toggle(p.id)} hitSlop={8}>
                   <Ionicons name={isFavorito(p.id) ? 'heart' : 'heart-outline'} size={15} color={isFavorito(p.id) ? '#ef4444' : C.sub} />
                 </TouchableOpacity>
               </View>
 
-              {/* Info */}
+              {/* Información del producto */}
               <View style={styles.productInfo}>
                 <Text style={styles.productName} numberOfLines={1}>{p.nombre}</Text>
                 <View style={styles.prodRatingRow}>
@@ -310,10 +404,11 @@ const HomeScreenConsumer = ({ navigation }) => {
                 </View>
                 <View style={styles.productFooter}>
                   <Text style={styles.productPrice}>Bs {parseFloat(p.precio || 0).toFixed(2)}</Text>
+                  {/* Botón + con gradiente neón cyan a verde */}
                   <TouchableOpacity style={styles.addBtn}
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); navigation.navigate('DetalleProducto', { id: p.id }); }}>
-                    <LinearGradient colors={['#16a34a', '#22C55E']} style={styles.addBtnGrad}>
-                      <Ionicons name="add" size={16} color="#fff" />
+                    <LinearGradient colors={[neonCyan, neonGreen]} style={styles.addBtnGrad}>
+                      <Ionicons name="add" size={16} color="#030810" />
                     </LinearGradient>
                   </TouchableOpacity>
                 </View>
@@ -321,15 +416,19 @@ const HomeScreenConsumer = ({ navigation }) => {
             </TouchableOpacity>
           )) : (
             <View style={styles.emptyState}>
-              <Ionicons name="fish-outline" size={36} color={C.hint} />
+              <Ionicons name="fish-outline" size={36} color={neonCyan} style={{
+                textShadowColor: neonCyan,
+                textShadowOffset: { width: 0, height: 0 },
+                textShadowRadius: 12,
+              }} />
               <Text style={styles.emptyText}>No hay productos</Text>
             </View>
           )}
         </ScrollView>
-      </View>
+      </Animated.View>
 
-      {/* ── Pedidos recientes ── */}
-      <View style={styles.section}>
+      {/* ── Pedidos recientes con glassmorphism ── */}
+      <Animated.View style={[styles.section, { opacity: ordersFade, transform: [{ translateY: ordersSlide }] }]}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Pedidos Recientes</Text>
           <TouchableOpacity onPress={() => navigation.navigate('MisPedidos')}>
@@ -341,14 +440,17 @@ const HomeScreenConsumer = ({ navigation }) => {
           const estado = pedido.estado || pedido.status;
           const sc     = statusColor(estado);
           return (
-            <View key={pedido.id} style={styles.orderCard}>
+            <View key={pedido.id} style={[styles.orderCard, { borderLeftColor: sc, borderLeftWidth: 3 }]}>
               <LinearGradient
-                colors={isDarkMode ? ['rgba(15,23,42,0.97)', 'rgba(9,15,30,0.99)'] : [C.surface, C.surface]}
+                colors={isDarkMode ? ['rgba(10,15,30,0.92)', 'rgba(6,10,20,0.98)'] : [C.surface, C.surface]}
                 style={StyleSheet.absoluteFill} />
-              {/* Shimmer top line */}
-              <View style={[styles.orderShimmer, { backgroundColor: `${sc}50` }]} />
+              {/* Línea shimmer superior con color del estado */}
+              <LinearGradient
+                colors={['transparent', `${sc}80`, 'transparent']}
+                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                style={styles.orderShimmer} />
               <View style={styles.orderTop}>
-                <View style={[styles.orderIcon, { backgroundColor: `${sc}18`, borderColor: `${sc}30` }]}>
+                <View style={[styles.orderIcon, { backgroundColor: `${sc}18`, borderColor: `${sc}40` }]}>
                   <Ionicons name="bag-outline" size={18} color={sc} />
                 </View>
                 <View style={styles.orderMid}>
@@ -358,7 +460,16 @@ const HomeScreenConsumer = ({ navigation }) => {
                   </Text>
                 </View>
                 <View style={styles.orderRight}>
-                  <View style={[styles.statusBadge, { backgroundColor: `${sc}18`, borderColor: `${sc}35` }]}>
+                  {/* Badge de estado con brillo neón */}
+                  <View style={[styles.statusBadge, {
+                    backgroundColor: `${sc}18`,
+                    borderColor: `${sc}45`,
+                    shadowColor: sc,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 6,
+                    elevation: 4,
+                  }]}>
                     <View style={[styles.statusDot, { backgroundColor: sc }]} />
                     <Text style={[styles.statusText, { color: sc }]}>{statusLabel(estado)}</Text>
                   </View>
@@ -366,10 +477,11 @@ const HomeScreenConsumer = ({ navigation }) => {
                 </View>
               </View>
 
+              {/* Botón de seguimiento con estilo neón */}
               {puedeTracking(estado) && (
                 <TouchableOpacity style={styles.trackBtn}
                   onPress={() => navigation.navigate('TrackingPedido', { pedidoId: pedido.id })}>
-                  <Ionicons name="navigate" size={13} color={C.primary} />
+                  <Ionicons name="navigate" size={13} color={neonCyan} />
                   <Text style={styles.trackBtnText}>
                     {estado === 'en_camino' ? 'Ver en tiempo real' : 'Seguir pedido'}
                   </Text>
@@ -379,132 +491,332 @@ const HomeScreenConsumer = ({ navigation }) => {
           );
         }) : (
           <View style={styles.emptyOrder}>
-            <Ionicons name="receipt-outline" size={36} color={C.hint} />
+            <Ionicons name="receipt-outline" size={36} color={neonCyan} style={{
+              textShadowColor: neonCyan,
+              textShadowOffset: { width: 0, height: 0 },
+              textShadowRadius: 12,
+            }} />
             <Text style={styles.emptyText}>No hay pedidos recientes</Text>
           </View>
         )}
-      </View>
+      </Animated.View>
 
       <View style={{ height: 32 }} />
     </Animated.ScrollView>
   );
 };
 
+// ── Estilos futuristas con glassmorphism y neón ──
 const makeStyles = (C, isDarkMode) => StyleSheet.create({
   root:        { flex: 1, backgroundColor: C.bg },
   loadingWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: C.bg },
 
-  // Hero
+  // ── Hero: fondo profundo con bordes neón ──
   hero: {
     margin: 14, borderRadius: 24, padding: 20, paddingBottom: 24,
     overflow: 'hidden', position: 'relative',
-    borderWidth: 1, borderColor: 'rgba(56,189,248,0.22)',
-    shadowColor: '#38bdf8', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.14, shadowRadius: 18, elevation: 10,
+    borderWidth: 1,
+    borderColor: isDarkMode ? `${C.neonCyan}30` : 'rgba(56,189,248,0.22)',
+    shadowColor: C.neonCyan,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: isDarkMode ? 0.25 : 0.14,
+    shadowRadius: 22,
+    elevation: 12,
   },
-  heroLine:    { height: 1, position: 'absolute', top: 0, left: 0, right: 0 },
-  orb1: { position: 'absolute', width: 220, height: 220, borderRadius: 110, backgroundColor: 'rgba(56,189,248,0.09)', top: -80, right: -60 },
-  orb2: { position: 'absolute', width: 150, height: 150, borderRadius: 75,  backgroundColor: 'rgba(20,184,166,0.07)', bottom: -50, left: -40 },
-  orb3: { position: 'absolute', width: 100, height: 100, borderRadius: 50,  backgroundColor: 'rgba(192,132,252,0.06)', top: '25%', left: '45%' },
-  wave: { position: 'absolute', left: -20, right: -20, height: 70, borderRadius: 35 },
-  waveA: { backgroundColor: 'rgba(56,189,248,0.11)',  bottom: -20 },
-  waveB: { backgroundColor: 'rgba(20,184,166,0.08)',  bottom: -10 },
-  waveC: { backgroundColor: 'rgba(139,92,246,0.05)', bottom: -4 },
-  heroRow:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 },
-  heroSub:       { fontSize: 12, color: C.hint, marginBottom: 2 },
-  heroName:      { fontSize: 26, fontWeight: 'bold', color: C.text, marginBottom: 6 },
-  heroBadge:     { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(20,184,166,0.12)', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', borderWidth: 1, borderColor: 'rgba(20,184,166,0.25)' },
-  heroBadgeText: { fontSize: 11, color: C.teal, fontWeight: '500' },
-  heroActions:   { flexDirection: 'row', gap: 8 },
-  heroIconBtn:   { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(34,197,94,0.1)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.22)', justifyContent: 'center', alignItems: 'center' },
-  heroCta:       { borderRadius: 14, overflow: 'hidden' },
-  heroCtaGrad:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 11, gap: 8 },
-  heroCtaText:   { flex: 1, color: '#fff', fontSize: 14, fontWeight: '600' },
+  heroLine: { height: 2, position: 'absolute', top: 0, left: 0, right: 0 },
 
-  // Active banner
+  // Orbes de brillo más grandes y difusos
+  orb1: { position: 'absolute', width: 260, height: 260, borderRadius: 130, top: -100, right: -80 },
+  orb2: { position: 'absolute', width: 180, height: 180, borderRadius: 90, bottom: -60, left: -50 },
+  orb3: { position: 'absolute', width: 120, height: 120, borderRadius: 60, top: '20%', left: '40%' },
+
+  // Olas con colores neón
+  wave: { position: 'absolute', left: -20, right: -20, height: 70, borderRadius: 35 },
+  waveA: { backgroundColor: `${C.neonCyan}18`, bottom: -20 },
+  waveB: { backgroundColor: `${C.neonGreen}12`, bottom: -10 },
+  waveC: { backgroundColor: `${C.purple}0A`, bottom: -4 },
+
+  heroRow: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'flex-start', marginBottom: 16,
+  },
+  heroSub: {
+    fontSize: 12,
+    color: C.hint,
+    marginBottom: 2,
+    fontFamily: 'SpaceGrotesk-Regular',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  heroName: {
+    fontSize: 30,
+    fontFamily: 'SpaceGrotesk-Bold',
+    color: C.text,
+    marginBottom: 8,
+    // Brillo neón en el nombre
+    textShadowColor: isDarkMode ? `${C.neonCyan}40` : 'transparent',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: isDarkMode ? 12 : 0,
+  },
+  // Badge con brillo neón cyan
+  heroBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: `${C.neonCyan}15`,
+    borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: `${C.neonCyan}35`,
+    shadowColor: C.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: isDarkMode ? 0.3 : 0,
+    shadowRadius: 8,
+    elevation: isDarkMode ? 3 : 0,
+  },
+  heroBadgeText: {
+    fontSize: 11,
+    color: C.neonCyan,
+    fontFamily: 'SpaceGrotesk-Medium',
+  },
+  heroActions: { flexDirection: 'row', gap: 8 },
+  // Botones de acción con glassmorphism
+  heroIconBtn: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: isDarkMode ? 'rgba(0,245,255,0.08)' : 'rgba(34,197,94,0.1)',
+    borderWidth: 1,
+    borderColor: isDarkMode ? `${C.neonCyan}25` : 'rgba(34,197,94,0.22)',
+    justifyContent: 'center', alignItems: 'center',
+    // Sombra neón sutil
+    shadowColor: C.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: isDarkMode ? 0.2 : 0,
+    shadowRadius: 6,
+    elevation: isDarkMode ? 2 : 0,
+  },
+  heroCta: { borderRadius: 14, overflow: 'hidden' },
+  heroCtaGrad: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 16, paddingVertical: 12, gap: 8,
+  },
+  heroCtaText: {
+    flex: 1, color: '#030810', fontSize: 14,
+    fontFamily: 'SpaceGrotesk-SemiBold',
+  },
+
+  // ── Banner activo con brillo neón ──
   activeBanner: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     marginHorizontal: 14, marginBottom: 12, borderRadius: 16, padding: 14,
     borderWidth: 1, overflow: 'hidden',
-    shadowColor: '#06b6d4', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.85)' : undefined,
+    shadowColor: C.neonCyan, shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35, shadowRadius: 10, elevation: 5,
   },
   activeBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
-  activePulse:      { width: 38, height: 38, borderRadius: 19, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(6,182,212,0.12)' },
-  activeBannerTitle: { color: C.text, fontSize: 14, fontWeight: '700' },
-  activeBannerSub:   { color: C.hint, fontSize: 12, marginTop: 1 },
-
-  // Feature chips
-  featureChip: {
-    width: 90, backgroundColor: C.surface, borderRadius: 16, padding: 12, marginRight: 10,
-    borderWidth: 1, borderColor: C.border, alignItems: 'center',
-    shadowColor: isDarkMode ? '#38bdf8' : '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: isDarkMode ? 0.1 : 0.06, shadowRadius: 6, elevation: 3,
+  activePulse: {
+    width: 38, height: 38, borderRadius: 19, borderWidth: 1.5,
+    justifyContent: 'center', alignItems: 'center',
+    backgroundColor: `${C.neonCyan}15`,
   },
-  featureIcon:  { width: 40, height: 40, borderRadius: 20, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
-  featureLabel: { fontSize: 12, fontWeight: '600', color: C.text, textAlign: 'center' },
-  featureSub:   { fontSize: 10, color: C.hint, textAlign: 'center', marginTop: 1 },
+  activeBannerTitle: {
+    color: C.text, fontSize: 14,
+    fontFamily: 'SpaceGrotesk-Bold',
+  },
+  activeBannerSub: {
+    color: C.hint, fontSize: 12, marginTop: 1,
+    fontFamily: 'SpaceGrotesk-Regular',
+  },
 
-  // Frescura card
+  // ── Chips de características con glassmorphism ──
+  featureChip: {
+    width: 92,
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.surface,
+    borderRadius: 16, padding: 12, marginRight: 10,
+    borderWidth: 1, alignItems: 'center',
+    // Sombra neón sutil
+    shadowColor: isDarkMode ? C.neonCyan : '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: isDarkMode ? 0.15 : 0.06,
+    shadowRadius: 8, elevation: 3,
+  },
+  featureIcon: {
+    width: 42, height: 42, borderRadius: 21,
+    borderWidth: 1, justifyContent: 'center', alignItems: 'center',
+    marginBottom: 6,
+  },
+  featureLabel: {
+    fontSize: 12, fontFamily: 'SpaceGrotesk-SemiBold',
+    color: C.text, textAlign: 'center',
+  },
+  featureSub: {
+    fontSize: 10, color: C.hint, textAlign: 'center', marginTop: 1,
+    fontFamily: 'SpaceGrotesk-Regular',
+  },
+
+  // ── Card de frescura con borde gradiente rotativo ──
+  frescuraOuter: {
+    marginHorizontal: 14, marginTop: 14,
+    borderRadius: 18, overflow: 'hidden',
+    position: 'relative',
+  },
+  frescuraRotatingBorder: {
+    position: 'absolute',
+    top: -50, left: -50, right: -50, bottom: -50,
+    borderRadius: 200,
+  },
   frescuraCard: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
-    marginHorizontal: 14, marginTop: 14, padding: 16, borderRadius: 16, borderWidth: 1.5,
-    shadowColor: '#22c55e', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.2, shadowRadius: 10, elevation: 5,
+    margin: 1.5, padding: 16, borderRadius: 16,
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.92)' : C.card,
+    // Brillo neón verde
+    shadowColor: C.neonGreen,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: isDarkMode ? 0.3 : 0.2,
+    shadowRadius: 14, elevation: 6,
   },
-  frescuraIconWrap: { width: 52, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(34,197,94,0.3)' },
-  frescuraTitulo:   { fontSize: 15, fontWeight: '700', marginBottom: 2 },
-  frescuraSub:      { fontSize: 12 },
+  frescuraIconWrap: {
+    width: 52, height: 52, borderRadius: 26,
+    justifyContent: 'center', alignItems: 'center',
+    backgroundColor: `${C.neonGreen}18`,
+    borderWidth: 1, borderColor: `${C.neonGreen}40`,
+    // Brillo pulsante
+    shadowColor: C.neonGreen,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: isDarkMode ? 0.4 : 0.15,
+    shadowRadius: 10,
+    elevation: isDarkMode ? 4 : 0,
+  },
+  frescuraTitulo: {
+    fontSize: 15, fontFamily: 'SpaceGrotesk-Bold',
+    marginBottom: 2,
+  },
+  frescuraSub: {
+    fontSize: 12, fontFamily: 'SpaceGrotesk-Regular',
+  },
 
-  // Section
+  // ── Secciones ──
   section:       { paddingHorizontal: 14, marginTop: 18 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  sectionTitle:  { fontSize: 16, fontWeight: '700', color: C.text },
-  seeAll:        { fontSize: 13, color: C.primary, fontWeight: '500' },
+  sectionTitle: {
+    fontSize: 17, fontFamily: 'SpaceGrotesk-Bold',
+    color: C.text,
+    letterSpacing: 0.3,
+  },
+  seeAll: {
+    fontSize: 13, color: C.neonCyan,
+    fontFamily: 'SpaceGrotesk-Medium',
+  },
 
-  // Product card
+  // ── Card de producto con glassmorphism neón ──
   productCard: {
-    width: 158, borderRadius: 18, marginRight: 12, overflow: 'hidden',
-    borderWidth: 1, borderColor: isDarkMode ? 'rgba(34,197,94,0.18)' : C.border, backgroundColor: C.card,
-    shadowColor: isDarkMode ? '#22C55E' : '#000', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: isDarkMode ? 0.18 : 0.12, shadowRadius: isDarkMode ? 14 : 8, elevation: 8,
+    width: 162, borderRadius: 18, marginRight: 12, overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: isDarkMode ? `${C.neonCyan}22` : C.border,
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.85)' : C.card,
+    shadowColor: isDarkMode ? C.neonCyan : '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: isDarkMode ? 0.2 : 0.12,
+    shadowRadius: isDarkMode ? 16 : 8, elevation: 8,
   },
   productImgWrap:    { height: 120, position: 'relative' },
   productImg:        { width: '100%', height: '100%', resizeMode: 'cover' },
   productImgFallback:{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: C.card },
   productImgOverlay: { ...StyleSheet.absoluteFillObject },
-  favBtn:            { position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: 14, backgroundColor: isDarkMode ? 'rgba(9,15,30,0.75)' : 'rgba(255,255,255,0.85)', borderWidth: 1, borderColor: C.border, justifyContent: 'center', alignItems: 'center' },
-  productInfo:       { padding: 12 },
-  productName:       { fontSize: 13, fontWeight: '600', color: C.text, marginBottom: 3 },
-  productCat:        { fontSize: 11, color: C.hint },
-  prodRatingRow:     { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 8, minHeight: 14 },
-  prodRatingText:    { fontSize: 11, fontWeight: '700', color: C.text },
-  prodRatingCount:   { fontSize: 10, color: C.hint },
-  productFooter:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  productPrice:      { fontSize: 15, fontWeight: 'bold', color: C.primary },
-  addBtn:            { width: 28, height: 28, borderRadius: 8, overflow: 'hidden' },
-  addBtnGrad:        { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyState:        { width: width - 80, padding: 32, borderRadius: 16, alignItems: 'center', backgroundColor: C.surface, borderWidth: 1, borderColor: C.border },
-  emptyText:         { marginTop: 8, fontSize: 13, color: C.hint },
+  favBtn: {
+    position: 'absolute', top: 8, right: 8,
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.8)' : 'rgba(255,255,255,0.85)',
+    borderWidth: 1, borderColor: isDarkMode ? `${C.neonCyan}20` : C.border,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  productInfo: { padding: 12 },
+  productName: {
+    fontSize: 13, fontFamily: 'SpaceGrotesk-SemiBold',
+    color: C.text, marginBottom: 3,
+  },
+  productCat:    { fontSize: 11, color: C.hint, fontFamily: 'SpaceGrotesk-Regular' },
+  prodRatingRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 8, minHeight: 14 },
+  prodRatingText: {
+    fontSize: 11, fontFamily: 'SpaceGrotesk-Bold', color: C.text,
+  },
+  prodRatingCount: { fontSize: 10, color: C.hint, fontFamily: 'SpaceGrotesk-Regular' },
+  productFooter:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  // Precio con color neón verde
+  productPrice: {
+    fontSize: 15, fontFamily: 'SpaceGrotesk-Bold',
+    color: C.neonGreen,
+    textShadowColor: isDarkMode ? `${C.neonGreen}30` : 'transparent',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: isDarkMode ? 6 : 0,
+  },
+  // Botón + con gradiente neón
+  addBtn: { width: 30, height: 30, borderRadius: 10, overflow: 'hidden' },
+  addBtnGrad: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
-  // Order card
+  // Estados vacíos con glassmorphism
+  emptyState: {
+    width: width - 80, padding: 32, borderRadius: 16, alignItems: 'center',
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.8)' : C.surface,
+    borderWidth: 1,
+    borderColor: isDarkMode ? `${C.neonCyan}20` : C.border,
+  },
+  emptyText: {
+    marginTop: 8, fontSize: 13, color: C.hint,
+    fontFamily: 'SpaceGrotesk-Regular',
+  },
+
+  // ── Card de pedido con glassmorphism y borde neón de estado ──
   orderCard: {
     borderRadius: 18, marginBottom: 10, overflow: 'hidden',
-    borderWidth: 1, borderColor: C.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5,
+    borderWidth: 1,
+    borderColor: isDarkMode ? `${C.neonCyan}18` : C.border,
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.85)' : undefined,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35, shadowRadius: 8, elevation: 5,
   },
-  orderShimmer: { height: 1, marginHorizontal: 20 },
+  orderShimmer: { height: 2, position: 'absolute', top: 0, left: 0, right: 0 },
   orderTop:     { flexDirection: 'row', alignItems: 'center', padding: 14 },
-  orderIcon:    { width: 40, height: 40, borderRadius: 20, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  orderMid:     { flex: 1 },
-  orderNum:     { fontSize: 14, fontWeight: '600', color: C.text, marginBottom: 2 },
-  orderDate:    { fontSize: 12, color: C.hint },
-  orderRight:   { alignItems: 'flex-end', gap: 4 },
-  statusBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, borderWidth: 1 },
-  statusDot:    { width: 5, height: 5, borderRadius: 2.5 },
-  statusText:   { fontSize: 11, fontWeight: '600' },
-  orderTotal:   { fontSize: 13, fontWeight: '700', color: C.text },
-  trackBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderTopWidth: 1, borderTopColor: C.border },
-  trackBtnText: { color: C.primary, fontSize: 13, fontWeight: '600' },
-  emptyOrder:   { padding: 32, borderRadius: 16, alignItems: 'center', backgroundColor: C.surface, borderWidth: 1, borderColor: C.border },
+  orderIcon: {
+    width: 40, height: 40, borderRadius: 20,
+    borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginRight: 12,
+  },
+  orderMid: { flex: 1 },
+  orderNum: {
+    fontSize: 14, fontFamily: 'SpaceGrotesk-SemiBold',
+    color: C.text, marginBottom: 2,
+  },
+  orderDate: {
+    fontSize: 12, color: C.hint,
+    fontFamily: 'SpaceGrotesk-Regular',
+  },
+  orderRight: { alignItems: 'flex-end', gap: 4 },
+  statusBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, borderWidth: 1,
+  },
+  statusDot: { width: 5, height: 5, borderRadius: 2.5 },
+  statusText: {
+    fontSize: 11, fontFamily: 'SpaceGrotesk-SemiBold',
+  },
+  orderTotal: {
+    fontSize: 13, fontFamily: 'SpaceGrotesk-Bold', color: C.text,
+  },
+  // Botón de tracking con estilo neón
+  trackBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: isDarkMode ? `${C.neonCyan}15` : C.border,
+  },
+  trackBtnText: {
+    color: C.neonCyan, fontSize: 13,
+    fontFamily: 'SpaceGrotesk-SemiBold',
+  },
+  emptyOrder: {
+    padding: 32, borderRadius: 16, alignItems: 'center',
+    backgroundColor: isDarkMode ? 'rgba(10,15,30,0.8)' : C.surface,
+    borderWidth: 1,
+    borderColor: isDarkMode ? `${C.neonCyan}20` : C.border,
+  },
 });
 
 export default HomeScreenConsumer;

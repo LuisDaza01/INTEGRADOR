@@ -1,82 +1,140 @@
 // src/constants/colors.js
-// Paleta de colores — NaturaPiscis brand: verde #22C55E como primario
+// Paleta de colores futurista — NaturaPiscis brand: verde #22C55E como primario
+// Sistema de diseño con acentos neón, glassmorphism y gradientes premium
 
 export const COLORS = {
-  // Colores principales — verde marca NaturaPiscis
+  // Colores principales — verde marca NaturaPiscis (vibrante y futurista)
   primary: {
-    50: '#f0fdf4',
-    100: '#dcfce7',
-    200: '#bbf7d0',
-    300: '#86efac',
-    400: '#4ade80',
+    50: '#ECFDF5',
+    100: '#D1FAE5',
+    200: '#A7F3D0',
+    300: '#6EE7B7',
+    400: '#34D399',
     500: '#22C55E',  // Color principal
-    600: '#16a34a',
-    700: '#15803d',
+    600: '#16A34A',
+    700: '#15803D',
     800: '#166534',
-    900: '#14532d',
+    900: '#14532D',
   },
 
-  // Slate (fondos oscuros)
+  // Slate (fondos oscuros — profundos y premium)
   slate: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
+    50: '#F8FAFC',
+    100: '#F1F5F9',
+    200: '#E2E8F0',
+    300: '#CBD5E1',
+    400: '#94A3B8',
+    500: '#64748B',
     600: '#475569',
     700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a',  // Fondo principal
-    950: '#020617',
+    800: '#1E293B',
+    900: '#0F172A',
+    950: '#030712',  // Fondo ultra-profundo futurista
   },
 
-  // Estados
+  // Estados — colores vibrantes de alto contraste
   success: {
-    light: '#dcfce7',
-    main: '#22c55e',
-    dark: '#15803d',
+    light: '#D1FAE5',
+    main: '#22C55E',
+    dark: '#15803D',
   },
   warning: {
-    light: '#fef3c7',
-    main: '#f59e0b',
-    dark: '#b45309',
+    light: '#FEF3C7',
+    main: '#F59E0B',
+    dark: '#B45309',
   },
   error: {
-    light: '#fee2e2',
-    main: '#ef4444',
-    dark: '#b91c1c',
+    light: '#FEE2E2',
+    main: '#EF4444',
+    dark: '#B91C1C',
   },
   info: {
-    light: '#dbeafe',
-    main: '#3b82f6',
-    dark: '#1d4ed8',
+    light: '#DBEAFE',
+    main: '#3B82F6',
+    dark: '#1D4ED8',
   },
 
   // Texto
   text: {
-    primary: '#ffffff',
-    secondary: '#94a3b8',
-    disabled: '#64748b',
+    primary: '#FFFFFF',
+    secondary: '#94A3B8',
+    disabled: '#64748B',
     hint: '#475569',
   },
 
-  // Fondos
+  // Fondos — oscuros premium
   background: {
-    default: '#0f172a',
-    paper: '#1e293b',
-    elevated: '#334155',
+    default: '#030712',
+    paper: '#0A0F1E',
+    elevated: '#0F1629',
   },
 
   // Bordes
   border: {
-    light: '#334155',
-    main: '#475569',
-    dark: '#64748b',
+    light: '#1E293B',
+    main: '#334155',
+    dark: '#475569',
   },
 };
 
-// Colores para sensores (neon vibrante, identidad acuícola)
+// Colores neón futuristas — acentos vibrantes para UI premium
+export const NEON_COLORS = {
+  cyan: '#00F5FF',
+  green: '#00FF88',
+  magenta: '#FF00E5',
+  amber: '#FFAA00',
+  purple: '#BF5AF2',
+};
+
+// Colores para glassmorphism — variantes con opacidad
+export const GLASS_COLORS = {
+  // Fondos de cristal oscuro
+  darkLight: 'rgba(10, 15, 30, 0.45)',
+  darkMedium: 'rgba(10, 15, 30, 0.65)',
+  darkHeavy: 'rgba(10, 15, 30, 0.85)',
+
+  // Fondos de cristal claro
+  light: 'rgba(255, 255, 255, 0.08)',
+  lightMedium: 'rgba(255, 255, 255, 0.15)',
+  lightHeavy: 'rgba(255, 255, 255, 0.25)',
+
+  // Bordes con brillo neón
+  borderCyan: 'rgba(0, 245, 255, 0.15)',
+  borderGreen: 'rgba(0, 255, 136, 0.15)',
+  borderMagenta: 'rgba(255, 0, 229, 0.15)',
+  borderAmber: 'rgba(255, 170, 0, 0.15)',
+  borderPrimary: 'rgba(34, 197, 94, 0.18)',
+  borderWhite: 'rgba(255, 255, 255, 0.08)',
+};
+
+// Presets de gradientes — combinaciones listas para usar
+export const GRADIENT_PRESETS = {
+  // Gradientes de fondo
+  backgroundDark: ['#030712', '#0A0F1E'],
+  backgroundDeep: ['#0A0F1E', '#030712'],
+  backgroundSurface: ['#0F1629', '#0A0F1E'],
+
+  // Gradientes de tarjetas
+  cardDark: ['rgba(10, 15, 30, 0.9)', 'rgba(3, 7, 18, 0.95)'],
+  cardGlow: ['rgba(0, 245, 255, 0.05)', 'rgba(0, 255, 136, 0.02)'],
+  cardNeon: ['rgba(0, 245, 255, 0.08)', 'rgba(0, 255, 136, 0.04)'],
+
+  // Gradientes de botones y acentos
+  primary: ['#00FF88', '#22C55E'],
+  secondary: ['#00F5FF', '#0284C7'],
+  neon: ['#00F5FF', '#00FF88'],
+  magenta: ['#FF00E5', '#BF5AF2'],
+  amber: ['#FFAA00', '#F59E0B'],
+  sunset: ['#FF00E5', '#FFAA00'],
+  ocean: ['#00F5FF', '#3B82F6'],
+  aurora: ['#00FF88', '#00F5FF', '#BF5AF2'],
+
+  // Gradientes para texto (meshGradient style)
+  textShimmer: ['#FFFFFF', '#94A3B8', '#FFFFFF'],
+  textNeon: ['#00F5FF', '#00FF88'],
+};
+
+// Colores para sensores (neón vibrante, identidad acuícola)
 export const SENSOR_COLORS = {
   temperatura: {
     primary: '#f87171',
@@ -104,7 +162,7 @@ export const SENSOR_COLORS = {
   },
 };
 
-// Colores para dispositivos (neon vibrante)
+// Colores para dispositivos (neón vibrante)
 export const DEVICE_COLORS = {
   bomba: '#00D4FF',
   aireador: '#2AFBCE',

@@ -1,3 +1,6 @@
+// src/components/ui/Skeleton.jsx
+// Componentes skeleton de carga — Estilo futurista con shimmer neón
+
 import React, { useRef, useEffect } from 'react';
 import { Animated, View, StyleSheet } from 'react-native';
 
@@ -7,15 +10,15 @@ const Skeleton = ({ width = '100%', height = 14, borderRadius = 7, style }) => {
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(shimmer, { toValue: 1, duration: 900, useNativeDriver: false }),
-        Animated.timing(shimmer, { toValue: 0, duration: 900, useNativeDriver: false }),
+        Animated.timing(shimmer, { toValue: 1, duration: 1100, useNativeDriver: false }),
+        Animated.timing(shimmer, { toValue: 0, duration: 1100, useNativeDriver: false }),
       ])
     ).start();
   }, []);
 
   const bg = shimmer.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)'],
+    inputRange: [0, 0.5, 1],
+    outputRange: ['rgba(0,245,255,0.03)', 'rgba(0,245,255,0.09)', 'rgba(0,245,255,0.03)'],
   });
 
   return (
@@ -25,7 +28,7 @@ const Skeleton = ({ width = '100%', height = 14, borderRadius = 7, style }) => {
 
 export const SkeletonProductCard = () => (
   <View style={s.productCard}>
-    <Skeleton height={110} borderRadius={0} style={{ borderTopLeftRadius: 14, borderTopRightRadius: 14 }} />
+    <Skeleton height={110} borderRadius={0} style={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }} />
     <View style={{ padding: 10 }}>
       <Skeleton height={12} width="80%" style={{ marginBottom: 6 }} />
       <Skeleton height={10} width="50%" style={{ marginBottom: 10 }} />
@@ -39,7 +42,7 @@ export const SkeletonProductCard = () => (
 
 export const SkeletonProductorCard = () => (
   <View style={s.productorCard}>
-    <Skeleton height={100} borderRadius={0} style={{ borderTopLeftRadius: 14, borderTopRightRadius: 14 }} />
+    <Skeleton height={100} borderRadius={0} style={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }} />
     <View style={{ padding: 12 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 }}>
         <Skeleton width={40} height={40} borderRadius={20} />
@@ -56,6 +59,8 @@ export const SkeletonProductorCard = () => (
 
 export const SkeletonOrderCard = () => (
   <View style={s.orderCard}>
+    {/* Shimmer line neón en la parte superior */}
+    <View style={s.orderShimmerLine} />
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <Skeleton width={40} height={40} borderRadius={20} />
       <View style={{ flex: 1 }}>
@@ -86,24 +91,28 @@ export const SkeletonList = ({ count = 4, Component = SkeletonOrderCard }) => (
 
 const s = StyleSheet.create({
   productCard: {
-    width: 150, borderRadius: 14, overflow: 'hidden', marginRight: 10,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1, borderColor: 'rgba(56,189,248,0.08)',
+    width: 158, borderRadius: 18, overflow: 'hidden', marginRight: 12,
+    backgroundColor: 'rgba(10,15,30,0.65)',
+    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
   },
   productorCard: {
-    borderRadius: 14, overflow: 'hidden', marginBottom: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1, borderColor: 'rgba(56,189,248,0.08)',
+    borderRadius: 18, overflow: 'hidden', marginBottom: 12,
+    backgroundColor: 'rgba(10,15,30,0.65)',
+    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
   },
   orderCard: {
-    padding: 14, borderRadius: 14, marginBottom: 10,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1, borderColor: 'rgba(56,189,248,0.08)',
+    padding: 14, borderRadius: 18, marginBottom: 10, overflow: 'hidden',
+    backgroundColor: 'rgba(10,15,30,0.65)',
+    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
+  },
+  orderShimmerLine: {
+    position: 'absolute', top: 0, left: 20, right: 20, height: 1,
+    backgroundColor: 'rgba(0,245,255,0.08)',
   },
   statCard: {
-    flex: 1, minWidth: '45%', padding: 14, borderRadius: 14, alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1, borderColor: 'rgba(56,189,248,0.08)',
+    flex: 1, minWidth: '45%', padding: 14, borderRadius: 18, alignItems: 'center',
+    backgroundColor: 'rgba(10,15,30,0.65)',
+    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
   },
 });
 

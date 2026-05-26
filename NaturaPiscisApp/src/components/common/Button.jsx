@@ -1,131 +1,179 @@
 // src/components/common/Button.jsx
-// Componente de botón reutilizable
+// Componente de botón reutilizable — Diseño futurista con gradientes neón
 
-import React from 'react';
+import React, { useRef } from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  View,
+  TouchableOpacity, Text, StyleSheet, ActivityIndicator,
+  View, Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 const Button = ({
   title,
   onPress,
-  variant = 'primary', // primary, secondary, outline, danger, success, ghost
+  variant = 'primary', // primary, secondary, outline, danger, success, ghost, neon, glass
   size = 'md', // sm, md, lg
   icon,
   iconPosition = 'left',
   loading = false,
   disabled = false,
   fullWidth = true,
+  neonColor,
   style,
   textStyle,
   ...props
 }) => {
-  const getVariantStyles = () => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    // Micro-animación de escala
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.96, duration: 60, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, speed: 25, bounciness: 12, useNativeDriver: true }),
+    ]).start();
+    onPress?.();
+  };
+
+  const isDisabled = disabled || loading;
+  const nc = neonColor || '#00F5FF';
+
+  // Colores de icono según variante
+  const iconColor = (() => {
+    if (variant === 'outline' || variant === 'ghost') return COLORS.primary?.[500] || '#22C55E';
+    if (variant === 'neon') return '#030712';
+    if (variant === 'glass') return nc;
+    return '#fff';
+  })();
+
+  // Para variantes con gradiente usamos LinearGradient interno
+  const isGradient = variant === 'primary' || variant === 'neon';
+
+  const gradientColors = (() => {
+    if (variant === 'neon') return [nc, `${nc}cc`];
+    if (variant === 'primary') return ['#00FF88', '#22C55E', '#16a34a'];
+    return ['transparent', 'transparent'];
+  })();
+
+  const sizeStyles = (() => {
+    switch (size) {
+      case 'sm': return { py: 10, px: 14, fontSize: 13 };
+      case 'lg': return { py: 18, px: 28, fontSize: 17 };
+      default:   return { py: 15, px: 22, fontSize: 15 };
+    }
+  })();
+
+  const baseStyle = (() => {
     switch (variant) {
       case 'secondary':
         return {
-          button: styles.secondaryButton,
-          text: styles.secondaryText,
+          backgroundColor: COLORS.background?.elevated || '#334155',
+          borderWidth: 1, borderColor: 'rgba(0,245,255,0.1)',
         };
       case 'outline':
         return {
-          button: styles.outlineButton,
-          text: styles.outlineText,
+          backgroundColor: 'transparent',
+          borderWidth: 1.5, borderColor: `${COLORS.primary?.[500] || '#22C55E'}60`,
         };
       case 'danger':
-        return {
-          button: styles.dangerButton,
-          text: styles.primaryText,
-        };
+        return { backgroundColor: COLORS.error?.main || '#EF4444' };
       case 'success':
-        return {
-          button: styles.successButton,
-          text: styles.primaryText,
-        };
+        return { backgroundColor: COLORS.success?.main || '#22C55E' };
       case 'ghost':
+        return { backgroundColor: 'transparent' };
+      case 'glass':
         return {
-          button: styles.ghostButton,
-          text: styles.ghostText,
+          backgroundColor: 'rgba(10,15,30,0.72)',
+          borderWidth: 1, borderColor: `${nc}20`,
+          shadowColor: nc, shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.15, shadowRadius: 12, elevation: 6,
         };
-      default:
-        return {
-          button: styles.primaryButton,
-          text: styles.primaryText,
-        };
+      default: return {};
     }
-  };
+  })();
 
-  const getSizeStyles = () => {
-    switch (size) {
-      case 'sm':
-        return {
-          button: styles.smallButton,
-          text: styles.smallText,
-        };
-      case 'lg':
-        return {
-          button: styles.largeButton,
-          text: styles.largeText,
-        };
-      default:
-        return {
-          button: styles.mediumButton,
-          text: styles.mediumText,
-        };
+  const textColor = (() => {
+    switch (variant) {
+      case 'outline': return COLORS.primary?.[500] || '#22C55E';
+      case 'ghost': return COLORS.primary?.[500] || '#22C55E';
+      case 'glass': return nc;
+      case 'secondary': return COLORS.text?.primary || '#fff';
+      case 'neon':
+      case 'primary': return '#030712';
+      default: return '#fff';
     }
-  };
+  })();
 
-  const variantStyles = getVariantStyles();
-  const sizeStyles = getSizeStyles();
-  const isDisabled = disabled || loading;
+  const content = (
+    <View style={styles.content}>
+      {icon && iconPosition === 'left' && (
+        <Ionicons name={icon} size={size === 'sm' ? 16 : 20} color={iconColor} style={styles.iconLeft} />
+      )}
+      <Text style={[styles.text, { fontSize: sizeStyles.fontSize, color: textColor, fontFamily: 'SpaceGrotesk-SemiBold' }, textStyle]}>
+        {title}
+      </Text>
+      {icon && iconPosition === 'right' && (
+        <Ionicons name={icon} size={size === 'sm' ? 16 : 20} color={iconColor} style={styles.iconRight} />
+      )}
+    </View>
+  );
 
-  const iconColor = variant === 'outline' || variant === 'ghost' 
-    ? COLORS.primary[500] 
-    : '#fff';
+  if (isGradient) {
+    return (
+      <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, fullWidth && styles.fullWidth]}>
+        <TouchableOpacity
+          onPress={handlePress} disabled={isDisabled} activeOpacity={0.85}
+          style={[styles.gradientWrap, isDisabled && styles.disabled,
+            { shadowColor: variant === 'neon' ? nc : '#00FF88', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 14, elevation: 10 },
+            style,
+          ]}
+          {...props}
+        >
+          <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={[styles.gradient, { paddingVertical: sizeStyles.py, paddingHorizontal: sizeStyles.px }]}
+          >
+            {loading ? <ActivityIndicator color="#030712" size="small" /> : content}
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={isDisabled}
-      activeOpacity={0.8}
-      style={[
-        styles.base,
-        variantStyles.button,
-        sizeStyles.button,
-        fullWidth && styles.fullWidth,
-        isDisabled && styles.disabled,
-        style,
-      ]}
-      {...props}
-    >
-      {loading ? (
-        <ActivityIndicator color={iconColor} size="small" />
-      ) : (
-        <View style={styles.content}>
-          {icon && iconPosition === 'left' && (
-            <Ionicons name={icon} size={20} color={iconColor} style={styles.iconLeft} />
-          )}
-          <Text style={[variantStyles.text, sizeStyles.text, textStyle]}>
-            {title}
-          </Text>
-          {icon && iconPosition === 'right' && (
-            <Ionicons name={icon} size={20} color={iconColor} style={styles.iconRight} />
-          )}
-        </View>
-      )}
-    </TouchableOpacity>
+    <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, fullWidth && styles.fullWidth]}>
+      <TouchableOpacity
+        onPress={handlePress} disabled={isDisabled} activeOpacity={0.85}
+        style={[
+          styles.base, baseStyle,
+          { paddingVertical: sizeStyles.py, paddingHorizontal: sizeStyles.px },
+          fullWidth && styles.fullWidth,
+          isDisabled && styles.disabled,
+          style,
+        ]}
+        {...props}
+      >
+        {loading ? <ActivityIndicator color={textColor} size="small" /> : content}
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gradientWrap: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  gradient: {
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -138,74 +186,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   disabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
-  
-  // Variants
-  primaryButton: {
-    backgroundColor: COLORS.primary[500],
-    ...SHADOWS.primary,
+  text: {
+    letterSpacing: 0.3,
   },
-  secondaryButton: {
-    backgroundColor: COLORS.background.elevated,
-  },
-  outlineButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: COLORS.primary[500],
-  },
-  dangerButton: {
-    backgroundColor: COLORS.error.main,
-  },
-  successButton: {
-    backgroundColor: COLORS.success.main,
-  },
-  ghostButton: {
-    backgroundColor: 'transparent',
-  },
-
-  // Text variants
-  primaryText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  secondaryText: {
-    color: COLORS.text.primary,
-    fontWeight: '600',
-  },
-  outlineText: {
-    color: COLORS.primary[500],
-    fontWeight: '600',
-  },
-  ghostText: {
-    color: COLORS.primary[500],
-    fontWeight: '500',
-  },
-
-  // Sizes
-  smallButton: {
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-  },
-  mediumButton: {
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-  },
-  largeButton: {
-    paddingVertical: SPACING.lg,
-    paddingHorizontal: SPACING.xl,
-  },
-  smallText: {
-    fontSize: 12,
-  },
-  mediumText: {
-    fontSize: 16,
-  },
-  largeText: {
-    fontSize: 18,
-  },
-
-  // Icons
   iconLeft: {
     marginRight: SPACING.sm,
   },

@@ -20,12 +20,12 @@ export const THEME_MODES = {
 // PALETAS DE COLORES
 // ============================================
 const lightColors = {
-  // Backgrounds — clean white with green tint
+  // Backgrounds — limpio y premium con tinte verde
   background: '#F0FDF4',
   surface: '#FFFFFF',
   surfaceVariant: '#F0FDF4',
 
-  // Text — high contrast slate
+  // Text — alto contraste slate
   text: '#0F172A',
   textSecondary: '#334155',
   textMuted: '#64748B',
@@ -40,7 +40,18 @@ const lightColors = {
   secondary: '#0284c7',
   secondaryLight: '#38bdf8',
   secondaryDark: '#0369a1',
-  
+
+  // Acentos neón — tonos suaves para modo claro
+  neonCyan: '#06B6D4',
+  neonGreen: '#10B981',
+  neonMagenta: '#D946EF',
+  neonAmber: '#F59E0B',
+
+  // Glassmorphism — cristal claro
+  glass: 'rgba(255, 255, 255, 0.85)',
+  glassBorder: 'rgba(22, 163, 74, 0.15)',
+  glassLight: 'rgba(255, 255, 255, 0.5)',
+
   // Status
   success: '#22C55E',
   successBg: '#F0FDF4',
@@ -50,7 +61,7 @@ const lightColors = {
   errorBg: '#FEF2F2',
   info: '#3B82F6',
   infoBg: '#EFF6FF',
-  
+
   // Borders & Dividers
   border: 'rgba(22, 163, 74, 0.2)',
   divider: 'rgba(22, 163, 74, 0.1)',
@@ -95,29 +106,42 @@ const lightColors = {
   gradientPrimary: ['#16A34A', '#22C55E'],
   gradientSecondary: ['#0284c7', '#38bdf8'],
   gradientDark: ['#0F172A', '#1E293B'],
+  gradientNeon: ['#10B981', '#22C55E'],
+  gradientMagenta: ['#D946EF', '#A855F7'],
 };
 
 const darkColors = {
-  // Backgrounds — dark slate aligned with web #0a1220
-  background: '#080E1A',
-  surface: '#0D1929',
-  surfaceVariant: '#111E33',
+  // Backgrounds — ultra-profundo premium futurista
+  background: '#030712',
+  surface: '#0A0F1E',
+  surfaceVariant: '#0F1629',
 
-  // Text — high contrast #F8FAFC base
+  // Text — alto contraste #F8FAFC base
   text: '#F1F5F9',
   textSecondary: '#94A3B8',
   textMuted: '#64748B',
-  textInverse: '#080E1A',
+  textInverse: '#030712',
 
   // Primary — NaturaPiscis brand green #22C55E
   primary: '#22C55E',
   primaryLight: '#4ade80',
   primaryDark: '#16a34a',
 
-  // Secondary — kept for IoT sensor accents
+  // Secondary — IoT sensor accents
   secondary: '#38bdf8',
   secondaryLight: '#7dd3fc',
   secondaryDark: '#0284c7',
+
+  // Acentos neón futuristas
+  neonCyan: '#00F5FF',
+  neonGreen: '#00FF88',
+  neonMagenta: '#FF00E5',
+  neonAmber: '#FFAA00',
+
+  // Glassmorphism — superficies de cristal oscuro
+  glass: 'rgba(10, 15, 30, 0.72)',
+  glassBorder: 'rgba(0, 245, 255, 0.12)',
+  glassLight: 'rgba(255, 255, 255, 0.04)',
 
   // Status
   success: '#22C55E',
@@ -129,50 +153,52 @@ const darkColors = {
   info: '#38bdf8',
   infoBg: 'rgba(56, 189, 248, 0.1)',
 
-  // Borders & Dividers — green-tinted
-  border: 'rgba(34, 197, 94, 0.14)',
-  divider: 'rgba(34, 197, 94, 0.07)',
+  // Borders & Dividers — cyan-tinted futurista
+  border: 'rgba(0, 245, 255, 0.10)',
+  divider: 'rgba(0, 245, 255, 0.06)',
 
   // Cards & Containers
-  card: '#0D1929',
-  cardBorder: 'rgba(34, 197, 94, 0.16)',
-  cardGlass: 'rgba(13, 25, 41, 0.85)',
-  cardGlassBorder: 'rgba(34, 197, 94, 0.2)',
+  card: '#0A0F1E',
+  cardBorder: 'rgba(0, 245, 255, 0.12)',
+  cardGlass: 'rgba(10, 15, 30, 0.75)',
+  cardGlassBorder: 'rgba(0, 245, 255, 0.15)',
 
   // Glow
   glowColor: '#22C55E',
   glowColorPrimary: '#22C55E',
 
   // Tab Bar
-  tabBar: 'rgba(8, 14, 26, 0.96)',
-  tabBarBorder: 'rgba(34, 197, 94, 0.2)',
+  tabBar: 'rgba(3, 7, 18, 0.92)',
+  tabBarBorder: 'rgba(0, 245, 255, 0.15)',
   tabActive: '#22C55E',
   tabInactive: '#334155',
 
   // Inputs
-  inputBackground: '#0D1929',
-  inputBorder: 'rgba(34, 197, 94, 0.14)',
-  inputBorderFocused: '#22C55E',
+  inputBackground: '#0A0F1E',
+  inputBorder: 'rgba(0, 245, 255, 0.10)',
+  inputBorderFocused: '#00F5FF',
   placeholder: '#64748B',
 
   // Buttons
   buttonPrimary: '#22C55E',
   buttonPrimaryText: '#FFFFFF',
-  buttonSecondary: '#111E33',
+  buttonSecondary: '#0F1629',
   buttonSecondaryText: '#F1F5F9',
-  buttonDisabled: '#111E33',
+  buttonDisabled: '#0F1629',
   buttonDisabledText: '#64748B',
 
   // Overlays
   overlay: 'rgba(0, 0, 0, 0.78)',
 
   // Shadows
-  shadowColor: '#22C55E',
+  shadowColor: '#00F5FF',
 
-  // Gradients
-  gradientPrimary: ['#22C55E', '#16a34a'],
-  gradientSecondary: ['#38bdf8', '#0284c7'],
-  gradientDark: ['#0D1929', '#080E1A'],
+  // Gradientes futuristas
+  gradientPrimary: ['#00FF88', '#22C55E'],
+  gradientSecondary: ['#00F5FF', '#0284c7'],
+  gradientDark: ['#0A0F1E', '#030712'],
+  gradientNeon: ['#00F5FF', '#00FF88'],
+  gradientMagenta: ['#FF00E5', '#BF5AF2'],
 };
 
 // ============================================

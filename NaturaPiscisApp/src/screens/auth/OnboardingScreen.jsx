@@ -188,7 +188,7 @@ const OnboardingScreen = ({ navigation }) => {
 
   const finish = async () => {
     await AsyncStorage.setItem('onboarding_done', 'true');
-    navigation.replace('Login');
+    navigation.replace('Welcome');
   };
 
   const slide = SLIDES[current];

@@ -1,14 +1,17 @@
 // src/components/common/FloatingAssistant.jsx
-import React, { useState, useRef, useCallback } from 'react';
+// Asistente Flotante Inteligente — Diseño futurista con glassmorphism, brillo neón dinámico, micro-animaciones y tipografía SpaceGrotesk
+
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
   StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator,
-  Animated,
+  Animated, Easing,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../api/axios.config';
+import { SPACING, BORDER_RADIUS } from '../../constants/theme';
 
 const SUGERENCIAS = {
   productor: [
@@ -30,31 +33,88 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
   const [input,    setInput]    = useState('');
   const [cargando, setCargando] = useState(false);
   const scrollRef = useRef(null);
+  
+  // Animaciones del panel
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacAnim  = useRef(new Animated.Value(0)).current;
+  
+  // Animación del FAB (pulso infinito)
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Colores neón con fallback
+  const neonCyan = colors.neonCyan || '#00F5FF';
+  const neonGreen = colors.neonGreen || '#00FF88';
+  const neonMagenta = colors.neonMagenta || '#FF00E5';
+
+  useEffect(() => {
+    // Animación de pulso infinito para el FAB cuando el panel está cerrado
+    let animation;
+    if (!abierto) {
+      pulseAnim.setValue(1);
+      animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.08,
+            duration: 1200,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1200,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      animation.start();
+    }
+    return () => animation?.stop();
+  }, [abierto]);
 
   const C = {
-    bg:     isDarkMode ? '#0D1525' : '#FFFFFF',
-    surface:isDarkMode ? '#111827' : '#F9FAFB',
-    border: isDarkMode ? 'rgba(56,189,248,0.18)' : '#E5E7EB',
-    text:   isDarkMode ? '#E8F0FF' : '#111827',
-    muted:  isDarkMode ? '#64748B' : '#6B7280',
-    input:  isDarkMode ? '#1E293B' : '#F3F4F6',
-    bubble: isDarkMode ? '#1E3A5F' : '#EFF6FF',
+    bg:      isDarkMode ? 'rgba(10, 15, 30, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+    surface: isDarkMode ? 'rgba(3, 7, 18, 0.6)' : 'rgba(243, 244, 246, 0.6)',
+    border:  isDarkMode ? 'rgba(0, 245, 255, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+    text:    colors.text,
+    muted:   colors.textMuted || '#94a3b8',
+    input:   isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+    bubble:  isDarkMode ? 'rgba(0, 245, 255, 0.08)' : 'rgba(16, 185, 129, 0.06)',
+    bubbleBorder: isDarkMode ? 'rgba(0, 245, 255, 0.15)' : 'rgba(16, 185, 129, 0.12)',
+    neonCyan,
+    neonGreen,
   };
 
   const abrir = () => {
     setAbierto(true);
     Animated.parallel([
-      Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 10 }),
-      Animated.timing(opacAnim,  { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 18,
+        bounciness: 8,
+      }),
+      Animated.timing(opacAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
   const cerrar = () => {
     Animated.parallel([
-      Animated.spring(scaleAnim, { toValue: 0, useNativeDriver: true, speed: 20, bounciness: 5 }),
-      Animated.timing(opacAnim,  { toValue: 0, duration: 150, useNativeDriver: true }),
+      Animated.spring(scaleAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        speed: 20,
+        bounciness: 4,
+      }),
+      Animated.timing(opacAnim, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }),
     ]).start(() => setAbierto(false));
   };
 
@@ -88,42 +148,86 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
   return (
     <>
       {abierto && (
-        <Animated.View style={[s.panel, { backgroundColor: C.bg, borderColor: C.border, opacity: opacAnim, transform: [{ scale: scaleAnim }] }]}>
-
-          {/* Header */}
-          <LinearGradient colors={['#0ea5e9', '#14b8a6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.header}>
+        <Animated.View
+          style={[
+            s.panel,
+            {
+              backgroundColor: C.bg,
+              borderColor: C.border,
+              opacity: opacAnim,
+              transform: [{ scale: scaleAnim }],
+              shadowColor: neonCyan,
+            }
+          ]}
+        >
+          {/* Header de gradiente futurista */}
+          <LinearGradient
+            colors={[neonCyan, neonGreen]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={s.header}
+          >
             <View style={s.headerLeft}>
               <View style={s.avatarCircle}>
-                <Ionicons name="fish" size={16} color="#fff" />
+                <Ionicons name="sparkles" size={16} color="#030712" />
               </View>
               <View>
-                <Text style={s.headerTitle}>Asistente NaturaPiscis</Text>
+                <Text style={[s.headerTitle, { fontFamily: 'SpaceGrotesk-Bold' }]}>NaturaPiscis AI</Text>
+                <Text style={[s.headerSub, { fontFamily: 'SpaceGrotesk-Medium' }]}>Asistente Cuántico</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={cerrar} style={s.closeBtn}>
-              <Ionicons name="close" size={20} color="#fff" />
+            <TouchableOpacity onPress={cerrar} style={s.closeBtn} activeOpacity={0.7}>
+              <Ionicons name="close-circle-outline" size={24} color="#030712" />
             </TouchableOpacity>
           </LinearGradient>
 
-          {/* Mensajes */}
+          {/* Línea de brillo neón debajo del header */}
+          <LinearGradient
+            colors={['transparent', neonCyan, neonGreen, 'transparent']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={s.shimmerLine}
+          />
+
+          {/* Área de mensajes con scroll */}
           <ScrollView
             ref={scrollRef}
             style={[s.mensajesArea, { backgroundColor: C.surface }]}
-            contentContainerStyle={{ padding: 12, gap: 10 }}
+            contentContainerStyle={{ padding: 16, gap: 12 }}
             showsVerticalScrollIndicator={false}
           >
             {mensajes.length === 0 && (
               <View>
-                <View style={[s.bubble, s.bubbleBot, { backgroundColor: C.bubble }]}>
-                  <Text style={[s.bubbleText, { color: C.text }]}>
-                    ¡Hola! ¿En qué te puedo ayudar hoy?
+                <View style={[s.bubble, s.bubbleBot, { backgroundColor: C.bubble, borderColor: C.bubbleBorder }]}>
+                  <View style={s.botIcon}>
+                    <Ionicons name="fish" size={12} color={neonCyan} />
+                  </View>
+                  <Text style={[s.bubbleText, { color: C.text, fontFamily: 'SpaceGrotesk-Regular' }]}>
+                    ¡Saludos! Soy tu asistente inteligente NaturaPiscis. ¿Cómo puedo optimizar tu experiencia hoy?
                   </Text>
                 </View>
+
                 <View style={s.sugerencias}>
+                  <Text style={[s.sugerenciasTitle, { color: C.muted, fontFamily: 'SpaceGrotesk-SemiBold' }]}>
+                    Sugerencias rápidas:
+                  </Text>
                   {sugerencias.map((sg, i) => (
-                    <TouchableOpacity key={i} onPress={() => enviar(sg)}
-                      style={[s.chip, { borderColor: '#0ea5e9', backgroundColor: isDarkMode ? 'rgba(14,165,233,0.08)' : '#EFF6FF' }]}>
-                      <Text style={[s.chipText, { color: '#0ea5e9' }]}>{sg}</Text>
+                    <TouchableOpacity
+                      key={i}
+                      onPress={() => enviar(sg)}
+                      activeOpacity={0.8}
+                      style={[
+                        s.chip,
+                        {
+                          borderColor: `${neonCyan}40`,
+                          backgroundColor: isDarkMode ? 'rgba(0,245,255,0.05)' : 'rgba(0,182,212,0.06)'
+                        }
+                      ]}
+                    >
+                      <Text style={[s.chipText, { color: isDarkMode ? neonCyan : '#0891b2', fontFamily: 'SpaceGrotesk-Medium' }]}>
+                        {sg}
+                      </Text>
+                      <Ionicons name="chevron-forward-outline" size={12} color={isDarkMode ? neonCyan : '#0891b2'} />
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -131,31 +235,77 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
             )}
 
             {mensajes.map((m, i) => (
-              <View key={i} style={[s.bubble, m.role === 'user' ? s.bubbleUser : [s.bubbleBot, { backgroundColor: C.bubble }]]}>
+              <View
+                key={i}
+                style={[
+                  s.bubble,
+                  m.role === 'user'
+                    ? [s.bubbleUser, { borderColor: `${neonCyan}30` }]
+                    : [s.bubbleBot, { backgroundColor: C.bubble, borderColor: C.bubbleBorder }]
+                ]}
+              >
                 {m.role === 'assistant' && (
                   <View style={s.botIcon}>
-                    <Ionicons name="fish" size={12} color="#0ea5e9" />
+                    <Ionicons name="fish" size={12} color={neonCyan} />
                   </View>
                 )}
-                <Text style={[s.bubbleText, { color: m.role === 'user' ? '#fff' : C.text }, m.role === 'assistant' && { flex: 1 }]}>
+                
+                {m.role === 'user' ? (
+                  <LinearGradient
+                    colors={[neonCyan, `${neonCyan}cc`]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={StyleSheet.absoluteFill}
+                  />
+                ) : null}
+
+                <Text
+                  style={[
+                    s.bubbleText,
+                    {
+                      color: m.role === 'user' ? '#030712' : C.text,
+                      fontFamily: m.role === 'user' ? 'SpaceGrotesk-Medium' : 'SpaceGrotesk-Regular'
+                    },
+                    m.role === 'assistant' && { flex: 1 }
+                  ]}
+                >
                   {m.content}
                 </Text>
               </View>
             ))}
 
             {cargando && (
-              <View style={[s.bubble, s.bubbleBot, { backgroundColor: C.bubble }]}>
-                <ActivityIndicator size="small" color="#0ea5e9" />
+              <View style={[s.bubble, s.bubbleBot, { backgroundColor: C.bubble, borderColor: C.bubbleBorder }]}>
+                <View style={s.botIcon}>
+                  <Ionicons name="fish" size={12} color={neonCyan} />
+                </View>
+                <ActivityIndicator size="small" color={neonCyan} />
               </View>
             )}
           </ScrollView>
 
-          {/* Input */}
+          {/* Línea de brillo neón sobre el input */}
+          <LinearGradient
+            colors={['transparent', neonCyan, neonGreen, 'transparent']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={s.shimmerLine}
+          />
+
+          {/* Formulario de Input */}
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-            <View style={[s.inputRow, { backgroundColor: C.bg, borderTopColor: C.border }]}>
+            <View style={[s.inputRow, { backgroundColor: C.bg, borderTopColor: 'rgba(255,255,255,0.03)' }]}>
               <TextInput
-                style={[s.input, { backgroundColor: C.input, color: C.text }]}
-                placeholder="Escribe tu pregunta..."
+                style={[
+                  s.input,
+                  {
+                    backgroundColor: C.input,
+                    color: C.text,
+                    fontFamily: 'SpaceGrotesk-Regular',
+                    borderColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
+                  }
+                ]}
+                placeholder="Pregunta lo que sea..."
                 placeholderTextColor={C.muted}
                 value={input}
                 onChangeText={setInput}
@@ -167,9 +317,15 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
                 onPress={() => enviar()}
                 disabled={!input.trim() || cargando}
                 style={[s.sendBtn, { opacity: input.trim() && !cargando ? 1 : 0.4 }]}
+                activeOpacity={0.7}
               >
-                <LinearGradient colors={['#0ea5e9', '#14b8a6']} style={s.sendGrad}>
-                  <Ionicons name="send" size={16} color="#fff" />
+                <LinearGradient
+                  colors={[neonCyan, neonGreen]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={s.sendGrad}
+                >
+                  <Ionicons name="send" size={14} color="#030712" />
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -177,13 +333,28 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
         </Animated.View>
       )}
 
-      {/* FAB */}
+      {/* FAB Botón Flotante con pulso neón y sombras */}
       {!abierto && (
-        <TouchableOpacity onPress={abrir} activeOpacity={0.85} style={s.fab}>
-          <LinearGradient colors={['#0ea5e9', '#14b8a6']} style={s.fabGrad}>
-            <Ionicons name="sparkles" size={22} color="#fff" />
-          </LinearGradient>
-        </TouchableOpacity>
+        <Animated.View
+          style={[
+            s.fabContainer,
+            {
+              transform: [{ scale: pulseAnim }],
+              shadowColor: neonCyan,
+            }
+          ]}
+        >
+          <TouchableOpacity onPress={abrir} activeOpacity={0.8} style={s.fabTouch}>
+            <LinearGradient
+              colors={[neonCyan, neonGreen]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={s.fabGrad}
+            >
+              <Ionicons name="sparkles" size={24} color="#030712" />
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
       )}
     </>
   );
@@ -192,38 +363,129 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
 const s = StyleSheet.create({
   panel: {
     position: 'absolute', bottom: 90, right: 16,
-    width: 320, height: 470,
-    borderRadius: 20, borderWidth: 1,
+    width: 330, height: 490,
+    borderRadius: 24, borderWidth: 1.5,
     overflow: 'hidden',
-    shadowColor: '#0ea5e9', shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25, shadowRadius: 20, elevation: 20,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35, shadowRadius: 22, elevation: 24,
     zIndex: 9000,
   },
-  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12 },
-  headerLeft:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatarCircle:{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  headerSub:   { color: 'rgba(255,255,255,0.75)', fontSize: 10 },
-  closeBtn:    { padding: 4 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  avatarCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(3, 7, 18, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: { color: '#030712', fontWeight: 'bold', fontSize: 14.5 },
+  headerSub: { color: 'rgba(3, 7, 18, 0.65)', fontSize: 10.5 },
+  closeBtn: { padding: 4 },
+  
+  shimmerLine: {
+    height: 1.5,
+    width: '100%',
+  },
 
   mensajesArea: { flex: 1 },
 
-  bubble:     { maxWidth: '85%', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
-  bubbleUser: { alignSelf: 'flex-end', backgroundColor: '#0ea5e9' },
-  bubbleBot:  { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
-  botIcon:    { width: 20, height: 20, borderRadius: 10, backgroundColor: 'rgba(14,165,233,0.15)', justifyContent: 'center', alignItems: 'center', marginTop: 1, flexShrink: 0 },
+  bubble: {
+    maxWidth: '85%',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  bubbleUser: {
+    alignSelf: 'flex-end',
+    borderColor: 'transparent',
+    shadowColor: '#00F5FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  bubbleBot: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  botIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(3, 7, 18, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 1,
+    flexShrink: 0,
+    borderWidth: 0.5,
+    borderColor: 'rgba(0, 245, 255, 0.3)',
+  },
   bubbleText: { fontSize: 13, lineHeight: 19 },
 
-  sugerencias: { marginTop: 10, gap: 6 },
-  chip:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, alignSelf: 'flex-start' },
-  chipText:    { fontSize: 12, fontWeight: '500' },
+  sugerencias: { marginTop: 14, gap: 8 },
+  sugerenciasTitle: { fontSize: 12.5, marginBottom: 4, paddingHorizontal: 4 },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 18,
+    borderWidth: 1.2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  chipText: { fontSize: 12.5 },
 
-  inputRow:   { flexDirection: 'row', alignItems: 'flex-end', gap: 8, padding: 10, borderTopWidth: 1 },
-  input:      { flex: 1, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 9, fontSize: 13, maxHeight: 80 },
-  sendBtn:    { width: 38, height: 38, borderRadius: 19, overflow: 'hidden' },
-  sendGrad:   { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  input: {
+    flex: 1,
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    fontSize: 13,
+    maxHeight: 80,
+    borderWidth: 1,
+  },
+  sendBtn: { width: 38, height: 38, borderRadius: 19, overflow: 'hidden' },
+  sendGrad: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
-  fab:     { position: 'absolute', bottom: 94, right: 16, width: 52, height: 52, borderRadius: 26, overflow: 'hidden', shadowColor: '#0ea5e9', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 12, zIndex: 9000 },
+  fabContainer: {
+    position: 'absolute',
+    bottom: 94,
+    right: 16,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 16,
+    elevation: 16,
+    zIndex: 9000,
+  },
+  fabTouch: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    overflow: 'hidden',
+  },
   fabGrad: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });
 

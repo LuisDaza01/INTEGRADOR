@@ -141,6 +141,7 @@ import useOffline         from '../hooks/useOffline';
 import LoginScreen          from '../screens/auth/LoginScreen';
 import OnboardingScreen     from '../screens/auth/OnboardingScreen';
 import RegistroScreen       from '../screens/auth/RegistroScreen';
+import WelcomeScreen        from '../screens/auth/WelcomeScreen';
 
 // ── Productor ─────────────────────────────────────────────────
 import HomeScreen           from '../screens/producer/HomeScreen';
@@ -475,13 +476,15 @@ const AppNavigator = () => {
         ) : !onboardingDone ? (
           <>
             <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ animation: 'none' }} />
+            <Stack.Screen name="Welcome"    component={WelcomeScreen}    options={{ animation: 'fade', animationDuration: 280 }} />
             <Stack.Screen name="Login"      component={LoginScreen}      options={{ animation: 'slide_from_right', animationDuration: 280 }} />
             <Stack.Screen name="Registro"   component={RegistroScreen}   options={{ animation: 'slide_from_right', animationDuration: 280 }} />
           </>
         ) : (
           <>
-            <Stack.Screen name="Login"    component={LoginScreen}    options={{ animation: 'none' }} />
-            <Stack.Screen name="Registro" component={RegistroScreen} options={{ animation: 'slide_from_right', animationDuration: 280 }} />
+            <Stack.Screen name="Welcome"    component={WelcomeScreen}    options={{ animation: 'none' }} />
+            <Stack.Screen name="Login"      component={LoginScreen}      options={{ animation: 'slide_from_right', animationDuration: 280 }} />
+            <Stack.Screen name="Registro"   component={RegistroScreen}   options={{ animation: 'slide_from_right', animationDuration: 280 }} />
           </>
         )}
       </Stack.Navigator>

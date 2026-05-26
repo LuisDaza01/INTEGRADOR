@@ -137,8 +137,9 @@ const RepartidorScreen = ({ navigation }) => {
   //    4. Backend valida, asigna repartidor, manda push al consumidor
   const confirmarCodigo = async () => {
     const codigoLimpio = codigo.toUpperCase().trim();
+    // Nuevos códigos son 6 dígitos; los antiguos (NP-...) podían ser hasta 12.
     if (codigoLimpio.length < 4) {
-      Alert.alert('Código inválido', 'Ingresa el código completo del paquete');
+      Alert.alert('Código inválido', 'Ingresa los 6 dígitos del código');
       return;
     }
 
@@ -286,25 +287,25 @@ const RepartidorScreen = ({ navigation }) => {
               <Text style={[styles.codigoTitle, { color: colors.text }]}>Ingresar código del paquete</Text>
             </View>
             <Text style={[styles.codigoHint, { color: colors.textSecondary }]}>
-              El código está en el paquete. Ej: NP-2026-A3F9
+              Ingresa los 6 dígitos del código del paquete
             </Text>
             <View style={[styles.inputRow, { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground }]}>
               <TextInput
-                style={[styles.codigoInput, { color: colors.text }]}
-                placeholder="NP-2026-XXXX"
+                style={[styles.codigoInput, { color: colors.text, letterSpacing: 6, fontSize: 22, fontWeight: '700' }]}
+                placeholder="000000"
                 placeholderTextColor={colors.placeholder}
                 value={codigo}
-                onChangeText={(t) => setCodigo(t.toUpperCase())}
-                autoCapitalize="characters"
+                onChangeText={(t) => setCodigo(t.replace(/\D/g, ''))}
+                keyboardType="number-pad"
                 autoCorrect={false}
-                maxLength={12}
+                maxLength={6}
                 returnKeyType="done"
                 onSubmitEditing={confirmarCodigo}
               />
               <TouchableOpacity
-                style={[styles.confirmarBtn, { backgroundColor: codigo.trim().length >= 4 ? colors.primary : colors.buttonDisabled }]}
+                style={[styles.confirmarBtn, { backgroundColor: codigo.trim().length >= 6 ? colors.primary : colors.buttonDisabled }]}
                 onPress={confirmarCodigo}
-                disabled={cargandoCodigo || codigo.trim().length < 4}
+                disabled={cargandoCodigo || codigo.trim().length < 6}
               >
                 {cargandoCodigo
                   ? <ActivityIndicator size="small" color="#fff" />

@@ -5,12 +5,10 @@ const ESTADOS = ['pendiente', 'aceptada', 'rechazada', 'expirada', 'cancelada'];
 // Tiempo por defecto que tiene el productor para aceptar/rechazar
 const HORAS_VIGENCIA_DEFAULT = 24;
 
-// Código de reserva tipo BoA: NP- + 5 caracteres (sin 0/O/1/I para evitar confusión)
-const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+// Código de reserva: 6 dígitos numéricos para que el conductor lo tipee rápido en el celular.
+// Códigos antiguos con formato NP-XXXXX siguen siendo válidos (validación es match exacto).
 const generarCodigoReserva = () => {
-  let s = '';
-  for (let i = 0; i < 5; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
-  return `NP-${s}`;
+  return String(Math.floor(Math.random() * 1_000_000)).padStart(6, '0');
 };
 
 class ReservaRepository {

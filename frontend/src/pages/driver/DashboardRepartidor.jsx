@@ -319,21 +319,23 @@ export default function DashboardRepartidor() {
             <Key size={18} color="#22C55E" />
             <p style={{ margin: 0, fontWeight: 700, color: D.text, fontSize: 15 }}>Ingresar código del paquete</p>
           </div>
-          <p style={{ margin: '0 0 14px', fontSize: 13, color: D.muted }}>El código está en el paquete. Ej: NP-A3F9</p>
+          <p style={{ margin: '0 0 14px', fontSize: 13, color: D.muted }}>Ingresa los 6 dígitos del código del paquete</p>
 
           <div style={{ display: 'flex', gap: 10 }}>
             <input
               value={codigo}
-              onChange={e => setCodigo(e.target.value.toUpperCase())}
+              onChange={e => setCodigo(e.target.value.replace(/\D/g, '').slice(0, 6))}
               onKeyDown={e => e.key === 'Enter' && confirmarCodigo()}
-              placeholder="NP-XXXX"
-              maxLength={12}
+              placeholder="000000"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={6}
               style={{
                 flex: 1, padding: '12px 14px', borderRadius: 10,
-                border: `2px solid ${codigo.length >= 4 ? '#22C55E' : 'rgba(34,197,94,0.2)'}`,
+                border: `2px solid ${codigo.length >= 6 ? '#22C55E' : 'rgba(34,197,94,0.2)'}`,
                 background: 'rgba(10,15,30,0.5)', color: D.text,
-                fontSize: 18, fontWeight: 700, letterSpacing: 3, outline: 'none',
-                boxShadow: codigo.length >= 4 ? '0 0 14px rgba(34,197,94,0.25)' : 'none',
+                fontSize: 24, fontWeight: 800, letterSpacing: 8, textAlign: 'center', outline: 'none',
+                boxShadow: codigo.length >= 6 ? '0 0 14px rgba(34,197,94,0.25)' : 'none',
                 transition: 'all 0.2s',
               }}
             />

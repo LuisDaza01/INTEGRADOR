@@ -3,11 +3,10 @@ const db = require('../../config/database');
 const { MINUTOS_CONFIRMACION, PRECIO_KG } = require('../../constants/estados');
 const inventarioRepo = require('../inventario/inventario.repository');
 
-// ✅ Generar código de retiro único NP-YYYY-XXXX
+// Código de retiro: 6 dígitos numéricos (rápido de tipear en el celular del conductor).
+// Códigos antiguos con formato NP-YYYY-XXXX siguen siendo válidos en la BD.
 const generarCodigoRetiro = () => {
-  const year   = new Date().getFullYear();
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `NP-${year}-${random}`;
+  return String(Math.floor(Math.random() * 1_000_000)).padStart(6, '0');
 };
 
 class PedidoRepository {

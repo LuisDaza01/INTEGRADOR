@@ -37,12 +37,17 @@ const sendPushNotification = async (pushToken, title, body, data = {}) => {
 
 // ── Notificaciones específicas ────────────────────────────────
 
-const notificarEnCamino = async (pushToken, pedidoId, nombreConductor) => {
+const notificarEnCamino = async (pushToken, pedidoId, nombreConductor, eta) => {
+  let mensaje = `${nombreConductor || 'El conductor'} está llevando tu pedido #${pedidoId}`;
+  if (eta instanceof Date && !Number.isNaN(eta.getTime())) {
+    const hora = eta.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+    mensaje = `${nombreConductor || 'El conductor'} ya salió con tu pedido — llega aprox. a las ${hora}`;
+  }
   await sendPushNotification(
     pushToken,
-    '🚴 Tu pedido está en camino',
-    `${nombreConductor || 'El conductor'} está llevando tu pedido #${pedidoId}`,
-    { type: 'en_camino', pedidoId, screen: 'TrackingPedido' }
+    '🚐 Tu pedido está en camino',
+    mensaje,
+    { type: 'en_camino', pedidoId, eta: eta instanceof Date ? eta.toISOString() : null, screen: 'TrackingPedido' }
   );
 };
 

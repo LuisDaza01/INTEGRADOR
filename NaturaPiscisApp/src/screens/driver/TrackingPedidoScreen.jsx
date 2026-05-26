@@ -564,6 +564,32 @@ const TrackingPedidoScreen = ({ route, navigation }) => {
               </TouchableOpacity>
             )}
 
+            {/* Banner ETA — hora estimada ingresada por el conductor */}
+            {pedido?.eta_estimada && pedido.estado !== 'entregado' && pedido.estado !== 'cancelado' && (() => {
+              const eta = new Date(pedido.eta_estimada);
+              if (Number.isNaN(eta.getTime())) return null;
+              const diffMin = Math.round((eta.getTime() - Date.now()) / 60000);
+              const hora = eta.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+              const restante = diffMin > 0
+                ? (diffMin >= 60 ? `en ${Math.floor(diffMin / 60)}h ${diffMin % 60}min` : `en ${diffMin} min`)
+                : 'llegando ahora';
+              return (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 14, backgroundColor: 'rgba(34,197,94,0.10)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.35)', marginTop: 10 }}>
+                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(34,197,94,0.20)', alignItems: 'center', justifyContent: 'center' }}>
+                    <Ionicons name="time" size={20} color="#22C55E" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: colors.textMuted, fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.4 }}>Hora estimada</Text>
+                    <Text style={{ color: '#22C55E', fontSize: 20, fontWeight: '800', marginTop: 2 }}>{hora}</Text>
+                  </View>
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={{ color: colors.textMuted, fontSize: 10 }}>{restante}</Text>
+                    <Text style={{ color: colors.textMuted, fontSize: 9, fontStyle: 'italic', marginTop: 2 }}>según el conductor</Text>
+                  </View>
+                </View>
+              );
+            })()}
+
             {/* Código de retiro */}
             <View style={[styles.codigoCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>

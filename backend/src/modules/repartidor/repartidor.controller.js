@@ -26,9 +26,9 @@ class RepartidorController {
   confirmarRecogida = async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { codigo_retiro } = req.body;
+      const { codigo_retiro, eta_minutos } = req.body;
       if (!codigo_retiro) return res.status(400).json({ error: 'El código de retiro es requerido' });
-      const result = await repartidorService.confirmarRecogida(parseInt(id), codigo_retiro, req.user);
+      const result = await repartidorService.confirmarRecogida(parseInt(id), codigo_retiro, req.user, eta_minutos);
       res.json(result);
     } catch (error) { next(error); }
   };

@@ -43,6 +43,16 @@ class RepartidorRepository {
     return result[0] || null;
   }
 
+  // ETA ingresada por el conductor al confirmar la recogida.
+  // Se guarda como timestamp absoluto en pedidos.eta_estimada.
+  async setETA(pedidoId, eta) {
+    const result = await db.query(
+      `UPDATE pedidos SET eta_estimada = $1 WHERE id = $2 RETURNING id, eta_estimada`,
+      [eta, pedidoId]
+    );
+    return result[0] || null;
+  }
+
   async marcarEntregado(pedidoId) {
     const result = await db.query(`
       UPDATE pedidos SET estado = 'entregado', fecha_entrega_real = NOW()
@@ -71,7 +81,7 @@ class RepartidorRepository {
       SELECT
         p.id, p.estado, p.codigo_retiro, p.total,
         p.fecha_pedido, p.fecha_recogida, p.fecha_entrega_real,
-        p.conductor_lat, p.conductor_lng,
+        p.conductor_lat, p.conductor_lng, p.eta_estimada,
         -- Conductor
         ur.nombre   AS repartidor_nombre,
         ur.telefono AS repartidor_telefono,

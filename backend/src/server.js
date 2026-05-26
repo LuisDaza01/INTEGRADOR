@@ -74,6 +74,7 @@ async function startServer() {
       `ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS pago_verificado BOOLEAN DEFAULT false`,
       `ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS resumen_mensual_ia TEXT`,
       `ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS resumen_mensual_at TIMESTAMP`,
+      `ALTER TABLE pedidos  ADD COLUMN IF NOT EXISTS eta_estimada      TIMESTAMP`,
     ];
     for (const sql of safeMigrations) {
       try {

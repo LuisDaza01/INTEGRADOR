@@ -399,6 +399,33 @@ const TrackingPedidoWeb = () => {
         </button>
       )}
 
+      {/* ── Banner ETA (hora estimada ingresada por el conductor) ── */}
+      {pedido.eta_estimada && !isEntregado && !isCancelado && (() => {
+        const eta = new Date(pedido.eta_estimada)
+        if (Number.isNaN(eta.getTime())) return null
+        const ahora = Date.now()
+        const diffMin = Math.round((eta.getTime() - ahora) / 60000)
+        const hora = eta.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' })
+        const restante = diffMin > 0
+          ? (diffMin >= 60 ? `en ${Math.floor(diffMin / 60)}h ${diffMin % 60}min` : `en ${diffMin} min`)
+          : 'llegando ahora'
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 14, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)' }}>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(34,197,94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Clock size={20} color="#22C55E" />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ color: D.muted, fontSize: 11, margin: 0, textTransform: 'uppercase', letterSpacing: 0.4, fontWeight: 600 }}>Hora estimada de llegada</p>
+              <p style={{ color: '#22C55E', fontSize: 20, fontWeight: 800, margin: '2px 0 0' }}>{hora}</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ color: D.muted, fontSize: 10, margin: 0 }}>{restante}</p>
+              <p style={{ color: D.dim, fontSize: 9, margin: '2px 0 0', fontStyle: 'italic' }}>según el conductor</p>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* ── Código de retiro (prominente) ── */}
       {pedido.codigo_retiro && (
         <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, borderColor: `${D.primary}50`, borderWidth: 2 }}>

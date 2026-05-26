@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, Animated,
-  RefreshControl, KeyboardAvoidingView, Platform,
+  RefreshControl, KeyboardAvoidingView, Platform, Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +29,9 @@ const RepartidorScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [pedidoExitoso, setPedidoExitoso] = useState(null);
   const [pedidoActivo, setPedidoActivo] = useState(null);
+  // Pedido pendiente de confirmación de ETA (modal abierto si !== null)
+  const [pedidoPendienteETA, setPedidoPendienteETA] = useState(null);
+  const [etaCustom, setEtaCustom] = useState('');
 
   const successScale = useRef(new Animated.Value(0)).current;
   const pollingRef = useRef(null);
@@ -153,34 +156,42 @@ const RepartidorScreen = ({ navigation }) => {
         return;
       }
 
-      // ✅ Llamada al backend con instancia api (token automático)
+      // En vez de hacer el POST aquí, abrir el modal de ETA.
+      // El POST se hace en `confirmarConETA` cuando el conductor elige el tiempo.
+      setPedidoPendienteETA({ pedido, codigoLimpio });
+    } catch (err) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'No se pudo procesar el código');
+    } finally {
+      setCargandoCodigo(false);
+    }
+  };
+
+  // Hace el POST de recogida con la ETA elegida por el conductor.
+  const confirmarConETA = async (etaMinutos) => {
+    if (!pedidoPendienteETA) return;
+    const { pedido, codigoLimpio } = pedidoPendienteETA;
+    setCargandoCodigo(true);
+    try {
       const res = await api.post(`/repartidor/pedidos/${pedido.id}/recoger`, {
         codigo_retiro: codigoLimpio,
+        eta_minutos: etaMinutos || null,
       });
-
-      // Backend responde: { success, message, consumidor }
       const respuesta = res.data?.data || res.data;
-
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setPedidoExitoso(respuesta);
       setCodigo('');
-
-      Animated.spring(successScale, {
-        toValue: 1, useNativeDriver: true, tension: 100, friction: 8,
-      }).start();
-
-      // Refrescar lista y ocultar banner después de 3s
+      setPedidoPendienteETA(null);
+      setEtaCustom('');
+      Animated.spring(successScale, { toValue: 1, useNativeDriver: true, tension: 100, friction: 8 }).start();
       setTimeout(() => {
         setPedidoExitoso(null);
         successScale.setValue(0);
         cargarPedidos(true);
       }, 3000);
-
     } catch (err) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      const mensaje = err.response?.data?.message
-        || err.response?.data?.error
-        || 'Error al confirmar el código';
+      const mensaje = err.response?.data?.message || err.response?.data?.error || 'Error al confirmar el código';
       Alert.alert('Error', mensaje);
     } finally {
       setCargandoCodigo(false);
@@ -398,6 +409,75 @@ const RepartidorScreen = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* ── Modal: ETA tras confirmar código ── */}
+      <Modal visible={!!pedidoPendienteETA} transparent animationType="fade" onRequestClose={() => !cargandoCodigo && setPedidoPendienteETA(null)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ width: '100%', maxWidth: 380, backgroundColor: colors.surface, borderRadius: 18, padding: 22, borderWidth: 1, borderColor: colors.border }}>
+            <View style={{ alignItems: 'center', marginBottom: 14 }}>
+              <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: colors.primary + '20', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+                <Ionicons name="time-outline" size={26} color={colors.primary} />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>¿En cuánto llegas a la parada?</Text>
+              <Text style={{ fontSize: 12, color: colors.textSecondary, textAlign: 'center', marginTop: 4 }}>
+                El consumidor recibirá la hora aproximada de llegada
+              </Text>
+            </View>
+
+            {/* Presets */}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              {[
+                { label: '2 h',     mins: 120 },
+                { label: '2 h 30',  mins: 150 },
+                { label: '3 h',     mins: 180 },
+                { label: '3 h 30',  mins: 210 },
+              ].map(p => (
+                <TouchableOpacity key={p.mins}
+                  onPress={() => confirmarConETA(p.mins)} disabled={cargandoCodigo}
+                  style={{ flex: 1, minWidth: '45%', paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, borderColor: colors.primary + '60', backgroundColor: colors.primary + '12', alignItems: 'center', opacity: cargandoCodigo ? 0.5 : 1 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: colors.primary }}>{p.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Custom */}
+            <Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 6 }}>Otro tiempo (en minutos):</Text>
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
+              <TextInput
+                value={etaCustom} onChangeText={setEtaCustom}
+                keyboardType="number-pad" placeholder="ej. 90" placeholderTextColor={colors.textMuted}
+                style={{ flex: 1, paddingHorizontal: 14, paddingVertical: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.border, color: colors.text, backgroundColor: colors.background, fontSize: 15 }}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  const m = parseInt(etaCustom, 10);
+                  if (Number.isFinite(m) && m > 0 && m <= 24 * 60) confirmarConETA(m);
+                  else Alert.alert('Tiempo inválido', 'Ingresa minutos entre 1 y 1440');
+                }}
+                disabled={cargandoCodigo || !etaCustom}
+                style={{ paddingHorizontal: 18, justifyContent: 'center', borderRadius: 10, backgroundColor: colors.primary, opacity: (cargandoCodigo || !etaCustom) ? 0.5 : 1 }}>
+                <Text style={{ color: '#fff', fontWeight: '700' }}>OK</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Sin ETA / cancelar */}
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <TouchableOpacity onPress={() => setPedidoPendienteETA(null)} disabled={cargandoCodigo}
+                style={{ flex: 1, paddingVertical: 11, borderRadius: 10, borderWidth: 1, borderColor: colors.border, alignItems: 'center', opacity: cargandoCodigo ? 0.5 : 1 }}>
+                <Text style={{ color: colors.textSecondary, fontWeight: '600', fontSize: 13 }}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => confirmarConETA(null)} disabled={cargandoCodigo}
+                style={{ flex: 1, paddingVertical: 11, borderRadius: 10, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, alignItems: 'center', opacity: cargandoCodigo ? 0.5 : 1 }}>
+                <Text style={{ color: colors.textMuted, fontWeight: '600', fontSize: 13 }}>Sin ETA</Text>
+              </TouchableOpacity>
+            </View>
+
+            {cargandoCodigo && (
+              <ActivityIndicator color={colors.primary} style={{ marginTop: 12 }} />
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

@@ -146,6 +146,9 @@ export default function DashboardRepartidor() {
   const [toast,            setToast]            = useState({ type: null, message: null })
   const [logoutModalOpen,  setLogoutModalOpen]  = useState(false)
   const [entregaModal,     setEntregaModal]     = useState(null) // pedido o null
+  // Pedido pendiente de elegir ETA antes de hacer el POST de recogida
+  const [etaModal,         setEtaModal]         = useState(null) // { pedido, codigoLimpio } | null
+  const [etaCustom,        setEtaCustom]        = useState('')
   const pollingRef = useRef(null)
 
   const showToast = (type, message) => setToast({ type, message })
@@ -184,15 +187,27 @@ export default function DashboardRepartidor() {
     if (tab === 'historial') cargarHistorial()
   }, [tab])
 
-  const confirmarCodigo = async () => {
+  const confirmarCodigo = () => {
     const limpio = codigo.toUpperCase().trim()
     if (limpio.length < 4) return
     const pedido = pedidos.find(p => p.codigo_retiro === limpio)
     if (!pedido) { showToast('error', 'Código no encontrado. Verifica que el pedido esté listo para recoger.'); return }
+    // En lugar de hacer el POST aquí, abrir el modal de ETA.
+    setEtaModal({ pedido, codigoLimpio: limpio })
+  }
+
+  const enviarRecogidaConETA = async (etaMinutos) => {
+    if (!etaModal) return
+    const { pedido, codigoLimpio } = etaModal
     setEnviandoCodigo(true)
     try {
-      const res = await axiosInstance.post(`/repartidor/pedidos/${pedido.id}/recoger`, { codigo_retiro: limpio })
+      const res = await axiosInstance.post(`/repartidor/pedidos/${pedido.id}/recoger`, {
+        codigo_retiro: codigoLimpio,
+        eta_minutos: etaMinutos || null,
+      })
       setCodigo('')
+      setEtaModal(null)
+      setEtaCustom('')
       showToast('success', res.data?.message || '¡Pedido recogido! El consumidor fue notificado.')
       cargarPedidos(true)
     } catch (err) {
@@ -495,6 +510,77 @@ export default function DashboardRepartidor() {
         onConfirm={() => entregaModal && marcarEntregado(entregaModal.id)}
         D={D}
       />
+
+      {/* ── Modal: ETA tras confirmar código ── */}
+      <AnimatePresence>
+        {etaModal && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => !enviandoCodigo && setEtaModal(null)}
+            style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'rgba(10,15,30,0.98)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 18, padding: 26, maxWidth: 400, width: '100%', boxShadow: '0 0 40px rgba(34,197,94,0.15)' }}>
+              <div style={{ textAlign: 'center', marginBottom: 16 }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <Clock size={22} color="#22C55E" />
+                </div>
+                <h4 style={{ color: D.text, margin: '0 0 4px', fontSize: 17, fontWeight: 700 }}>¿En cuánto llegas a la parada?</h4>
+                <p style={{ color: D.muted, fontSize: 12, margin: 0 }}>El consumidor recibirá la hora aproximada</p>
+              </div>
+
+              {/* Presets */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 14 }}>
+                {[
+                  { label: '2 h',    mins: 120 },
+                  { label: '2 h 30', mins: 150 },
+                  { label: '3 h',    mins: 180 },
+                  { label: '3 h 30', mins: 210 },
+                ].map(p => (
+                  <button key={p.mins}
+                    onClick={() => enviarRecogidaConETA(p.mins)}
+                    disabled={enviandoCodigo}
+                    style={{ padding: '14px 0', borderRadius: 12, border: '1.5px solid rgba(34,197,94,0.4)', background: 'rgba(34,197,94,0.12)', color: '#4ade80', fontSize: 15, fontWeight: 700, cursor: enviandoCodigo ? 'not-allowed' : 'pointer', opacity: enviandoCodigo ? 0.5 : 1 }}>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom */}
+              <p style={{ fontSize: 12, color: D.muted, margin: '0 0 6px' }}>Otro tiempo (en minutos):</p>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                <input value={etaCustom} onChange={e => setEtaCustom(e.target.value.replace(/\D/g, ''))}
+                  placeholder="ej. 90" type="number" min={1} max={1440}
+                  style={{ flex: 1, padding: '11px 14px', borderRadius: 10, border: `1px solid ${D.border}`, background: 'rgba(10,15,30,0.5)', color: D.text, fontSize: 14, outline: 'none' }} />
+                <button
+                  onClick={() => {
+                    const m = parseInt(etaCustom, 10)
+                    if (Number.isFinite(m) && m > 0 && m <= 1440) enviarRecogidaConETA(m)
+                    else showToast('error', 'Minutos entre 1 y 1440')
+                  }}
+                  disabled={enviandoCodigo || !etaCustom}
+                  style={{ padding: '0 18px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#16a34a,#22C55E)', color: '#fff', fontWeight: 700, cursor: (enviandoCodigo || !etaCustom) ? 'not-allowed' : 'pointer', opacity: (enviandoCodigo || !etaCustom) ? 0.5 : 1 }}>
+                  OK
+                </button>
+              </div>
+
+              {/* Cancelar / sin ETA */}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setEtaModal(null)} disabled={enviandoCodigo}
+                  style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: `1px solid ${D.border}`, background: 'rgba(34,197,94,0.04)', color: D.text, fontWeight: 600, fontSize: 13, cursor: enviandoCodigo ? 'not-allowed' : 'pointer', opacity: enviandoCodigo ? 0.5 : 1 }}>Cancelar</button>
+                <button onClick={() => enviarRecogidaConETA(null)} disabled={enviandoCodigo}
+                  style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: `1px solid ${D.border}`, background: 'transparent', color: D.muted, fontWeight: 600, fontSize: 13, cursor: enviandoCodigo ? 'not-allowed' : 'pointer', opacity: enviandoCodigo ? 0.5 : 1 }}>Sin ETA</button>
+              </div>
+
+              {enviandoCodigo && (
+                <p style={{ textAlign: 'center', color: D.muted, fontSize: 12, marginTop: 12 }}>Enviando…</p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {toast.message && <Toast type={toast.type} message={toast.message} onClose={clearToast} />}
       </AnimatePresence>

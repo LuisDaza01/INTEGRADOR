@@ -14,7 +14,7 @@ class RepartidorService {
     return await repartidorRepository.findPedidosDisponibles(repartidorId);
   }
 
-  async confirmarRecogida(pedidoId, codigoIngresado, repartidor) {
+  async confirmarRecogida(pedidoId, codigoIngresado, repartidor, etaMinutos) {
     const pedido = await repartidorRepository.findPedidoConConsumidor(pedidoId);
     if (!pedido) throw new AppError('Pedido no encontrado', 404);
 
@@ -27,13 +27,26 @@ class RepartidorService {
 
     await repartidorRepository.asignarRepartidor(pedidoId, repartidor.id);
 
-    notificarEnCamino(pedido.consumidor_push_token, pedidoId, repartidor.nombre)
+    // ETA opcional ingresada por el conductor (minutos desde ahora)
+    let eta = null;
+    const mins = parseInt(etaMinutos, 10);
+    if (Number.isFinite(mins) && mins > 0 && mins <= 24 * 60) {
+      eta = new Date(Date.now() + mins * 60_000);
+      await repartidorRepository.setETA(pedidoId, eta).catch(err =>
+        console.error('Error guardando eta_estimada:', err.message)
+      );
+    }
+
+    notificarEnCamino(pedido.consumidor_push_token, pedidoId, repartidor.nombre, eta)
       .catch(err => console.error('Push error:', err.message));
 
     return {
       success: true,
-      message: '¡Código correcto! El consumidor fue notificado.',
+      message: eta
+        ? `¡Código correcto! El consumidor fue notificado (ETA ${eta.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' })}).`
+        : '¡Código correcto! El consumidor fue notificado.',
       consumidor: pedido.consumidor_nombre,
+      eta_estimada: eta,
     };
   }
 

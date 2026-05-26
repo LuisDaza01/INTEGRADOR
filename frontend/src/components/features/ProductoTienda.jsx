@@ -21,6 +21,7 @@ const ProductoTienda = ({ producto, onAddToCart, onToggleFavorite, onViewDetails
   const {
     id, nombre, imagen, precio, categoria, unidad,
     disponible = true, stock, calificacion, esFavorito,
+    productor_nombre, productor_foto, productor_id,
   } = producto || {}
 
   const agotado    = !disponible || (stock != null && stock <= 0)
@@ -143,9 +144,32 @@ const ProductoTienda = ({ producto, onAddToCart, onToggleFavorite, onViewDetails
       {/* ── Info + CTA ── */}
       <div style={{ padding: '12px 14px 14px' }}>
         <p style={{
-          fontWeight: 700, fontSize: 14, color: D.text, margin: '0 0 8px',
+          fontWeight: 700, fontSize: 14, color: D.text, margin: '0 0 4px',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{nombre}</p>
+
+        {/* Mini-chip del productor (si vino en la data) */}
+        {productor_nombre && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8,
+            fontSize: 11, color: D.muted, overflow: 'hidden',
+          }}>
+            {productor_foto ? (
+              <img src={productor_foto} alt="" onError={e => { e.currentTarget.style.display = 'none' }}
+                style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+            ) : (
+              <div style={{
+                width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
+                background: `linear-gradient(135deg, ${D.primary}, #16a34a)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#fff', fontWeight: 800, fontSize: 9,
+              }}>{productor_nombre[0]?.toUpperCase() || 'P'}</div>
+            )}
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {productor_nombre}
+            </span>
+          </div>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ minWidth: 0 }}>

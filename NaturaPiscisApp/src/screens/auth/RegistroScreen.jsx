@@ -4,17 +4,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
   TextInput, ActivityIndicator, KeyboardAvoidingView, Platform, Alert,
-  Animated, Dimensions,
+  Animated, Dimensions, Image,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 import api from '../../api/axios.config';
+import authService from '../../api/services/auth.service';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
+WebBrowser.maybeCompleteAuthSession();
+
 const { width, height } = Dimensions.get('window');
+
+// Mismos client IDs que LoginScreen — el backend registra o loguea según corresponda.
+const GOOGLE_MOBILE_CLIENT_ID = '728810461626-05lrpoc2qr5udfo7apoh588nrkgjvig9.apps.googleusercontent.com';
+const GOOGLE_WEB_CLIENT_ID    = '728810461626-oub4t291euvfforvp72l9ajs0ebv8pq3.apps.googleusercontent.com';
 
 const FIELDS = [
   { key: 'nombre',   label: 'Nombre completo',     icon: 'person-outline',      keyboard: 'default',       secure: false },
@@ -66,7 +75,7 @@ const PARTICLES = [
 ];
 
 const RegistroScreen = ({ navigation }) => {
-  const { login } = useAuth();
+  const { login, loginWithData } = useAuth();
   const { colors, isDarkMode } = useTheme();
   const C = colors;
   const neonCyan  = C.neonCyan  || '#00F5FF';
@@ -77,6 +86,32 @@ const RegistroScreen = ({ navigation }) => {
   const [loading, setLoading]       = useState(false);
   const [errors, setErrors]         = useState({});
   const [focusedField, setFocused]  = useState(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const [, googleResponse, promptGoogleAsync] = Google.useIdTokenAuthRequest({
+    clientId:    GOOGLE_MOBILE_CLIENT_ID,
+    webClientId: GOOGLE_WEB_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    if (googleResponse?.type === 'success') {
+      const idToken = googleResponse.params?.id_token;
+      if (idToken) handleGoogleToken(idToken);
+    }
+  }, [googleResponse]);
+
+  const handleGoogleToken = async (idToken) => {
+    setGoogleLoading(true);
+    try {
+      const result = await authService.loginGoogle(idToken);
+      if (result.success) loginWithData(result.token, result.user);
+      else Alert.alert('Error', result.error || 'No se pudo registrar con Google');
+    } catch {
+      Alert.alert('Error', 'No se pudo registrar con Google');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   // Animaciones de entrada (igual que Login)
   const logoScale  = useRef(new Animated.Value(0.3)).current;
@@ -292,18 +327,32 @@ const RegistroScreen = ({ navigation }) => {
           {/* ── Divider ── */}
           <View style={s.divider}>
             <LinearGradient colors={['transparent', `${neonCyan}30`, 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.dividerLine} />
-            <Text style={[s.dividerText, { color: C.textMuted, fontFamily: 'SpaceGrotesk-Regular' }]}>¿Ya tienes cuenta?</Text>
+            <Text style={[s.dividerText, { color: C.textMuted, fontFamily: 'SpaceGrotesk-Regular' }]}>o</Text>
             <LinearGradient colors={['transparent', `${neonCyan}30`, 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.dividerLine} />
           </View>
 
-          {/* ── Volver al Login ── */}
+          {/* ── Registro / Login con Google ── */}
           <TouchableOpacity
-            style={[s.loginBtn, { backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.surface, borderColor: isDarkMode ? 'rgba(0,245,255,0.12)' : C.border }]}
-            onPress={() => navigation.navigate('Login')} activeOpacity={0.8}
+            style={[s.googleBtn, { backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.surface, borderColor: isDarkMode ? 'rgba(0,245,255,0.12)' : C.border }]}
+            onPress={() => promptGoogleAsync()} disabled={googleLoading} activeOpacity={0.8}
           >
-            <Ionicons name="log-in-outline" size={20} color={neonCyan} />
-            <Text style={[s.loginBtnText, { color: C.text, fontFamily: 'SpaceGrotesk-Medium' }]}>Iniciar sesión</Text>
+            {googleLoading ? (
+              <ActivityIndicator size="small" color="#4285F4" />
+            ) : (
+              <>
+                <Image source={{ uri: 'https://www.google.com/favicon.ico' }} style={s.googleIcon} />
+                <Text style={[s.googleBtnText, { color: C.text, fontFamily: 'SpaceGrotesk-Medium' }]}>Continuar con Google</Text>
+              </>
+            )}
           </TouchableOpacity>
+
+          {/* ── Footer: ir al Login ── */}
+          <View style={s.footer}>
+            <Text style={[s.footerText, { color: C.textSecondary, fontFamily: 'SpaceGrotesk-Regular' }]}>¿Ya tienes cuenta? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={[s.footerLink, { color: neonCyan, fontFamily: 'SpaceGrotesk-SemiBold' }]}>Inicia sesión</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Info */}
           <View style={[s.appInfo, { borderTopColor: isDarkMode ? 'rgba(0,245,255,0.08)' : C.border }]}>
@@ -389,12 +438,18 @@ const s = StyleSheet.create({
   dividerLine: { flex: 1, height: 1 },
   dividerText: { paddingHorizontal: 16, fontSize: 13 },
 
-  // Login
-  loginBtn: {
+  // Google
+  googleBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 10, paddingVertical: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 16,
   },
-  loginBtnText: { fontSize: 15 },
+  googleIcon:    { width: 20, height: 20 },
+  googleBtnText: { fontSize: 15 },
+
+  // Footer
+  footer:     { flexDirection: 'row', justifyContent: 'center', marginBottom: 4 },
+  footerText: { fontSize: 14 },
+  footerLink: { fontSize: 14 },
 
   // App info
   appInfo: {

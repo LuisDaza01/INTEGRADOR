@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-// Animated circular HUD gauge using SVG
+// Componente HUDGauge — Dial cuántico de monitoreo con órbitas giratorias dobles y resplandor neón
 const HUDGauge = ({
   value   = 0,
   min     = 0,
@@ -10,38 +10,37 @@ const HUDGauge = ({
   label   = '',
   unit    = '',
   color   = '#22C55E',
-  size    = 140,
-  icon: Icon,
+  size    = 150,
 }) => {
   const prevRef    = useRef(0)
   const frameRef   = useRef(null)
   const circleRef  = useRef(null)
   const valueRef   = useRef(null)
 
-  const R      = size * 0.38
+  const R      = size * 0.36
   const cx     = size / 2
   const cy     = size / 2
-  const stroke = size * 0.065
+  const stroke = size * 0.062
   const circ   = 2 * Math.PI * R
 
-  // Map value to 0-1
+  // Mapear valor a 0-1
   const pct      = Math.min(1, Math.max(0, (value - min) / (max - min)))
   const optMinPct = (optMin - min) / (max - min)
   const optMaxPct = (optMax - min) / (max - min)
 
-  // Is value in optimal range?
+  // ¿Parámetros en rango óptimo o crítico?
   const inRange  = value >= optMin && value <= optMax
-  const critical = value < min * 0.9 || value > max * 1.1
+  const critical = value < min * 0.95 || value > max * 1.05
 
-  const activeColor = critical ? '#f87171' : inRange ? color : '#fbbf24'
-  const glowColor   = critical ? 'rgba(248,113,113,0.5)' : inRange ? `${color}80` : 'rgba(251,191,36,0.5)'
+  const activeColor = critical ? '#f87171' : inRange ? color : '#facc15'
+  const glowColor   = critical ? 'rgba(248,113,113,0.45)' : inRange ? `${color}70` : 'rgba(250,204,21,0.45)'
 
-  // Animate the arc
+  // Animación del arco circular
   useEffect(() => {
     const target = pct
     const start  = prevRef.current
     const startT = performance.now()
-    const dur    = 900
+    const dur    = 1000
 
     const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
 
@@ -65,7 +64,6 @@ const HUDGauge = ({
     return () => cancelAnimationFrame(frameRef.current)
   }, [value, pct, min, max, circ])
 
-  // Arc start: 135° clockwise, span 270°
   const startAngle = 135 * (Math.PI / 180)
   const polarToCart = (angle, r = R) => ({
     x: cx + r * Math.cos(angle),
@@ -83,53 +81,72 @@ const HUDGauge = ({
   const optMinAngle = startAngle + optMinPct * totalSpan
   const optMaxAngle = startAngle + optMaxPct * totalSpan
 
-  // Tick marks
+  // Ticks de escala HUD
   const ticks = Array.from({ length: 9 }, (_, i) => {
     const angle = startAngle + (i / 8) * totalSpan
-    const inner = R - stroke * 0.9
+    const inner = R - stroke * 0.8
     const outer = R - stroke * 0.1
     const s = polarToCart(angle, inner)
     const e = polarToCart(angle, outer)
     return { s, e, major: i % 4 === 0 }
   })
 
-  // Needle tip
-  const needleAngle = startAngle + pct * totalSpan
-  const needleTip   = polarToCart(needleAngle, R * 0.72)
-  const needleBase1 = polarToCart(needleAngle - Math.PI / 2, 4)
-  const needleBase2 = polarToCart(needleAngle + Math.PI / 2, 4)
-
   return (
-    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <div className="relative flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      
+      {/* Órbita exterior girando a la derecha */}
+      <div 
+        className="absolute rounded-full border border-dashed animate-[spin_20s_linear_infinite]"
+        style={{
+          width: `${size - 4}px`,
+          height: `${size - 4}px`,
+          borderColor: `${activeColor}22`,
+        }}
+      />
+
+      {/* Órbita interior girando a la izquierda */}
+      <div 
+        className="absolute rounded-full border border-dotted animate-[spin_14s_linear_infinite_reverse]"
+        style={{
+          width: `${size - 18}px`,
+          height: `${size - 18}px`,
+          borderColor: `${activeColor}15`,
+        }}
+      />
+
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="absolute z-10">
         <defs>
-          <filter id={`glow-${label}`} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          <filter id={`neon-glow-${label}`} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
 
-        {/* Track background */}
+        {/* Pista de cristal traslúcido */}
         <circle
           cx={cx} cy={cy} r={R}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.04)"
           strokeWidth={stroke}
           strokeDasharray={`${circ * 0.75} ${circ * 0.25}`}
-          strokeDashoffset={circ * 0}
+          strokeDashoffset={0}
           strokeLinecap="round"
           transform={`rotate(135 ${cx} ${cy})`}
         />
 
-        {/* Optimal range arc */}
+        {/* Zona del rango óptimo delineada */}
         <path
           d={arcPath(optMinAngle, optMaxAngle)}
           fill="none"
-          stroke={`${color}22`}
-          strokeWidth={stroke + 2}
+          stroke={`${color}18`}
+          strokeWidth={stroke + 3}
+          strokeLinecap="round"
         />
 
-        {/* Active arc */}
+        {/* Arco de progreso de neón activo */}
         <circle
           ref={circleRef}
           cx={cx} cy={cy} r={R}
@@ -141,77 +158,69 @@ const HUDGauge = ({
           strokeLinecap="round"
           transform={`rotate(135 ${cx} ${cy})`}
           style={{
-            transition: 'stroke 0.5s ease',
-            filter: `drop-shadow(0 0 ${stroke * 0.8}px ${glowColor})`,
+            transition: 'stroke 0.4s ease',
+            filter: `url(#neon-glow-${label})`,
           }}
         />
 
-        {/* Tick marks */}
+        {/* Marcas de Ticks de escala */}
         {ticks.map((t, i) => (
           <line key={i}
             x1={t.s.x} y1={t.s.y} x2={t.e.x} y2={t.e.y}
-            stroke={t.major ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)'}
+            stroke={t.major ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}
             strokeWidth={t.major ? 1.5 : 0.8}
           />
         ))}
 
-        {/* Needle */}
-        <polygon
-          points={`${needleTip.x},${needleTip.y} ${needleBase1.x},${needleBase1.y} ${needleBase2.x},${needleBase2.y}`}
-          fill={activeColor}
-          opacity={0.9}
-          style={{ filter: `drop-shadow(0 0 4px ${activeColor})` }}
-        />
-        <circle cx={cx} cy={cy} r={4} fill={activeColor} />
-
-        {/* Center value */}
+        {/* Valor central grande */}
         <text
           ref={valueRef}
           x={cx} y={cy + R * 0.12}
           textAnchor="middle" dominantBaseline="middle"
-          fontSize={size * 0.155}
-          fontWeight="700"
+          fontSize={size * 0.16}
+          fontWeight="800"
           fontFamily="'Fira Code', monospace"
           fill={activeColor}
-          style={{ filter: `drop-shadow(0 0 6px ${glowColor})` }}
+          style={{ filter: `drop-shadow(0 0 5px ${glowColor})` }}
         >
           {value.toFixed(value % 1 === 0 ? 0 : 1)}
         </text>
+        
+        {/* Unidad en Fira Sans */}
         <text
           x={cx} y={cy + R * 0.38}
           textAnchor="middle"
-          fontSize={size * 0.08}
+          fontSize={size * 0.085}
+          fontWeight="500"
           fontFamily="'Fira Sans', sans-serif"
-          fill="rgba(255,255,255,0.45)"
+          fill="rgba(255,255,255,0.4)"
         >
-          {unit}
+          {unit || 'pH'}
         </text>
 
-        {/* Label */}
+        {/* Nombre del biosensor abajo */}
         <text
           x={cx} y={size - size * 0.08}
           textAnchor="middle"
-          fontSize={size * 0.09}
-          fontWeight="600"
-          fontFamily="'Fira Sans', sans-serif"
-          fill="rgba(255,255,255,0.65)"
-          letterSpacing="0.05em"
+          fontSize={size * 0.082}
+          fontWeight="700"
+          fontFamily="'Fira Code', monospace"
+          fill="rgba(255,255,255,0.5)"
+          letterSpacing="0.08em"
         >
           {label.toUpperCase()}
         </text>
-
-        {/* Min / Max labels */}
-        <text x={cx - R + 2} y={cy + R * 0.55} fontSize={size * 0.07} fill="rgba(255,255,255,0.3)" fontFamily="'Fira Code', monospace">{min}</text>
-        <text x={cx + R - 2} y={cy + R * 0.55} fontSize={size * 0.07} fill="rgba(255,255,255,0.3)" fontFamily="'Fira Code', monospace" textAnchor="end">{max}</text>
       </svg>
 
-      {/* Status ring glow */}
-      <div style={{
-        position: 'absolute', inset: 0, borderRadius: '50%',
-        pointerEvents: 'none',
-        boxShadow: `inset 0 0 ${size * 0.15}px ${glowColor}`,
-        transition: 'box-shadow 0.5s ease',
-      }} />
+      {/* Halo de luz posterior de cristal */}
+      <div 
+        className="absolute rounded-full pointer-events-none transition-all duration-500"
+        style={{
+          width: `${size - 10}px`,
+          height: `${size - 10}px`,
+          boxShadow: `inset 0 0 16px ${glowColor}`,
+        }}
+      />
     </div>
   )
 }

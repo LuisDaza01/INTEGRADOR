@@ -249,7 +249,7 @@ const ProducerTabs = () => {
       <Tab.Screen name="Home"       component={HomeScreen}       options={{ tabBarLabel: 'Inicio'     }} />
       <Tab.Screen name="Orders"     component={OrdersScreen}     options={{ tabBarLabel: 'Pedidos'    }} />
       <Tab.Screen name="Inventario" component={InventarioScreen} options={{ tabBarLabel: 'Inventario' }} />
-      <Tab.Screen name="Devices"    component={DevicesScreen}    options={{ tabBarLabel: 'Monitoreo'  }} />
+      <Tab.Screen name="Devices"    component={MonitoringScreen} options={{ tabBarLabel: 'Monitoreo'  }} />
       <Tab.Screen name="Profile"    component={ProfileScreen}    options={{ tabBarLabel: 'Perfil'     }} />
     </Tab.Navigator>
   );

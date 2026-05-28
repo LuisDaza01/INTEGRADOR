@@ -27,7 +27,7 @@ const ORDER_STATES = {
   pesado:                 { label: 'Pesado',                 color: '#0ea5e9', icon: 'scale-outline',             bgColor: 'rgba(14,165,233,0.1)'   },
   esperando_confirmacion: { label: 'Esperando confirmación', color: '#f97316', icon: 'hourglass-outline',         bgColor: 'rgba(249,115,22,0.1)'   },
   listo_para_recoger:     { label: 'Listo para recoger',     color: '#f97316', icon: 'bag-check-outline',         bgColor: 'rgba(249,115,22,0.1)'   },
-  en_camino:              { label: 'En Camino',              color: '#14b8a6', icon: 'bicycle-outline',           bgColor: 'rgba(20,184,166,0.1)'   },
+  en_camino:              { label: 'En Camino',              color: '#22C55E', icon: 'bicycle-outline',           bgColor: 'rgba(34,197,94,0.1)'   },
   entregado:              { label: 'Entregado',              color: '#22c55e', icon: 'checkmark-done-outline',    bgColor: 'rgba(34,197,94,0.1)'    },
   cancelado:              { label: 'Cancelado',              color: '#ef4444', icon: 'close-circle-outline',      bgColor: 'rgba(239,68,68,0.1)'    },
 };
@@ -561,7 +561,7 @@ const OrdersScreen = () => {
           { icon: 'checkmark-circle', label: 'Confirmados', value: countByStatus.confirmado,         color: '#3b82f6', filter: 'confirmado'         },
           { icon: 'construct',        label: 'Preparando',  value: countByStatus.preparando,         color: '#8b5cf6', filter: 'preparando'         },
           { icon: 'bag-check',        label: 'Para recoger',value: countByStatus.listo_para_recoger, color: '#f97316', filter: 'listo_para_recoger' },
-          { icon: 'bicycle',          label: 'En Camino',   value: countByStatus.en_camino,          color: '#14b8a6', filter: 'en_camino'          },
+          { icon: 'bicycle',          label: 'En Camino',   value: countByStatus.en_camino,          color: '#22C55E', filter: 'en_camino'          },
           { icon: 'checkmark-done',   label: 'Entregados',  value: countByStatus.entregado,          color: '#22c55e', filter: 'entregado'          },
         ].map((item) => (
           <SummaryCard key={item.filter} {...item} active={statusFilter === item.filter}

@@ -223,7 +223,7 @@ const TopProducto = ({ rank, nombre, unidades, ingresos, colors }) => (
         {unidades} unidades vendidas
       </Text>
     </View>
-    <Text style={[styles.topIngreso, { color: '#0d9488' }]}>
+    <Text style={[styles.topIngreso, { color: '#16A34A' }]}>
       Bs. {parseFloat(ingresos).toFixed(0)}
     </Text>
   </View>
@@ -643,7 +643,7 @@ const EstadisticasScreen = ({ navigation }) => {
               icon="cash-outline"
               label="Ingresos totales"
               value={`Bs. ${parseFloat(ingresoTotal).toFixed(0)}`}
-              color="#0d9488"
+              color="#16A34A"
               bg="#f0fdfa"
             />
             <MetricCard
@@ -677,11 +677,11 @@ const EstadisticasScreen = ({ navigation }) => {
                 <Text style={[styles.chartTitle, { color: colors.text }]}>
                   Ingresos mensuales
                 </Text>
-                <Text style={[styles.chartTotal, { color: '#0d9488' }]}>
+                <Text style={[styles.chartTotal, { color: '#16A34A' }]}>
                   Bs. {parseFloat(ingresoTotal).toFixed(0)}
                 </Text>
               </View>
-              <BarChart data={ventasMensuales} color="#0d9488" isDark={isDarkMode} />
+              <BarChart data={ventasMensuales} color="#16A34A" isDark={isDarkMode} />
             </View>
           )}
 
@@ -744,7 +744,7 @@ const EstadisticasScreen = ({ navigation }) => {
                 const pct   = total > 0 ? Math.round((parseInt(e.cantidad) / total) * 100) : 0;
                 const colorMap = {
                   entregado:          '#22c55e',
-                  en_camino:          '#14b8a6',
+                  en_camino:          '#22C55E',
                   preparando:         '#8b5cf6',
                   listo_para_recoger: '#f97316',
                   confirmado:         '#3b82f6',

@@ -529,9 +529,9 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
           {/* Banner */}
           <div style={{ height:200, position:"relative", background:"linear-gradient(135deg,#0a1428,#061230,#080e24)", overflow:"hidden" }}>
             <div style={{ position:"absolute", top:-40, right:-40, width:260, height:260, borderRadius:"50%", background:"radial-gradient(circle,rgba(34,197,94,0.14),transparent)", filter:"blur(50px)" }} />
-            <div style={{ position:"absolute", bottom:-20, left:-20, width:200, height:200, borderRadius:"50%", background:"radial-gradient(circle,rgba(20,184,166,0.12),transparent)", filter:"blur(40px)" }} />
+            <div style={{ position:"absolute", bottom:-20, left:-20, width:200, height:200, borderRadius:"50%", background:"radial-gradient(circle,rgba(34,197,94,0.12),transparent)", filter:"blur(40px)" }} />
             <div style={{ position:"absolute", inset:0, opacity:0.04, backgroundImage:"repeating-linear-gradient(0deg,rgba(34,197,94,1) 0,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(34,197,94,1) 0,transparent 1px,transparent 48px)" }} />
-            <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,transparent,#22C55E,#14b8a6,transparent)" }} />
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,transparent,#22C55E,#22C55E,transparent)" }} />
             {productor.foto_portada && (
               <img src={productor.foto_portada} alt="portada" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", opacity:0.35 }} />
             )}
@@ -546,11 +546,11 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
               <div style={{ display:"flex", flexWrap:"wrap", gap:20, alignItems:"flex-end" }}>
                 {/* Avatar */}
                 <div style={{ position:"relative", flexShrink:0, zIndex:10 }}>
-                  <div style={{ width:120, height:120, borderRadius:"50%", padding:3, background:"linear-gradient(135deg,#22C55E,#14b8a6)", boxShadow:"0 0 28px rgba(34,197,94,0.4)" }}>
+                  <div style={{ width:120, height:120, borderRadius:"50%", padding:3, background:"linear-gradient(135deg,#22C55E,#22C55E)", boxShadow:"0 0 28px rgba(34,197,94,0.4)" }}>
                     <div style={{ width:"100%", height:"100%", borderRadius:"50%", overflow:"hidden", background: isDark ? "#0f172a" : D.surface, border: `3px solid ${isDark ? "#0f172a" : D.surface}` }}>
                       {productor.foto_perfil
                         ? <img src={productor.foto_perfil} alt={productor.nombre} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                        : <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,rgba(34,197,94,0.2),rgba(20,184,166,0.15))" }}>
+                        : <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.15))" }}>
                             <span style={{ fontSize:40, fontWeight:800, color:D.primary }}>{initials}</span>
                           </div>
                       }
@@ -639,17 +639,17 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
 
             {/* Horario */}
             <motion.div initial={{ opacity:0, x:-16 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.18 }}
-              style={{ ...sideCard("#14b8a6"), borderTopWidth:2, borderTopColor:"#14b8a6" }}>
+              style={{ ...sideCard("#22C55E"), borderTopWidth:2, borderTopColor:"#22C55E" }}>
               <div style={{ padding:18 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                  <div style={{ width:30, height:30, borderRadius:9, background:"rgba(20,184,166,0.15)", border:"1px solid rgba(20,184,166,0.3)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    <Clock size={15} color="#14b8a6" />
+                  <div style={{ width:30, height:30, borderRadius:9, background:"rgba(34,197,94,0.15)", border:"1px solid rgba(34,197,94,0.3)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                    <Clock size={15} color="#22C55E" />
                   </div>
                   <span style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:D.muted }}>Horario de atención</span>
                 </div>
-                <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 14px", borderRadius:12, background:"rgba(20,184,166,0.08)", border:"1px solid rgba(20,184,166,0.2)", marginBottom:12 }}>
-                  <Clock size={14} color="#14b8a6" />
-                  <span style={{ fontWeight:700, fontSize:14, color:"#14b8a6" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 14px", borderRadius:12, background:"rgba(34,197,94,0.08)", border:"1px solid rgba(34,197,94,0.2)", marginBottom:12 }}>
+                  <Clock size={14} color="#22C55E" />
+                  <span style={{ fontWeight:700, fontSize:14, color:"#22C55E" }}>
                     {productor.horario_atencion_inicio || "08:00"} – {productor.horario_atencion_fin || "18:00"}
                   </span>
                 </div>
@@ -683,7 +683,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                   {[
                     { label:"Llamar",   fn:handleCall,     color:D.primary,  bg:"rgba(34,197,94,0.08)",  bd:"rgba(34,197,94,0.28)",  icon:<Phone size={18} color={D.primary} /> },
                     { label:"WhatsApp", fn:handleWhatsApp, color:"#25d366",  bg:"rgba(37,211,102,0.08)", bd:"rgba(37,211,102,0.28)",  icon:<svg viewBox="0 0 24 24" width="18" height="18" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.532 5.852L.057 23.527a.75.75 0 0 0 .916.917l5.733-1.48A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.856 0-3.596-.5-5.088-1.372l-.364-.217-3.764.97.998-3.68-.237-.381A9.937 9.937 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg> },
-                    { label:"Email",    fn:handleEmail,    color:"#14b8a6",  bg:"rgba(20,184,166,0.08)",  bd:"rgba(20,184,166,0.28)",  icon:<Mail size={18} color="#14b8a6" /> },
+                    { label:"Email",    fn:handleEmail,    color:"#22C55E",  bg:"rgba(34,197,94,0.08)",  bd:"rgba(34,197,94,0.28)",  icon:<Mail size={18} color="#22C55E" /> },
                     { label:"Chat",     fn:handleChat,     color:"#818cf8",  bg:"rgba(129,140,248,0.08)", bd:"rgba(129,140,248,0.28)", icon:<MessageSquare size={18} color="#818cf8" /> },
                   ].map(({ label, fn, color, bg, bd, icon }) => (
                     <motion.button key={label} whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
@@ -989,7 +989,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                             placeholder="Cuéntanos tu experiencia…" rows={3}
                             style={{ width:"100%", padding:"8px 10px", background: isDark ? "rgba(34,197,94,0.05)" : D.bg, border:`1px solid ${D.border}`, borderRadius:9, color:D.text, fontSize:13, outline:"none", resize:"vertical", boxSizing:"border-box", marginBottom:12 }} />
                           <button type="submit" disabled={submitting}
-                            style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"9px 18px", borderRadius:10, background:`linear-gradient(135deg,${D.primary},#14b8a6)`, color:"#fff", border:"none", cursor:"pointer", fontWeight:700, fontSize:13, opacity:submitting ? 0.6 : 1 }}>
+                            style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"9px 18px", borderRadius:10, background:`linear-gradient(135deg,${D.primary},#22C55E)`, color:"#fff", border:"none", cursor:"pointer", fontWeight:700, fontSize:13, opacity:submitting ? 0.6 : 1 }}>
                             {submitting ? <Loader size={13} style={{ animation:"spin 1s linear infinite" }} /> : <Send size={13} />}
                             Publicar reseña
                           </button>
@@ -1005,7 +1005,7 @@ const PerfilProductorVista = ({ productorId, onBack }) => {
                             <motion.div key={r.id} initial={{ opacity:0,y:8 }} animate={{ opacity:1,y:0 }}
                               style={{ background: isDark ? "rgba(255,255,255,0.03)" : D.bg, border:`1px solid ${D.border}`, borderRadius:14, padding:16 }}>
                               <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
-                                <div style={{ width:36, height:36, borderRadius:"50%", background:`linear-gradient(135deg,${D.primary},#14b8a6)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, overflow:"hidden", fontSize:14, fontWeight:700, color:"#fff" }}>
+                                <div style={{ width:36, height:36, borderRadius:"50%", background:`linear-gradient(135deg,${D.primary},#22C55E)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, overflow:"hidden", fontSize:14, fontWeight:700, color:"#fff" }}>
                                   {r.foto_perfil ? <img src={r.foto_perfil} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} /> : (r.usuario_nombre?.[0]||"U").toUpperCase()}
                                 </div>
                                 <div style={{ flex:1, minWidth:0 }}>

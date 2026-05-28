@@ -26,7 +26,7 @@ const ProfileScreen = ({ navigation }) => {
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
     primary: colors.secondary,
-    teal:    '#14b8a6',
+    teal:    '#22C55E',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -325,7 +325,7 @@ const ProfileScreen = ({ navigation }) => {
               ) : user?.foto_perfil ? (
                 <Image source={{ uri: user.foto_perfil }} style={styles.avatarImg} />
               ) : (
-                <LinearGradient colors={['rgba(56,189,248,0.2)','rgba(20,184,166,0.15)']} style={styles.avatarImg}>
+                <LinearGradient colors={['rgba(56,189,248,0.2)','rgba(34,197,94,0.15)']} style={styles.avatarImg}>
                   <Text style={styles.avatarInitial}>{user?.nombre?.charAt(0)?.toUpperCase() || 'P'}</Text>
                 </LinearGradient>
               )}
@@ -683,7 +683,7 @@ const makeStyles = (C) => StyleSheet.create({
   bannerWrapper:   { height: 110, position: 'relative' },
   bannerImg:       { ...StyleSheet.absoluteFillObject },
   bannerOrb1:      { position: 'absolute', top: -20, right: -20, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(56,189,248,0.1)' },
-  bannerOrb2:      { position: 'absolute', bottom: 0, left: -10, width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(20,184,166,0.08)' },
+  bannerOrb2:      { position: 'absolute', bottom: 0, left: -10, width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(34,197,94,0.08)' },
   bannerAccent:    { position: 'absolute', top: 0, left: 0, right: 0, height: 2 },
   bannerEditOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 6, backgroundColor: 'rgba(0,0,0,0.25)' },
   bannerEditText:  { color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: '500' },

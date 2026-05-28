@@ -372,8 +372,8 @@ const Mensajes = () => {
                   {/* Botón cámara */}
                   <motion.button type="button" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                     onClick={() => cameraInputRef.current?.click()}
-                    style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(20,184,166,0.08)", border: "1px solid rgba(20,184,166,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Camera size={17} color="#14b8a6" />
+                    style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Camera size={17} color="#22C55E" />
                   </motion.button>
                   <textarea value={texto} onChange={e => setTexto(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e) } }}

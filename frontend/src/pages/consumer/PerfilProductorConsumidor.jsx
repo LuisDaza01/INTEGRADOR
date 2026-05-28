@@ -670,14 +670,14 @@ const PerfilProductorConsumidor = () => {
             background: 'radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 65%)', filter: 'blur(32px)' }} />
         <div className="absolute pointer-events-none"
           style={{ bottom: -40, left: '5%', width: 260, height: 260, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(20,184,166,0.14) 0%, transparent 65%)', filter: 'blur(28px)' }} />
+            background: 'radial-gradient(circle, rgba(34,197,94,0.14) 0%, transparent 65%)', filter: 'blur(28px)' }} />
         <div className="absolute pointer-events-none"
           style={{ top: '30%', left: '35%', width: 180, height: 180, borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(139,92,246,0.09) 0%, transparent 65%)', filter: 'blur(24px)' }} />
 
         {/* Top shimmer line */}
         <div className="absolute top-0 inset-x-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent 5%, rgba(34,197,94,0.7) 40%, rgba(20,184,166,0.5) 60%, transparent 95%)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent 5%, rgba(34,197,94,0.7) 40%, rgba(34,197,94,0.5) 60%, transparent 95%)' }} />
 
         {/* Bottom fade into page */}
         <div className="absolute bottom-0 inset-x-0 h-20"
@@ -725,7 +725,7 @@ const PerfilProductorConsumidor = () => {
                 ) : null}
                 <div className="w-full h-full items-center justify-center text-3xl font-bold"
                   style={{ display: producer.foto_perfil ? 'none' : 'flex',
-                    background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(20,184,166,0.15))', color: '#22C55E' }}>
+                    background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.15))', color: '#22C55E' }}>
                   {producer.nombre?.charAt(0)?.toUpperCase() || 'P'}
                 </div>
               </div>
@@ -768,7 +768,7 @@ const PerfilProductorConsumidor = () => {
                 {producer.years_experience > 0 && (
                   <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
                     style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#cbd5e1' }}>
-                    <Clock size={11} style={{ color: '#14b8a6' }} />
+                    <Clock size={11} style={{ color: '#22C55E' }} />
                     {producer.years_experience} años
                   </span>
                 )}
@@ -813,7 +813,7 @@ const PerfilProductorConsumidor = () => {
                   <div className="font-bold text-white mb-2">Bs{getTotalPrice().toFixed(2)}</div>
                   <button onClick={goToCart}
                     className="w-full px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                    style={{ background: 'linear-gradient(135deg, #16a34a, #14b8a6)', color: '#fff' }}>
+                    style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', color: '#fff' }}>
                     Ver Carrito
                   </button>
                 </div>
@@ -1509,7 +1509,7 @@ const PerfilProductorConsumidor = () => {
             {getTotalItems() > 0 && (
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                 className="rounded-2xl p-5"
-                style={{ background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(20,184,166,0.05))', border: '1px solid rgba(34,197,94,0.2)' }}>
+                style={{ background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.05))', border: '1px solid rgba(34,197,94,0.2)' }}>
                 <h3 className="font-bold mb-4 text-sm flex items-center gap-2" style={{ color: D.text }}>
                   <ShoppingCart size={16} style={{ color: D.primary }} />Tu Carrito
                 </h3>

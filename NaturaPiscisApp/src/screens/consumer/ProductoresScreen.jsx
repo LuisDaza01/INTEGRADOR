@@ -17,7 +17,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 // Per-producer gradient pairs
 const GRADIENTS = [
   ['#16a34a', '#15803d'],
-  ['#22C55E', '#0f766e'],
+  ['#22C55E', '#15803D'],
   ['#8b5cf6', '#6d28d9'],
   ['#f97316', '#c2410c'],
   ['#ec4899', '#be185d'],

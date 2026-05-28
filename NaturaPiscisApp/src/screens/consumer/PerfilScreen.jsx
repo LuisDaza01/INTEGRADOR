@@ -306,7 +306,7 @@ const PerfilScreen = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* ── Header con gradiente ── */}
-        <LinearGradient colors={['#0284c7', '#0d9488']} style={styles.headerGrad}>
+        <LinearGradient colors={['#0284c7', '#16A34A']} style={styles.headerGrad}>
           {/* Avatar con foto */}
           <TouchableOpacity style={styles.avatarWrap} onPress={handleCambiarFoto} activeOpacity={0.85}>
             <View style={styles.avatar}>
@@ -364,7 +364,7 @@ const PerfilScreen = ({ navigation }) => {
 
         {/* ── Mis pedidos acceso rápido ── */}
         <TouchableOpacity
-          style={[styles.pedidosCard, { backgroundColor: '#0d9488' }]}
+          style={[styles.pedidosCard, { backgroundColor: '#16A34A' }]}
           onPress={() => navigation.navigate('MisPedidos')}
           activeOpacity={0.85}
         >

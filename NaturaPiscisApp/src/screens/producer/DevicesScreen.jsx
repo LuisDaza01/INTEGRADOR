@@ -353,7 +353,7 @@ const DevicesScreen = () => {
             />
             <AutomationRule 
               icon="water-outline"
-              color="#14b8a6"
+              color="#22C55E"
               title="Turbidez > 50 NTU"
               description="Envía notificación para cambiar o tratar el agua"
               active
@@ -389,7 +389,7 @@ const DevicesScreen = () => {
               </View>
             </View>
             <View style={[styles.rangeItem, { borderBottomColor: colors.border }]}>
-              <Ionicons name="water-outline" size={18} color="#14b8a6" />
+              <Ionicons name="water-outline" size={18} color="#22C55E" />
               <View style={styles.rangeInfo}>
                 <Text style={[styles.rangeTitle, { color: colors.text }]}>Turbidez</Text>
                 <Text style={[styles.rangeValue, { color: colors.textSecondary }]}>0 - 50 NTU (crítico: 100 NTU)</Text>

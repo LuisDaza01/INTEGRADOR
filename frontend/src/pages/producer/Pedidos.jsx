@@ -18,7 +18,7 @@ const PRECIO_KG = 35
 
 const STATUS_HEX = {
   yellow: '#f59e0b', blue: '#22C55E', purple: '#a855f7',
-  sky: '#16a34a', orange: '#fb923c', teal: '#14b8a6',
+  sky: '#16a34a', orange: '#fb923c', teal: '#22C55E',
   green: '#22c55e', red: '#ef4444', gray: '#64748b',
 }
 
@@ -29,7 +29,7 @@ const ORDER_STATES = {
   pesado:                 { label: 'Pesado',              hex: '#16a34a' },
   esperando_confirmacion: { label: 'Esp. confirmación',   hex: '#fb923c' },
   listo_para_recoger:     { label: 'Listo para recoger',  hex: '#fb923c' },
-  en_camino:              { label: 'En Camino',           hex: '#14b8a6' },
+  en_camino:              { label: 'En Camino',           hex: '#22C55E' },
   entregado:              { label: 'Entregado',           hex: '#22c55e' },
   cancelado:              { label: 'Cancelado',           hex: '#ef4444' },
 }
@@ -438,7 +438,7 @@ const Pedidos = () => {
     { label: 'Confirmados',       value: counts.confirmado,             hex: '#22C55E', icon: CheckCircle  },
     { label: 'Preparando',        value: counts.preparando,             hex: '#a855f7', icon: Package      },
     { label: 'Esp. conf.',        value: counts.esperando_confirmacion, hex: '#fb923c', icon: Hourglass    },
-    { label: 'En camino',         value: counts.en_camino,             hex: '#14b8a6', icon: Truck        },
+    { label: 'En camino',         value: counts.en_camino,             hex: '#22C55E', icon: Truck        },
     { label: 'Entregados',        value: counts.entregado,             hex: '#22c55e', icon: CheckCircle  },
     { label: 'Cancelados',        value: counts.cancelado,             hex: '#ef4444', icon: XCircle      },
   ]

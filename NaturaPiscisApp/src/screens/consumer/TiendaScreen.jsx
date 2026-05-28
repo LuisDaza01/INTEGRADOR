@@ -161,7 +161,7 @@ const TiendaScreen = ({ navigation }) => {
     ? pFilters.verificado
     : (qFilters.precio_min || qFilters.precio_max || qFilters.order !== 'fecha_desc');
 
-  const gradients = [['#16a34a','#22C55E'],['#0d9488','#4ade80'],['#c084fc','#8b5cf6'],['#fb923c','#f59e0b']];
+  const gradients = [['#16a34a','#22C55E'],['#16A34A','#4ade80'],['#c084fc','#8b5cf6'],['#fb923c','#f59e0b']];
 
   const goProductor = (id) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); navigation.navigate('DetalleProductor', { id }); };
   const goProducto  = (id) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); navigation.navigate('DetalleProducto', { id }); };

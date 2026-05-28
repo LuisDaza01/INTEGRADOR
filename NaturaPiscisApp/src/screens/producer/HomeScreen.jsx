@@ -109,7 +109,7 @@ const HomeScreen = ({ navigation }) => {
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
     primary: colors.secondary,
-    teal:    '#14b8a6',
+    teal:    '#22C55E',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -404,7 +404,7 @@ const HomeScreen = ({ navigation }) => {
           {/* ─── Stats CTA ─── */}
           <TouchableOpacity onPress={handleEstadisticas} activeOpacity={0.85}>
             <LinearGradient
-              colors={['#0d9488', '#0f766e']}
+              colors={['#16A34A', '#15803D']}
               start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
               style={styles.statsCta}
             >
@@ -431,7 +431,7 @@ const HomeScreen = ({ navigation }) => {
 
 const GlowStatCard = ({ icon, label, value, glow, onPress }) => {
   const { colors: gColors } = useTheme();
-  const styles = makeStyles({ bg: gColors.background, surface: gColors.surface, card: gColors.card, border: gColors.border, text: gColors.text, sub: gColors.textSecondary, hint: gColors.textMuted, primary: gColors.secondary, teal: '#14b8a6', green: '#4ade80', orange: '#fb923c', purple: '#c084fc', textSub: gColors.textSecondary, textHint: gColors.textMuted, red: '#f87171' });
+  const styles = makeStyles({ bg: gColors.background, surface: gColors.surface, card: gColors.card, border: gColors.border, text: gColors.text, sub: gColors.textSecondary, hint: gColors.textMuted, primary: gColors.secondary, teal: '#22C55E', green: '#4ade80', orange: '#fb923c', purple: '#c084fc', textSub: gColors.textSecondary, textHint: gColors.textMuted, red: '#f87171' });
   return (
     <TouchableOpacity style={[styles.statCard, { borderColor: `${glow}30` }]}
       onPress={onPress} activeOpacity={0.8} disabled={!onPress}>
@@ -460,7 +460,7 @@ const LagunaCard = ({ laguna, onBombaToggle, onPress }) => {
     sub:     lColors.textSecondary,
     hint:    lColors.textMuted,
     primary: lColors.secondary,
-    teal:    '#14b8a6',
+    teal:    '#22C55E',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -532,7 +532,7 @@ const LagunaCard = ({ laguna, onBombaToggle, onPress }) => {
 const ActionBtn = ({ icon, label, onPress, glow }) => {
   const { colors: aColors } = useTheme();
   const C = { textSub: aColors.textSecondary };
-  const styles = makeStyles({ ...C, border: aColors.border, text: aColors.text, sub: aColors.textSecondary, hint: aColors.textMuted, primary: aColors.secondary, teal: '#14b8a6', green: '#4ade80', orange: '#fb923c', purple: '#c084fc', textHint: aColors.textMuted, red: '#f87171', bg: aColors.background, surface: aColors.surface, card: aColors.card });
+  const styles = makeStyles({ ...C, border: aColors.border, text: aColors.text, sub: aColors.textSecondary, hint: aColors.textMuted, primary: aColors.secondary, teal: '#22C55E', green: '#4ade80', orange: '#fb923c', purple: '#c084fc', textHint: aColors.textMuted, red: '#f87171', bg: aColors.background, surface: aColors.surface, card: aColors.card });
   return (
     <TouchableOpacity style={styles.actionBtn} onPress={onPress} activeOpacity={0.8}>
       <View style={[styles.actionIcon, { backgroundColor: `${glow}18`, borderColor: `${glow}30`, shadowColor: glow }]}>
@@ -575,7 +575,7 @@ const makeStyles = (C) => StyleSheet.create({
   },
   heroOrb2: {
     position: 'absolute', width: 140, height: 140, borderRadius: 70,
-    backgroundColor: 'rgba(20,184,166,0.08)', bottom: -50, left: -40,
+    backgroundColor: 'rgba(34,197,94,0.08)', bottom: -50, left: -40,
   },
   heroOrb3: {
     position: 'absolute', width: 100, height: 100, borderRadius: 50,
@@ -587,7 +587,7 @@ const makeStyles = (C) => StyleSheet.create({
     bottom: -20,
   },
   wave1: { backgroundColor: 'rgba(56,189,248,0.12)', bottom: -18 },
-  wave2: { backgroundColor: 'rgba(20,184,166,0.09)', bottom: -10 },
+  wave2: { backgroundColor: 'rgba(34,197,94,0.09)', bottom: -10 },
   wave3: { backgroundColor: 'rgba(139,92,246,0.06)', bottom: -4 },
   heroRow:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   heroLeft:    { flex: 1 },

@@ -16,6 +16,12 @@
           "sounds": []
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir a NaturaPiscis usar la cámara para escanear el código QR del sensor."
+        }
+      ],
       "expo-asset",
       "expo-font",
       "expo-secure-store",
@@ -32,7 +38,8 @@
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA"
       ],
       "config": {
         "googleMaps": {

@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Cpu, Plus, Trash2, Edit2, Copy, Check, X, AlertCircle,
   Search, RefreshCw, Link2, Unlink, Power, ToggleLeft, ToggleRight,
+  QrCode, Printer,
 } from "lucide-react"
+import { QRCodeCanvas } from "qrcode.react"
 import axios from "../../api/config/axios"
 import { useTheme } from "../../contexts/ThemeContext"
 
@@ -25,6 +27,7 @@ const DispositivosAdmin = () => {
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [copiedId, setCopiedId] = useState(null)
   const [toast, setToast] = useState(null)
+  const [qrFor, setQrFor] = useState(null) // dispositivo cuyo QR se muestra
 
   useEffect(() => { cargar() }, [])
 
@@ -121,6 +124,33 @@ const DispositivosAdmin = () => {
       setCopiedId(id)
       setTimeout(() => setCopiedId(null), 1500)
     } catch {/* noop */}
+  }
+
+  // Abre una ventana con solo el QR + código → lista para imprimir y pegar al ESP32
+  const printQR = (d) => {
+    const node = document.getElementById(`qr-print-${d.id}`)
+    if (!node) return
+    const w = window.open('', '_blank', 'width=420,height=540')
+    if (!w) { notify('No se pudo abrir la ventana de impresión (popup bloqueado)', 'error'); return }
+    w.document.write(`
+      <html>
+        <head>
+          <title>QR — ${d.codigo}</title>
+          <style>
+            body { margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, sans-serif; }
+            .label { padding: 20px; text-align: center; }
+            .label canvas { display: block; margin: 0 auto; }
+            .code  { font-family: 'Courier New', monospace; font-size: 20px; font-weight: 800; letter-spacing: 0.08em; margin-top: 14px; }
+            .sub   { font-size: 12px; color: #666; margin-top: 4px; }
+            @media print { @page { margin: 5mm; } body { background: white; } }
+          </style>
+        </head>
+        <body><div class="label">${node.innerHTML}</div>
+        <script>setTimeout(() => { window.print(); window.close(); }, 250);<\/script>
+        </body>
+      </html>
+    `)
+    w.document.close()
   }
 
   const filtrados = useMemo(() => {
@@ -363,6 +393,12 @@ const DispositivosAdmin = () => {
 
                 {/* Acciones */}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  <button onClick={() => setQrFor(d)}
+                    title="Ver / imprimir QR"
+                    style={iconBtn(D, '#06b6d4')}>
+                    <QrCode size={16} />
+                  </button>
+
                   <button onClick={() => handleToggleActivo(d)}
                     title={d.activo ? 'Desactivar' : 'Activar'}
                     style={iconBtn(D, d.activo ? '#22C55E' : '#94a3b8')}>
@@ -418,6 +454,83 @@ const DispositivosAdmin = () => {
           })}
         </div>
       )}
+
+      {/* ── Modal QR ────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {qrFor && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setQrFor(null)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 200,
+              background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 20,
+            }}>
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: D.card, borderRadius: 18, padding: 24,
+                border: `1px solid ${D.border}`,
+                maxWidth: 380, width: '100%',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+              }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <QrCode size={18} color="#06b6d4" />
+                  <strong style={{ fontSize: 15 }}>Código QR del dispositivo</strong>
+                </div>
+                <button onClick={() => setQrFor(null)} style={iconBtn(D, '#94a3b8')}>
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* QR — id para poder localizarlo al imprimir */}
+              <div id={`qr-print-${qrFor.id}`} style={{
+                background: '#fff', padding: 20, borderRadius: 14,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+              }}>
+                <QRCodeCanvas
+                  value={qrFor.codigo}
+                  size={220}
+                  level="H"
+                  includeMargin={false}
+                />
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontFamily: "'Fira Code', monospace", fontSize: 18,
+                    fontWeight: 800, color: '#000', letterSpacing: '0.06em',
+                  }}>{qrFor.codigo}</div>
+                  <div style={{ fontSize: 11, color: '#666', marginTop: 4 }}>
+                    NaturaPiscis · Sensor IoT
+                  </div>
+                </div>
+              </div>
+
+              {qrFor.notas && (
+                <p style={{ fontSize: 12, color: D.muted, margin: '12px 0 0', textAlign: 'center' }}>
+                  {qrFor.notas}
+                </p>
+              )}
+
+              <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                <button onClick={() => copiar(qrFor.codigo, qrFor.id)} style={{ ...btnSecundario(D), flex: 1 }}>
+                  {copiedId === qrFor.id ? <Check size={14} color={D.primary} /> : <Copy size={14} />}
+                  {copiedId === qrFor.id ? 'Copiado' : 'Copiar código'}
+                </button>
+                <button onClick={() => printQR(qrFor)} style={{ ...btnPrimario(D), flex: 1 }}>
+                  <Printer size={14} /> Imprimir
+                </button>
+              </div>
+
+              <p style={{ fontSize: 11, color: D.muted, margin: '12px 0 0', textAlign: 'center' }}>
+                Pega esta etiqueta en el ESP32 antes de entregarlo al productor.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Toast ───────────────────────────────────────────────── */}
       <AnimatePresence>

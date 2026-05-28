@@ -16,6 +16,7 @@ import { useLagunas } from '../../hooks/useLagunas';
 import { useSensorHistory } from '../../api/services/sensorHistory.service';
 import { useTheme } from '../../contexts/ThemeContext';
 import { LoadingSpinner } from '../../components/common/Loading';
+import QRScannerModal from '../../components/common/QRScannerModal';
 import { SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { SENSOR_COLORS } from '../../constants/colors';
 import GlassContainer from '../../components/ui/GlassContainer';
@@ -348,6 +349,7 @@ const MonitoringScreen = ({ navigation }) => {
   const [codigoInput, setCodigoInput]     = useState('');
   const [vinculando, setVinculando]       = useState(false);
   const [showCodigo, setShowCodigo]       = useState(false);
+  const [scannerOpen, setScannerOpen]     = useState(false);
 
   // Animación rotativa global para los anillos exteriores
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -761,6 +763,12 @@ const MonitoringScreen = ({ navigation }) => {
             Pega aquí el código que te dio el administrador junto con tu sensor ESP32:
           </Text>
           <View style={styles.codigoInputRow}>
+            <TouchableOpacity
+              onPress={() => setScannerOpen(true)}
+              style={[styles.codigoScanBtn, { borderColor: 'rgba(0,245,255,0.35)', backgroundColor: 'rgba(0,245,255,0.08)' }]}
+              activeOpacity={0.7}>
+              <Ionicons name="qr-code-outline" size={20} color={neonCyan} />
+            </TouchableOpacity>
             <TextInput
               value={codigoInput}
               onChangeText={v => setCodigoInput(v.toUpperCase())}
@@ -778,6 +786,9 @@ const MonitoringScreen = ({ navigation }) => {
                 : <Text style={[styles.codigoBtnText, { color: codigoInput.trim() ? '#030712' : '#94a3b8', fontFamily: 'SpaceGrotesk-Bold' }]}>ENLAZAR</Text>}
             </TouchableOpacity>
           </View>
+          <Text style={[styles.codigoHint, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Regular', fontSize: 11, marginTop: 6 }]}>
+            Toca el ícono de QR para escanear, o pega el código manualmente.
+          </Text>
         </View>
       )}
 
@@ -823,6 +834,16 @@ const MonitoringScreen = ({ navigation }) => {
           </>
         )}
       </ScrollView>
+
+      <QRScannerModal
+        visible={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onScanned={(code) => {
+          setCodigoInput(code);
+          setScannerOpen(false);
+          setShowCodigo(true);
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -840,7 +861,8 @@ const styles = StyleSheet.create({
   codigoActualLabel:{ fontSize: 13 },
   codigoActualVal: { fontSize: 14.5 },
   codigoHint:      { fontSize: 12 },
-  codigoInputRow:  { flexDirection: 'row', gap: 8 },
+  codigoInputRow:  { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  codigoScanBtn:   { width: 42, height: 42, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   codigoInput:     { flex: 1, borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, fontSize: 15, letterSpacing: 2 },
   codigoBtn:       { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, justifyContent: 'center' },
   codigoBtnText:   { fontSize: 12.5 },

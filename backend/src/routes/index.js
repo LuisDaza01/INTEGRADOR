@@ -30,6 +30,7 @@ const pescadoRouter         = require('../modules/pescado/pescado.routes');
 const inventarioRouter      = require('../modules/inventario/inventario.routes');
 const disponibilidadRouter  = require('../modules/disponibilidad/disponibilidad.routes');
 const reservasRouter        = require('../modules/reservas/reserva.routes');
+const dispositivosRouter    = require('../modules/dispositivos/dispositivo.routes');
 
 // ============================================
 // RUTA RAÍZ DE LA API
@@ -182,7 +183,9 @@ router.use('/pescado', pescadoRouter);
 router.use('/inventario', inventarioRouter);
 router.use('/disponibilidad', disponibilidadRouter);
 router.use('/reservas', reservasRouter);
+router.use('/dispositivos', dispositivosRouter);
 logger.info('✅ Módulo de análisis de pescado cargado en /api/pescado');
+logger.info('✅ Módulo de dispositivos IoT cargado en /api/dispositivos (admin)');
 
 // ============================================
 // RUTAS DE UTILIDAD

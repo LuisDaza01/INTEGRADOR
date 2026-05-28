@@ -48,6 +48,7 @@ import PedidosAdmin from './pages/admin/PedidosAdmin';
 import CategoriasAdmin from './pages/admin/CategoriasAdmin';
 import UsuariosAdmin from './pages/admin/UsuariosAdmin';
 import RegistrarProductor from './pages/admin/RegistrarProductor';
+import DispositivosAdmin from './pages/admin/DispositivosAdmin';
 import TrazabilidadPublica from './pages/consumer/TrazabilidadPublica';
 import TrackingPedidoWeb from './pages/consumer/TrackingPedidoWeb';
 import AnalizarFrescura from './pages/consumer/AnalizarFrescura';
@@ -160,6 +161,7 @@ const App = () => {
             <Route path="categorias" element={<CategoriasAdmin />} />
             <Route path="usuarios" element={<UsuariosAdmin />} />
             <Route path="registrar-productor" element={<RegistrarProductor />} />
+            <Route path="dispositivos" element={<DispositivosAdmin />} />
           </Route>
 
           {/* TRAZABILIDAD — pública, sin login */}

@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard, Package, ShoppingBag, Tag, LogOut,
-  ChevronRight, Menu, X, Shield, Users, UserPlus,
+  ChevronRight, Menu, X, Shield, Users, UserPlus, Cpu,
 } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
 import { useTheme } from "../../contexts/ThemeContext"
@@ -16,6 +16,7 @@ const menuItems = [
   { id: "categorias",          label: "Categorías",          icon: Tag,             color: '#34d399', path: "/dashboard-admin/categorias" },
   { id: "usuarios",            label: "Usuarios",            icon: Users,           color: '#a78bfa', path: "/dashboard-admin/usuarios" },
   { id: "registrar-productor", label: "Registrar Usuario",   icon: UserPlus,        color: '#c084fc', path: "/dashboard-admin/registrar-productor" },
+  { id: "dispositivos",        label: "Dispositivos IoT",    icon: Cpu,             color: '#06b6d4', path: "/dashboard-admin/dispositivos" },
 ]
 
 const SidebarAdmin = () => {

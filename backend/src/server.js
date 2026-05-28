@@ -80,6 +80,17 @@ async function startServer() {
       `ALTER TABLE sensor_readings ADD COLUMN IF NOT EXISTS nivel     NUMERIC(6,2)`,
       `ALTER TABLE sensor_readings ADD COLUMN IF NOT EXISTS oxigeno   NUMERIC(5,2)`,
       `CREATE INDEX IF NOT EXISTS idx_sensor_readings_laguna_ts ON sensor_readings (laguna_id, timestamp DESC)`,
+      // Dispositivos IoT — el admin genera códigos y el productor los vincula a su laguna
+      `CREATE TABLE IF NOT EXISTS dispositivos (
+         id                    SERIAL PRIMARY KEY,
+         codigo                VARCHAR(50)  NOT NULL UNIQUE,
+         notas                 TEXT,
+         activo                BOOLEAN      NOT NULL DEFAULT true,
+         asignado_a_laguna_id  INTEGER REFERENCES lagunas(id) ON DELETE SET NULL,
+         fecha_asignacion      TIMESTAMP,
+         fecha_creacion        TIMESTAMP    NOT NULL DEFAULT NOW()
+       )`,
+      `CREATE INDEX IF NOT EXISTS idx_dispositivos_laguna ON dispositivos (asignado_a_laguna_id)`,
     ];
     for (const sql of safeMigrations) {
       try {

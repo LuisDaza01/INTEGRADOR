@@ -231,9 +231,18 @@ class LagunaService {
   async vincularDispositivo(lagunaId, codigo, productorId) {
     const ok = await lagunaRepository.verificarPropietario(lagunaId, productorId);
     if (!ok) throw new ForbiddenError('No tienes acceso a esta laguna');
-    if (!codigo || !codigo.trim()) throw new ValidationError('Código de dispositivo requerido');
-    const updated = await lagunaRepository.updateCodigo(lagunaId, codigo.trim().toUpperCase());
+
+    // Valida que el código exista en la tabla `dispositivos`, esté activo
+    // y no esté ya vinculado a otra laguna distinta.
+    const dispositivoService = require('../dispositivos/dispositivo.service');
+    const disp = await dispositivoService.validarParaVinculacion(codigo, lagunaId);
+
+    const updated = await lagunaRepository.updateCodigo(lagunaId, disp.codigo);
     if (!updated) throw new NotFoundError('Laguna no encontrada');
+
+    // Marca el dispositivo como asignado a esta laguna (idempotente)
+    await dispositivoService.marcarAsignado(disp.id, Number(lagunaId));
+
     return updated;
   }
 

@@ -14,6 +14,7 @@ const sectionTitles = {
   "/dashboard-admin/categorias":            "Gestión de Categorías",
   "/dashboard-admin/usuarios":              "Gestión de Usuarios",
   "/dashboard-admin/registrar-productor":   "Registrar Usuario",
+  "/dashboard-admin/dispositivos":          "Dispositivos IoT",
 }
 
 const DashboardAdmin = () => {

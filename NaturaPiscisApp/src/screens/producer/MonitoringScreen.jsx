@@ -231,12 +231,17 @@ const GAUGE_CIRC   = 2 * Math.PI * GAUGE_R;
 const GAUGE_ARC    = GAUGE_CIRC * 0.75;
 const GAUGE_GAP    = GAUGE_CIRC - GAUGE_ARC;
 
-const SensorGauge = ({ value, unit, label, color, min, max, optMin, optMax, sensorIcon, isAlert, spinAngle }) => {
+const SensorGauge = ({ value, unit, label, color, min, max, optMin, optMax, sensorIcon, isAlert, spinAngle, isDarkMode, themeColors }) => {
   const gaugeColor = isAlert ? '#FF5370' : color;
   const pct        = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
   const [arcFill, setArcFill] = useState(0);
   const animRef    = useRef(null);
   const targetArc  = (pct / 100) * GAUGE_ARC;
+
+  // Colores tipográficos coherentes con el tema (light/dark)
+  const valueFill   = isAlert ? '#FF5370' : (themeColors?.text || (isDarkMode ? '#E8F0FF' : '#0f172a'));
+  const unitFill    = themeColors?.textSecondary || (isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(15,23,42,0.55)');
+  const trackStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.06)';
 
   useEffect(() => {
     const start    = Date.now();
@@ -277,7 +282,7 @@ const SensorGauge = ({ value, unit, label, color, min, max, optMin, optMax, sens
           <Circle
             cx={GAUGE_CX} cy={GAUGE_CY} r={GAUGE_R}
             fill="none"
-            stroke="rgba(255,255,255,0.05)"
+            stroke={trackStroke}
             strokeWidth={GAUGE_STROKE}
             strokeDasharray={`${GAUGE_ARC} ${GAUGE_GAP}`}
             strokeLinecap="round"
@@ -311,7 +316,7 @@ const SensorGauge = ({ value, unit, label, color, min, max, optMin, optMax, sens
             y={GAUGE_CY + Math.floor(valFontSize * 0.35)}
             fontSize={valFontSize}
             fontFamily="SpaceGrotesk-Bold"
-            fill={isAlert ? '#FF5370' : '#E8F0FF'}
+            fill={valueFill}
             textAnchor="middle"
           >
             {value?.toFixed(1) ?? '--'}
@@ -322,7 +327,7 @@ const SensorGauge = ({ value, unit, label, color, min, max, optMin, optMax, sens
             y={GAUGE_CY + Math.floor(valFontSize * 0.35) + unitFontSize + 2}
             fontSize={unitFontSize}
             fontFamily="SpaceGrotesk-Medium"
-            fill="rgba(255,255,255,0.4)"
+            fill={unitFill}
             textAnchor="middle"
           >
             {displayUnit}
@@ -336,7 +341,7 @@ const SensorGauge = ({ value, unit, label, color, min, max, optMin, optMax, sens
           {label.toUpperCase()}
         </Text>
       </View>
-      <Text style={[styles.gaugeOptRange, { fontFamily: 'SpaceGrotesk-Regular' }]} numberOfLines={1}>
+      <Text style={[styles.gaugeOptRange, { color: unitFill, fontFamily: 'SpaceGrotesk-Regular' }]} numberOfLines={1}>
         ÓPTIMO: {optMin}–{optMax}
       </Text>
     </View>
@@ -524,6 +529,8 @@ const MonitoringScreen = ({ navigation }) => {
                                                     'eye-outline'
                   }
                   isAlert={sensor.status === 'critical' || sensor.status === 'warning'}
+                  isDarkMode={isDarkMode}
+                  themeColors={colors}
                 />
               );
             })}

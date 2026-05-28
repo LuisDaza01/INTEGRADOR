@@ -72,6 +72,33 @@ class EstadisticaController {
     }
   }
 
+  async obtenerVentasMensualesAdmin(req, res) {
+    try {
+      const data = await estadisticaService.obtenerVentasMensualesAdmin();
+      return successResponse(res, data, 'Ventas mensuales obtenidas');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
+
+  async obtenerPedidosPorEstadoAdmin(req, res) {
+    try {
+      const data = await estadisticaService.obtenerPedidosPorEstadoAdmin();
+      return successResponse(res, data, 'Pedidos por estado obtenidos');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
+
+  async obtenerTopProductosAdmin(req, res) {
+    try {
+      const data = await estadisticaService.obtenerTopProductosAdmin();
+      return successResponse(res, data, 'Top productos obtenidos');
+    } catch (error) {
+      return errorResponse(res, error.message, error.statusCode || 500);
+    }
+  }
+
   // Resumen mensual IA — obtiene el cacheado en BD
   async obtenerResumenMensual(req, res) {
     try {

@@ -150,6 +150,44 @@ class EstadisticaService {
   }
 
 
+  async obtenerVentasMensualesAdmin() {
+    try {
+      const rows = await estadisticaRepository.obtenerVentasMensualesAdmin();
+      return rows.map(r => ({
+        mes:     r.mes,
+        ventas:  parseFloat(r.ventas),
+        pedidos: parseInt(r.pedidos),
+      }));
+    } catch (error) {
+      throw new AppError('Error al obtener ventas mensuales', 500);
+    }
+  }
+
+  async obtenerPedidosPorEstadoAdmin() {
+    try {
+      const rows = await estadisticaRepository.obtenerPedidosPorEstadoAdmin();
+      return rows.map(r => ({
+        estado:   r.estado,
+        cantidad: parseInt(r.cantidad),
+      }));
+    } catch (error) {
+      throw new AppError('Error al obtener pedidos por estado', 500);
+    }
+  }
+
+  async obtenerTopProductosAdmin() {
+    try {
+      const rows = await estadisticaRepository.obtenerTopProductosAdmin();
+      return rows.map(r => ({
+        nombre:   r.nombre,
+        ingresos: parseFloat(r.ingresos),
+        unidades: parseInt(r.unidades),
+      }));
+    } catch (error) {
+      throw new AppError('Error al obtener top productos', 500);
+    }
+  }
+
   // ───────────────────────────────────────────────────────────
   // MARKETING ANALYTICS
   // ───────────────────────────────────────────────────────────

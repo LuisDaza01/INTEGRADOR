@@ -12,8 +12,9 @@ Thumbs.db
 # node_modules (each subfolder has its own .gitignore)
 node_modules/
 
-# Grafana (optional - remove if you want to version this)
-# grafana-dashboard.json
+# Grafana â€” JSONs locales / iteraciones de dashboards (no versionar drafts)
+grafana-*.json
+grafana-dashboard.json
 
 # Large/compiled files
 *.zip
@@ -23,5 +24,5 @@ node_modules/
 *.sql.bak
 backend/backup.sql
 
-# Backups locales (datos reales — nunca al repo)
+# Backups locales (datos reales ï¿½ nunca al repo)
 backups/

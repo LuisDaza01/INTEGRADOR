@@ -249,6 +249,48 @@ class EstadisticaRepository {
     `, [productorId, desde, hasta]);
   }
 
+  // ───────────────────────────────────────────────────────────
+  // ADMIN CHARTS
+  // ───────────────────────────────────────────────────────────
+
+  async obtenerVentasMensualesAdmin() {
+    return await db.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', fecha_pedido), 'Mon YY') AS mes,
+             COALESCE(SUM(total), 0)   AS ventas,
+             COUNT(*)                  AS pedidos,
+             DATE_TRUNC('month', fecha_pedido) AS fecha_orden
+      FROM pedidos
+      WHERE estado != 'cancelado'
+        AND fecha_pedido >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', fecha_pedido)
+      ORDER BY fecha_orden ASC
+    `);
+  }
+
+  async obtenerPedidosPorEstadoAdmin() {
+    return await db.query(`
+      SELECT estado, COUNT(*) AS cantidad
+      FROM pedidos
+      GROUP BY estado
+      ORDER BY cantidad DESC
+    `);
+  }
+
+  async obtenerTopProductosAdmin() {
+    return await db.query(`
+      SELECT pr.nombre,
+             SUM(dp.cantidad * dp.precio_unitario) AS ingresos,
+             SUM(dp.cantidad)                       AS unidades
+      FROM detalles_pedido dp
+      JOIN productos pr ON dp.producto_id = pr.id
+      JOIN pedidos p     ON dp.pedido_id  = p.id
+      WHERE p.estado != 'cancelado'
+      GROUP BY pr.nombre
+      ORDER BY ingresos DESC
+      LIMIT 8
+    `);
+  }
+
   async obtenerDatosPrediccion(productorId) {
     return await db.query(
       `SELECT

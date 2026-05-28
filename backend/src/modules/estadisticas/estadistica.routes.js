@@ -17,7 +17,10 @@ router.get ('/resumen-mensual',         isAuthenticated, hasRole('productor'), e
 router.post('/resumen-mensual/generar', isAuthenticated, hasRole('productor'), estadisticaController.regenerarResumenMensual);
 
 // Rutas admin
-router.get('/admin/productores', isAuthenticated, hasRole('admin'), estadisticaController.obtenerVentasPorProductor);
-router.get('/admin/resumen', isAuthenticated, hasRole('admin'), estadisticaController.obtenerResumenGlobal);
+router.get('/admin/productores',      isAuthenticated, hasRole('admin'), estadisticaController.obtenerVentasPorProductor);
+router.get('/admin/resumen',          isAuthenticated, hasRole('admin'), estadisticaController.obtenerResumenGlobal);
+router.get('/admin/ventas-mensuales', isAuthenticated, hasRole('admin'), estadisticaController.obtenerVentasMensualesAdmin);
+router.get('/admin/pedidos-estado',   isAuthenticated, hasRole('admin'), estadisticaController.obtenerPedidosPorEstadoAdmin);
+router.get('/admin/top-productos',    isAuthenticated, hasRole('admin'), estadisticaController.obtenerTopProductosAdmin);
 
 module.exports = router;

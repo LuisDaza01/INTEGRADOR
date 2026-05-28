@@ -1,12 +1,21 @@
 // backend/src/services/pushNotifications.js
+// Lazy + safe loader: si expo-server-sdk falla al cargar (p.ej. runtime sin global `File`
+// en Node < 20), el resto del backend sigue corriendo y solo se desactiva el push.
 let Expo = null;
+let sdkLoadFailed = false;
 
-const getExpo = async () => {
-  if (!Expo) {
-    const mod = await import('expo-server-sdk');
-    Expo = mod.Expo;
+const getExpo = () => {
+  if (sdkLoadFailed) return null;
+  if (Expo) return new Expo();
+  try {
+    // require síncrono envuelto: un fallo aquí NO escapa a unhandledRejection
+    Expo = require('expo-server-sdk').Expo;
+    return new Expo();
+  } catch (err) {
+    sdkLoadFailed = true;
+    console.error('❌ No se pudo cargar expo-server-sdk — push notifications desactivadas:', err.message);
+    return null;
   }
-  return new Expo();
 };
 
 // ✅ Enviar notificación genérica
@@ -18,7 +27,8 @@ const sendPushNotification = async (pushToken, title, body, data = {}) => {
     return;
   }
   try {
-    const expo = await getExpo();
+    const expo = getExpo();
+    if (!expo) return; // SDK no disponible → silenciar sin romper el flujo
     if (!Expo.isExpoPushToken(pushToken)) {
       console.log('⚠️ Push token inválido:', pushToken);
       return;

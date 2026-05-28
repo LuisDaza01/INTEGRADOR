@@ -3,7 +3,8 @@ import { useState, useEffect } from "react"
 import {
   Thermometer, Eye, Waves, RefreshCw, AlertTriangle,
   Clock, Activity, TrendingUp, TrendingDown, Minus,
-  Wifi, WifiOff, Fish, Bell, CheckCircle, Info, Sparkles
+  Wifi, WifiOff, Fish, Bell, CheckCircle, Info, Sparkles,
+  Cpu, BarChart3, Brain, Copy
 } from "lucide-react"
 import {
   AreaChart, Area, XAxis, YAxis,
@@ -296,19 +297,22 @@ const RiskIndicator = ({ sensorsData, isConnected }) => {
 const Monitoring = () => {
   const { D } = useTheme()
   const { data: sensorsData, isConnected, alerts, refreshData } = useSensorData()
-  const [timeRange, setTimeRange] = useState("24h")
+  const [timeRange, setTimeRange] = useState("1h")
+  const [activeTab, setActiveTab] = useState("sensores")
+  const [selectedLagunaId, setSelectedLagunaId] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(new Date())
   const [alertHistory, setAlertHistory] = useState([])
+  const [copiedCode, setCopiedCode] = useState(false)
 
   // Histórico desde PostgreSQL (vía sensorBridge → /api/lagunas/:id/sensores/history).
-  // Detecta la primera laguna del productor automáticamente.
+  // Si el usuario selecciona una laguna, se respeta. Si no, auto-detecta la primera.
   const {
     points: currentHistory,
     loading: loadingHistory,
     refresh: refreshHistory,
     lagunaId: lagunaActivaId,
     lagunas,
-  } = useSensorHistory(timeRange)
+  } = useSensorHistory(timeRange, selectedLagunaId)
 
   useEffect(() => { if (!loadingHistory) setLastUpdated(new Date()) }, [loadingHistory])
 
@@ -323,69 +327,160 @@ const Monitoring = () => {
 
   const lagunaActiva = lagunas?.find(l => l.id === lagunaActivaId)
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 40 }} className="text-slate-100">
+  const copiarCodigo = async () => {
+    if (!lagunaActiva?.codigo_dispositivo) return
+    try {
+      await navigator.clipboard.writeText(lagunaActiva.codigo_dispositivo)
+      setCopiedCode(true)
+      setTimeout(() => setCopiedCode(false), 1500)
+    } catch {/* noop */}
+  }
 
-      {/* Encabezado */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+  const TABS = [
+    { key: "sensores", icon: Activity,   label: "EN VIVO"   },
+    { key: "graficos", icon: BarChart3,  label: "HISTORIAL" },
+    { key: "ia",       icon: Brain,      label: "IA RIESGO" },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingBottom: 40 }} className="text-slate-100">
+
+      {/* ── Header (igual estructura que móvil) ─────────────── */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: D.text, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Fira Code', monospace" }}>
-            <Fish size={22} className="text-cyan-400" />
-            Monitoreo IoT — {TAMBAQUI_INFO?.nombreComun || "Tambaqui"}
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: D.text, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Fira Code', monospace", letterSpacing: '-0.5px' }}>
+            <Fish size={22} style={{ color: '#00F5FF', filter: 'drop-shadow(0 0 6px #00F5FF)' }} />
+            Monitoreo IoT
           </h2>
-          <p style={{ fontSize: 13, color: D.muted, margin: 0, fontFamily: "'Fira Sans', sans-serif" }}>
-            {isConnected
-              ? `Estación de enlace en línea · Sincronizado ${lastUpdated.toLocaleTimeString("es-BO")}`
-              : "Buscando enlace telemétrico..."}
+          <p style={{ fontSize: 12, color: D.muted, margin: 0, fontFamily: "'Fira Code', monospace", letterSpacing: '0.04em' }}>
+            <span style={{ color: isConnected ? '#00FF88' : '#f87171' }}>●</span>{' '}
+            {isConnected ? `SISTEMA EN LÍNEA · ${lastUpdated.toLocaleTimeString("es-BO", { hour: '2-digit', minute: '2-digit' })}` : "MODO OFFLINE"}
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div 
-            className="border border-cyan-500/20 bg-cyan-950/20"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-              color: isConnected ? '#00FF88' : '#f87171',
-              fontFamily: "'Fira Code', monospace",
-            }}
-          >
-            {isConnected ? <Wifi size={12} className="animate-pulse" /> : <WifiOff size={12} />}
-            {isConnected ? "EN LÍNEA" : "DESCONECTADO"}
-          </div>
-          <button
-            onClick={() => { refreshData(); refreshHistory() }}
-            className="glass transition hover:bg-white/5 active:scale-95"
-            style={{ 
-              display: 'flex', alignItems: 'center', gap: 6, 
-              padding: '6px 12px', border: `1px solid rgba(255,255,255,0.08)`, 
-              borderRadius: 10, color: D.text, fontSize: 13, cursor: 'pointer',
-              fontFamily: "'Fira Code', monospace"
-            }}
-          >
-            <RefreshCw size={13} className={loadingHistory ? "animate-spin" : ""} />
-            REFRESCAR
-          </button>
-        </div>
+        <button
+          onClick={() => { refreshData(); refreshHistory() }}
+          className="glass transition hover:bg-white/5 active:scale-95"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 40, height: 40, border: `1px solid rgba(255,255,255,0.08)`,
+            borderRadius: 10, color: '#00F5FF', cursor: 'pointer',
+          }}
+          title="Refrescar"
+        >
+          <RefreshCw size={16} className={loadingHistory ? "animate-spin" : ""} />
+        </button>
       </div>
 
-      {/* Alertas activas */}
+      {/* ── Chips de lagunas (si hay más de una) ────────────── */}
+      {lagunas && lagunas.length > 1 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {lagunas.map(l => {
+            const active = (selectedLagunaId ?? lagunaActivaId) === l.id
+            return (
+              <button key={l.id}
+                onClick={() => setSelectedLagunaId(l.id)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '6px 14px', borderRadius: 18, height: 32,
+                  border: `1px solid ${active ? '#00F5FF' : 'rgba(255,255,255,0.08)'}`,
+                  background: active ? '#00F5FF' : 'rgba(255,255,255,0.04)',
+                  color: active ? '#030712' : D.text,
+                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                  fontFamily: "'Fira Code', monospace", letterSpacing: '0.04em',
+                  transition: 'all 0.15s',
+                }}>
+                <span style={{
+                  width: 7, height: 7, borderRadius: '50%',
+                  background: l.codigo_dispositivo ? '#00FF88' : '#6b7280',
+                }} />
+                {l.nombre?.toUpperCase()}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ── Barra de código (estilo móvil) ──────────────────── */}
+      {lagunaActiva && (
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '11px 14px', borderRadius: 12,
+            background: 'rgba(255,255,255,0.03)',
+            border: `1px solid rgba(0,245,255,0.18)`,
+          }}>
+          <Cpu size={16} style={{ color: '#00F5FF', flexShrink: 0 }} />
+          <span style={{
+            flex: 1, fontSize: 12, color: D.text, fontWeight: 600,
+            fontFamily: "'Fira Code', monospace", letterSpacing: '0.04em',
+          }}>
+            {lagunaActiva.codigo_dispositivo
+              ? `TELEMETRÍA ENLAZADA: ${lagunaActiva.codigo_dispositivo}`
+              : 'SIN DISPOSITIVO IOT — VINCULA EL SENSOR DESDE LA APP MÓVIL'}
+          </span>
+          {lagunaActiva.codigo_dispositivo && (
+            <button onClick={copiarCodigo}
+              title="Copiar código"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: 6, border: `1px solid rgba(255,255,255,0.08)`,
+                borderRadius: 8, background: 'transparent',
+                cursor: 'pointer', color: copiedCode ? '#00FF88' : D.muted,
+              }}>
+              {copiedCode ? <CheckCircle size={14} /> : <Copy size={14} />}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ── Tabs (EN VIVO / HISTORIAL / IA RIESGO) ──────────── */}
+      <div className="glass" style={{
+        display: 'flex', borderRadius: 12, padding: 4,
+        border: `1px solid rgba(255,255,255,0.06)`,
+      }}>
+        {TABS.map(t => {
+          const Icon = t.icon
+          const active = activeTab === t.key
+          return (
+            <button key={t.key} onClick={() => setActiveTab(t.key)}
+              style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: 6, padding: '10px 12px', borderRadius: 8, border: 'none',
+                background: active ? 'rgba(0,245,255,0.08)' : 'transparent',
+                borderBottom: active ? '2px solid #00F5FF' : '2px solid transparent',
+                color: active ? '#00F5FF' : D.muted,
+                fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                fontFamily: "'Fira Code', monospace", letterSpacing: '0.05em',
+                transition: 'all 0.15s',
+              }}>
+              <Icon size={14} />
+              {t.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* ── Alertas activas (siempre visibles arriba) ───────── */}
       {alerts?.length > 0 && (
-        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 16, padding: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <Bell size={18} style={{ color: '#f87171' }} className="animate-bounce" />
-            <h3 style={{ fontWeight: 700, color: '#f87171', margin: 0, fontSize: 14, fontFamily: "'Fira Code', monospace" }}>
-              {alerts.length} ALERTA{alerts.length > 1 ? "S" : ""} DE BIOSISTEMA ACTIVA{alerts.length > 1 ? "S" : ""}
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 12, padding: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <Bell size={16} style={{ color: '#f87171' }} className="animate-bounce" />
+            <h3 style={{ fontWeight: 700, color: '#f87171', margin: 0, fontSize: 13, fontFamily: "'Fira Code', monospace" }}>
+              {alerts.length} ALERTA{alerts.length > 1 ? "S" : ""} DETECTADA{alerts.length > 1 ? "S" : ""}
             </h3>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {alerts.slice(0, 3).map((alert, i) => (
-              <p key={i} style={{ fontSize: 13, color: '#fca5a5', margin: 0 }}>• {alert.message || alert}</p>
+              <p key={i} style={{ fontSize: 12.5, color: '#fca5a5', margin: 0 }}>• {alert.message || alert}</p>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── HUD Telemetría Glassmorphism panel ── */}
+      {/* ═══════ TAB: EN VIVO ═══════════════════════════════ */}
+      {activeTab === "sensores" && (
+        <>
+        {/* HUD Telemetría Glassmorphism panel */}
       <div className="np-hud-frame glass relative overflow-hidden" style={{
         borderRadius: 20, padding: '24px 20px',
         position: 'relative', overflow: 'hidden',
@@ -448,20 +543,25 @@ const Monitoring = () => {
 
       {/* Indicador de riesgo */}
       <RiskIndicator sensorsData={sensorsData} isConnected={isConnected} />
+        </>
+      )}
 
+      {/* ═══════ TAB: HISTORIAL ════════════════════════════ */}
+      {activeTab === "graficos" && (
+        <>
       {/* Selector de rango */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h3 style={{ fontSize: 11, fontWeight: 700, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0, fontFamily: "'Fira Code', monospace" }}>
-            HISTORIAL DE PARÁMETROS · POSTGRESQL
+            HISTORIAL · POSTGRESQL
           </h3>
           <p style={{ fontSize: 10.5, color: D.dim, margin: '3px 0 0', fontFamily: "'Fira Code', monospace" }}>
             {lagunaActiva
-              ? `${lagunaActiva.nombre}${lagunaActiva.codigo_dispositivo ? ` · ${lagunaActiva.codigo_dispositivo}` : ''}`
+              ? `${lagunaActiva.nombre}${lagunaActiva.codigo_dispositivo ? ` · ${lagunaActiva.codigo_dispositivo}` : ''} · ${currentHistory.length} registros`
               : 'Sin laguna detectada'}
           </p>
         </div>
-        
+
         {/* Selector glass */}
         <div className="glass" style={{ display: 'flex', borderRadius: 10, padding: 3, gap: 2 }}>
           {TIME_RANGES.map(r => (
@@ -527,7 +627,7 @@ const Monitoring = () => {
         <div className="np-hover glass" style={{ borderRadius: 16, padding: 20 }}>
           <h3 style={{ fontWeight: 700, color: D.text, margin: '0 0 12px', fontSize: 14.5, display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Fira Code', monospace" }}>
             <Clock size={16} style={{ color: D.muted }} />
-            HISTORIAL DE ALERTAS CUÁNTICAS RECIENTES
+            HISTORIAL DE ALERTAS RECIENTES
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {alertHistory.map((alert, i) => (
@@ -542,7 +642,12 @@ const Monitoring = () => {
           </div>
         </div>
       )}
+        </>
+      )}
 
+      {/* ═══════ TAB: IA RIESGO ════════════════════════════ */}
+      {activeTab === "ia" && (
+        <>
       {/* IA Predictiva */}
       <div>
         <h3 style={{ fontSize: 11, fontWeight: 700, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14, fontFamily: "'Fira Code', monospace" }}>
@@ -552,12 +657,12 @@ const Monitoring = () => {
       </div>
 
       {/* Info de especie */}
-      <div 
+      <div
         className="glass relative overflow-hidden"
-        style={{ 
-          border: `1px solid rgba(0,245,255,0.2)`, 
-          borderRadius: 16, 
-          padding: 20 
+        style={{
+          border: `1px solid rgba(0,245,255,0.2)`,
+          borderRadius: 16,
+          padding: 20
         }}
       >
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-cyan-500" />
@@ -581,6 +686,8 @@ const Monitoring = () => {
           </div>
         </div>
       </div>
+        </>
+      )}
 
     </div>
   )

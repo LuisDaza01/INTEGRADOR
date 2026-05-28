@@ -59,7 +59,6 @@ const MiniChart = ({ data, cfg, isDark, neonCyan }) => {
   const scX  = (i) => CHART_PAD.left + (i / (data.length - 1)) * w;
   const scY  = (v) => CHART_PAD.top + h - ((v - minV) / (maxV - minV || 1)) * h;
 
-  const pts  = data.map((v, i) => `${scX(i)},${scY(v)}`).join(' ');
   const area = `M${scX(0)},${scY(data[0])} ` +
     data.map((v, i) => `L${scX(i)},${scY(v)}`).join(' ') +
     ` L${scX(data.length-1)},${CHART_PAD.top + h} L${scX(0)},${CHART_PAD.top + h} Z`;
@@ -99,7 +98,7 @@ const MiniChart = ({ data, cfg, isDark, neonCyan }) => {
       <Path d={area} fill={`url(#${cfg.gradId})`} />
 
       {/* Línea */}
-      <Path d={`M${pts.split(' ').map((p,i) => (i===0?'M':'L')+p).join(' ')}`}
+      <Path d={data.map((v, i) => `${i === 0 ? 'M' : 'L'}${scX(i)},${scY(v)}`).join(' ')}
         stroke={cfg.color} strokeWidth="2.5" fill="none"
         strokeLinecap="round" strokeLinejoin="round" />
 

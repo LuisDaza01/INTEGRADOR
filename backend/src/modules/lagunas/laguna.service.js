@@ -243,6 +243,16 @@ class LagunaService {
     // Marca el dispositivo como asignado a esta laguna (idempotente)
     await dispositivoService.marcarAsignado(disp.id, Number(lagunaId));
 
+    // Refresca la suscripción del bridge EN CALIENTE — sin necesidad de redeploy
+    // para que las lecturas de Firebase empiecen a guardarse en Postgres.
+    try {
+      const { refreshLagunaSubscription } = require('../../services/sensorBridge');
+      await refreshLagunaSubscription(Number(lagunaId));
+    } catch (e) {
+      // No falla la vinculación si el bridge no responde — el restart eventual lo recupera.
+      console.warn('refreshLagunaSubscription warn:', e.message);
+    }
+
     return updated;
   }
 

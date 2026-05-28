@@ -29,8 +29,9 @@ const THRESHOLDS = {
 const lastAlertState = new Map();
 // Throttle de insertion: { [lagunaId]: lastInsertTs }
 const lastInsert = new Map();
-// Listeners activos para poder limpiar al stop
-const listeners = []; // [{ ref, handler }]
+// Listeners activos indexados por lagunaId: { lagunaId → { ref, handler, path } }
+// Indexamos por id (no por path) para que al re-vincular un código distinto podamos cerrar el viejo.
+const listeners = new Map();
 
 // ── Clasifica un valor en 'ok' | 'warning' | 'critical' ──
 function classify(sensor, value) {
@@ -159,8 +160,23 @@ async function cargarLagunasConSensor() {
   );
 }
 
-// ── Suscribe un listener Firebase por laguna ──
+// ── Cierra el listener actual de una laguna (si existe) ──
+function unsubscribeLagunaInternal(lagunaId) {
+  const existing = listeners.get(lagunaId);
+  if (!existing) return false;
+  try { existing.ref.off('value', existing.handler); } catch (_) { /* ignore */ }
+  listeners.delete(lagunaId);
+  lastInsert.delete(lagunaId);
+  lastAlertState.delete(lagunaId);
+  logger.info(`🔌 SensorBridge → desuscrito de ${existing.path} (laguna ${lagunaId})`);
+  return true;
+}
+
+// ── Suscribe un listener Firebase por laguna (re-suscribe si ya había uno) ──
 function subscribeLaguna(firebaseDb, laguna) {
+  // Si ya estaba suscrito a un código viejo, cerrar antes
+  unsubscribeLagunaInternal(laguna.id);
+
   const path = `/sensores/${laguna.codigo_dispositivo}`;
   const ref = firebaseDb.ref(path);
 
@@ -187,8 +203,32 @@ function subscribeLaguna(firebaseDb, laguna) {
   ref.on('value', handler, (error) => {
     logger.error(`❌ Error en listener Firebase /${path}:`, error.message);
   });
-  listeners.push({ ref, handler });
+  listeners.set(laguna.id, { ref, handler, path });
   logger.info(`📡 SensorBridge → suscrito a ${path} (laguna ${laguna.id} · ${laguna.nombre})`);
+}
+
+// ── API pública: llamada por laguna.service tras un vincular/desvincular ──
+// Carga la laguna actualizada y reconfigura su suscripción Firebase EN CALIENTE
+// (no requiere redeploy del backend para que un nuevo código empiece a guardarse).
+async function refreshLagunaSubscription(lagunaId) {
+  try {
+    const firebaseDb = getDatabase();
+    const rows = await db.query(
+      `SELECT id, productor_id, nombre, codigo_dispositivo
+       FROM lagunas
+       WHERE id = $1 AND COALESCE(activa, true) = true`,
+      [lagunaId]
+    );
+    const laguna = rows[0];
+    if (!laguna || !laguna.codigo_dispositivo) {
+      // Sin código → si tenía listener, lo cerramos
+      unsubscribeLagunaInternal(lagunaId);
+      return;
+    }
+    subscribeLaguna(firebaseDb, laguna);
+  } catch (err) {
+    logger.error(`❌ refreshLagunaSubscription(${lagunaId}) falló:`, err.message);
+  }
 }
 
 async function startSensorBridge() {
@@ -210,13 +250,13 @@ async function startSensorBridge() {
 }
 
 function stopSensorBridge() {
-  for (const { ref, handler } of listeners) {
+  for (const { ref, handler } of listeners.values()) {
     try { ref.off('value', handler); } catch (_) { /* ignore */ }
   }
-  listeners.length = 0;
+  listeners.clear();
   lastInsert.clear();
   lastAlertState.clear();
   logger.info('🛑 SensorBridge detenido');
 }
 
-module.exports = { startSensorBridge, stopSensorBridge };
+module.exports = { startSensorBridge, stopSensorBridge, refreshLagunaSubscription };

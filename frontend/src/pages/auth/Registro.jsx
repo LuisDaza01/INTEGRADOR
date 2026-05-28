@@ -3,67 +3,99 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../../contexts/AuthContext'
-import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, Fish, CheckCircle, Sparkles } from 'lucide-react'
+import {
+  User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ArrowLeft,
+  Fish, CheckCircle, Sparkles, AlertCircle, ShoppingBag, Truck, Heart,
+} from 'lucide-react'
 
-// ── Partículas flotantes de fondo ──
-const FloatingParticle = ({ delay, size, x, y, color, duration }) => {
+// ── Paleta verde brand ──
+const GREEN  = '#22C55E'
+const GREEN2 = '#4ade80'
+const GREEN3 = '#16a34a'
+
+// ── Partículas (mismo patrón del WelcomeMenu / Login) ───────────────────
+const FloatingParticles = () => {
+  const [particles, setParticles] = useState([])
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: 18 }, (_, i) => ({
+        id: i,
+        x: ((i * 137) % 100),
+        y: ((i * 53) % 100),
+        size: 2 + ((i * 7) % 4),
+        delay: (i * 0.4) % 6,
+        dur: 5 + ((i * 2) % 6),
+      }))
+    )
+  }, [])
   return (
-    <motion.div
-      className="absolute rounded-full pointer-events-none z-0"
-      style={{
-        left: `${x}%`,
-        bottom: `${y}%`,
-        width: size,
-        height: size,
-        backgroundColor: color,
-        boxShadow: `0 0 10px ${color}`,
-      }}
-      animate={{
-        y: [0, -250],
-        opacity: [0, 0.75, 0],
-      }}
-      transition={{
-        duration: duration / 1000,
-        repeat: Infinity,
-        delay: delay / 1000,
-        ease: "easeOut",
-      }}
-    />
-  );
-};
-
-const PARTICLES = [
-  { delay: 0,    size: 4, x: 20, y: 15, color: '#00FF88', duration: 5200 },
-  { delay: 500,  size: 3, x: 40, y: 10, color: '#00F5FF', duration: 4500 },
-  { delay: 1000, size: 5, x: 60, y: 20, color: '#BF5AF2', duration: 6000 },
-  { delay: 1500, size: 3, x: 80, y: 5,  color: '#00FF88', duration: 5000 },
-];
-
-const inputStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  fontFamily: "'Fira Sans', sans-serif",
-  outline: 'none',
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      {particles.map(p => (
+        <motion.div key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${p.x}%`, top: `${p.y}%`,
+            width: p.size, height: p.size,
+            background: p.id % 3 === 0 ? GREEN2 : GREEN,
+            boxShadow: `0 0 ${p.size * 4}px ${p.id % 3 === 0 ? GREEN2 : GREEN}`,
+            opacity: 0.35,
+          }}
+          animate={{ y: [0, -40, 0], opacity: [0.15, 0.5, 0.15] }}
+          transition={{ duration: p.dur, repeat: Infinity, delay: p.delay, ease: 'easeInOut' }}
+        />
+      ))}
+    </div>
+  )
 }
 
-const FieldInput = ({ icon: Icon, onFocus, onBlur, ...props }) => {
-  const iconRef = useRef(null)
+// ── Logo orbital ─────────────────────────────────────────────────────────
+const AnimatedLogo = ({ size = 'md' }) => {
+  const d = size === 'sm'
+    ? { wrap: 36, ring1: 36, ring2: 30, core: 22, icon: 11, text: 'text-base' }
+    : { wrap: 44, ring1: 44, ring2: 36, core: 28, icon: 15, text: 'text-xl' }
+  return (
+    <motion.div className="flex items-center cursor-pointer"
+      initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+      <div className="relative mr-3 flex items-center justify-center" style={{ width: d.wrap, height: d.wrap }}>
+        <motion.div className="absolute rounded-full border border-dashed"
+          style={{ width: d.ring1, height: d.ring1, borderColor: `${GREEN}66` }}
+          animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 12, ease: 'linear' }} />
+        <motion.div className="absolute rounded-full border border-dotted"
+          style={{ width: d.ring2, height: d.ring2, borderColor: `${GREEN2}55` }}
+          animate={{ rotate: -360 }} transition={{ repeat: Infinity, duration: 8, ease: 'linear' }} />
+        <motion.div className="rounded-full flex items-center justify-center"
+          style={{
+            width: d.core, height: d.core,
+            background: `linear-gradient(135deg, ${GREEN3}, ${GREEN})`,
+            boxShadow: `0 0 14px ${GREEN}66`,
+          }}
+          animate={{ scale: [1, 1.08, 1] }} transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}>
+          <Fish size={d.icon} className="text-slate-950" />
+        </motion.div>
+      </div>
+      <div className={`font-bold text-white tracking-wide ${d.text}`} style={{ fontFamily: "'Fira Code', monospace" }}>
+        <span>Natura</span><span style={{ color: GREEN2 }} className="ml-0.5">Piscis</span>
+      </div>
+    </motion.div>
+  )
+}
+
+// ── Campo con icono + focus glow verde ─────────────────────────────────
+const FieldInput = ({ icon: Icon, ...props }) => {
+  const [focus, setFocus] = useState(false)
   return (
     <div className="relative">
-      {Icon && <Icon size={16} ref={iconRef} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-200" style={{ color: '#64748b' }} />}
-      <input
-        {...props}
-        className={`w-full ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-3 rounded-xl text-white text-sm transition-all duration-200 bg-white/5 border border-white/10 focus:border-emerald-500 focus:shadow-[0_0_12px_rgba(16,185,129,0.18)] outline-none`}
-        style={inputStyle}
-        onFocus={e => {
-          if (iconRef.current) iconRef.current.style.color = '#00FF88';
-          onFocus?.(e);
-        }}
-        onBlur={e => {
-          if (iconRef.current) iconRef.current.style.color = '#64748b';
-          onBlur?.(e);
-        }}
-      />
+      {Icon && <Icon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
+        style={{ color: focus ? GREEN2 : '#64748b' }} />}
+      <input {...props}
+        onFocus={(e) => { setFocus(true); props.onFocus?.(e) }}
+        onBlur={(e) => { setFocus(false); props.onBlur?.(e) }}
+        className={`w-full ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all duration-200`}
+        style={{
+          background: 'rgba(15,30,22,0.45)',
+          border: `1.5px solid ${focus ? GREEN : 'rgba(34,197,94,0.15)'}`,
+          boxShadow: focus ? `0 0 16px ${GREEN}33` : 'none',
+        }} />
     </div>
   )
 }
@@ -71,9 +103,10 @@ const FieldInput = ({ icon: Icon, onFocus, onBlur, ...props }) => {
 const Registro = () => {
   const [formData, setFormData] = useState({ nombre: '', email: '', password: '', confirmPassword: '', telefono: '', rol_id: 3 })
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading]       = useState(false)
-  const [errorMsg, setErrorMsg]         = useState('')
-  const [step, setStep]                 = useState(1)
+  const [passFocus, setPassFocus] = useState(false)
+  const [isLoading, setIsLoading]   = useState(false)
+  const [errorMsg, setErrorMsg]     = useState('')
+  const [step, setStep]             = useState(1)
 
   const { register, loginWithGoogle, error, setError } = useAuth()
   const navigate = useNavigate()
@@ -84,18 +117,17 @@ const Registro = () => {
   const handleChange = e => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
 
   const validateStep1 = () => {
-    if (!formData.nombre.trim())       { setErrorMsg('Por favor ingresa tu nombre'); return false }
-    if (!formData.email.trim())        { setErrorMsg('Por favor ingresa tu correo'); return false }
-    if (!/\S+@\S+\.\S+/.test(formData.email)) { setErrorMsg('Correo inválido'); return false }
+    if (!formData.nombre.trim())                { setErrorMsg('Por favor ingresa tu nombre'); return false }
+    if (!formData.email.trim())                 { setErrorMsg('Por favor ingresa tu correo'); return false }
+    if (!/\S+@\S+\.\S+/.test(formData.email))   { setErrorMsg('Correo inválido'); return false }
     return true
   }
   const validateStep2 = () => {
-    if (!formData.password)              { setErrorMsg('Ingresa una contraseña'); return false }
-    if (formData.password.length < 6)    { setErrorMsg('Mínimo 6 caracteres'); return false }
-    if (formData.password !== formData.confirmPassword) { setErrorMsg('Las contraseñas no coinciden'); return false }
+    if (!formData.password)                                       { setErrorMsg('Ingresa una contraseña'); return false }
+    if (formData.password.length < 6)                             { setErrorMsg('Mínimo 6 caracteres'); return false }
+    if (formData.password !== formData.confirmPassword)           { setErrorMsg('Las contraseñas no coinciden'); return false }
     return true
   }
-
   const nextStep = () => { if (validateStep1()) { setErrorMsg(''); setStep(2) } }
 
   const handleSubmit = async e => {
@@ -119,130 +151,150 @@ const Registro = () => {
     else setErrorMsg(result.error || 'Error con Google')
   }
 
+  // Beneficios visibles en el panel izquierdo (con iconos para diferenciar)
+  const benefits = [
+    { icon: ShoppingBag, text: 'Reservas con un clic, sin pagar adelantado' },
+    { icon: Truck,       text: 'Pescado fresco del Chapare en tu parada' },
+    { icon: CheckCircle, text: 'Trazabilidad real desde el estanque' },
+    { icon: Heart,       text: 'Apoyas productores acuícolas locales' },
+  ]
+
   return (
-    <div className="min-h-screen flex relative overflow-hidden bg-[#030712] np-grid">
-      
-      {/* Orbes de luz de fondo */}
-      <div className="absolute top-[-15%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-500/5 blur-[105px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-emerald-500/5 blur-[95px] pointer-events-none z-0" />
+    <div className="min-h-screen flex relative overflow-hidden text-slate-100" style={{ background: '#030712' }}>
+      {/* Fondo */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#030712] via-[#061a10] to-[#030712] z-0" />
+      <div className="absolute inset-0 z-0 pointer-events-none"
+        style={{ background: `radial-gradient(circle at 75% 20%, ${GREEN}1a, transparent 45%)` }} />
+      <div className="absolute top-[-15%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0"
+        style={{ background: `${GREEN}10`, filter: 'blur(105px)' }} />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full pointer-events-none z-0"
+        style={{ background: `${GREEN2}0c`, filter: 'blur(95px)' }} />
 
-      {/* Partículas holográficas */}
-      {PARTICLES.map((p, idx) => (
-        <FloatingParticle key={idx} {...p} />
-      ))}
+      <FloatingParticles />
 
-      {/* ── Branding lateral ── */}
+      {/* ─────────────── PANEL IZQUIERDO (branding) ─────────────── */}
       <motion.div
-        className="hidden lg:flex flex-col justify-between w-5/12 p-16 relative overflow-hidden z-10 border-r border-cyan-500/10"
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        {/* Logo orbital */}
-        <div className="flex items-center gap-3">
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            <motion.div className="absolute w-10 h-10 rounded-full border border-dashed border-cyan-400/40"
-              animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 11, ease: "linear" }} />
-            <motion.div className="w-6 h-6 bg-gradient-to-br from-cyan-500 to-emerald-500 rounded-full flex items-center justify-center"
-              animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}>
-              <Fish size={13} className="text-slate-950" />
-            </motion.div>
-          </div>
-          <span className="text-white font-bold text-lg tracking-wider" style={{ fontFamily: "'Fira Code', monospace" }}>NaturaPiscis</span>
-        </div>
+        className="hidden lg:flex flex-col justify-between w-5/12 p-12 xl:p-16 relative z-10"
+        style={{ borderRight: `1px solid ${GREEN}1a` }}
+        initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
+
+        <AnimatedLogo />
 
         <div>
           <motion.div
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-emerald-500/20 bg-emerald-950/20 text-emerald-400 mb-6"
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          >
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-6"
+            style={{ background: `${GREEN}1a`, border: `1px solid ${GREEN}44`, color: GREEN2 }}
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             <Sparkles size={12} className="animate-pulse" />
-            <span>ACCESO AL PORTAL DE CONSUMIDOR</span>
+            <span>ÚNETE GRATIS · CONSUMIDOR</span>
           </motion.div>
 
-          <h1 className="text-4xl font-extrabold text-white mb-6 leading-tight"
+          <h1 className="text-4xl xl:text-5xl font-extrabold text-white mb-5 leading-tight"
             style={{ fontFamily: "'Fira Code', monospace", letterSpacing: '-0.03em' }}>
-            Únete al ecosistema<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">acuícola</span>
+            Pescado fresco<br />
+            <span className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage: `linear-gradient(90deg, ${GREEN2}, ${GREEN}, ${GREEN3})`,
+                WebkitBackgroundClip: 'text',
+                filter: `drop-shadow(0 0 20px ${GREEN}40)`,
+              }}>
+              al alcance de un clic
+            </span>
           </h1>
-          <p className="text-slate-400 text-sm mb-10 max-w-sm leading-relaxed" style={{ fontFamily: "'Fira Sans', sans-serif" }}>
-            Regístrate gratis como consumidor y accede al marketplace cuántico más completo de productos acuícolas frescos del Chapare.
+          <p className="text-slate-400 text-sm mb-8 max-w-sm leading-relaxed">
+            Regístrate gratis y reserva pescado directamente del productor acuícola. Sin intermediarios, con trazabilidad.
           </p>
 
-          <div className="space-y-3.5 max-w-sm">
-            {[
-              'Acceso a productores verificados',
-              'Trazabilidad garantizada en cada compra',
-              'Análisis de frescura con inteligencia artificial',
-              'Pagos seguros con múltiples métodos',
-            ].map((item, i) => (
-              <motion.div key={item} className="flex items-center gap-3 p-3 rounded-xl backdrop-blur-md bg-slate-900/20 border border-emerald-500/10 hover:border-emerald-400/20 transition-all duration-300"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}>
-                <CheckCircle size={15} className="text-emerald-400 flex-shrink-0" />
-                <span className="text-slate-300 text-xs tracking-wide" style={{ fontFamily: "'Fira Sans', sans-serif" }}>{item}</span>
+          <div className="space-y-3 max-w-sm">
+            {benefits.map(({ icon: Icon, text }, i) => (
+              <motion.div key={text}
+                className="flex items-center gap-3 p-3.5 rounded-xl backdrop-blur-md hover:-translate-y-0.5 transition-all duration-300"
+                style={{ background: 'rgba(15,30,22,0.45)', border: `1px solid ${GREEN}1f` }}
+                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.1 }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${GREEN}1a`, border: `1px solid ${GREEN}33` }}>
+                  <Icon size={15} style={{ color: GREEN2 }} />
+                </div>
+                <span className="text-slate-300 text-xs tracking-wide leading-snug">{text}</span>
               </motion.div>
             ))}
           </div>
         </div>
 
-        {/* Bottom indicator */}
-        <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-emerald-500/15 bg-emerald-950/15 text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 np-live inline-block animate-pulse" />
-            <span>Infraestructura de Comercio Directo</span>
-          </div>
-        </div>
+        {/* Bottom badge */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold"
+          style={{ background: `${GREEN}10`, border: `1px solid ${GREEN}33`, color: GREEN2, width: 'fit-content' }}>
+          <motion.span className="w-1.5 h-1.5 rounded-full inline-block"
+            style={{ background: GREEN2, boxShadow: `0 0 8px ${GREEN2}` }}
+            animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.6, repeat: Infinity }} />
+          <span>Marketplace boliviano · IoT + IA</span>
+        </motion.div>
       </motion.div>
 
-      {/* ── Formulario ── */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-16 z-10">
+      {/* ─────────────── PANEL DERECHO (formulario) ─────────────── */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 z-10 relative">
         <motion.div className="w-full max-w-md"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}>
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
 
-          {/* Card Glass */}
-          <div className="rounded-2xl p-6 sm:p-10 relative overflow-hidden backdrop-blur-2xl bg-slate-900/40 border border-emerald-500/15 shadow-[0_10px_50px_rgba(0,0,0,0.5)]">
-            {/* Top shimmer line neón */}
-            <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
+          <div className="rounded-2xl p-7 sm:p-10 relative overflow-hidden backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+            style={{ background: 'rgba(8,20,14,0.65)', border: `1px solid ${GREEN}26` }}>
 
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-white tracking-wide"
-                  style={{ fontFamily: "'Fira Code', monospace", letterSpacing: '-0.02em' }}>
+            <div className="absolute top-0 left-0 right-0 h-[2px]"
+              style={{ background: `linear-gradient(90deg, transparent, ${GREEN2}, ${GREEN}, transparent)` }} />
+
+            {/* Logo móvil */}
+            <div className="lg:hidden mb-5 flex justify-center">
+              <AnimatedLogo size="sm" />
+            </div>
+
+            {/* Header con step indicator */}
+            <div className="mb-7">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-2xl font-bold text-white tracking-tight"
+                  style={{ fontFamily: "'Fira Code', monospace" }}>
                   Crear cuenta
                 </h2>
-                {/* Step indicator */}
                 <div className="flex items-center gap-2.5">
                   {[1, 2].map(s => (
-                    <div key={s} className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
+                    <div key={s}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
                       style={s === step
-                        ? { background: 'linear-gradient(90deg, #00FF88, #10B981)', color: '#030712', boxShadow: '0 0 10px rgba(0,255,136,0.3)' }
+                        ? { background: `linear-gradient(135deg, ${GREEN3}, ${GREEN})`, color: '#030712', boxShadow: `0 0 12px ${GREEN}55` }
                         : s < step
-                          ? { background: 'rgba(0,255,136,0.12)', color: '#00FF88', border: '1px solid rgba(0,255,136,0.3)' }
-                          : { background: 'rgba(255,255,255,0.06)', color: '#64748b', border: '1px solid rgba(255,255,255,0.05)' }
+                          ? { background: `${GREEN}1f`, color: GREEN2, border: `1px solid ${GREEN}55` }
+                          : { background: 'rgba(255,255,255,0.05)', color: '#64748b', border: '1px solid rgba(255,255,255,0.06)' }
                       }>
                       {s < step ? '✓' : s}
                     </div>
                   ))}
                 </div>
               </div>
-              <p className="text-slate-400 text-sm leading-relaxed" style={{ fontFamily: "'Fira Sans', sans-serif" }}>
-                {step === 1 ? 'Información básica de tu cuenta' : 'Crea tu contraseña segura'}
+              <p className="text-slate-400 text-sm">
+                {step === 1 ? 'Tus datos básicos' : 'Elige una contraseña segura'}
               </p>
+              {/* Progress bar */}
+              <div className="mt-4 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <motion.div
+                  initial={false}
+                  animate={{ width: step === 1 ? '50%' : '100%' }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                  className="h-full rounded-full"
+                  style={{ background: `linear-gradient(90deg, ${GREEN3}, ${GREEN}, ${GREEN2})` }} />
+              </div>
             </div>
 
             {/* Error */}
             <AnimatePresence>
               {errorMsg && (
-                <motion.div className="flex items-center gap-2 p-3 rounded-xl mb-5 text-sm"
-                  style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5' }}
+                <motion.div className="flex items-start gap-2.5 p-3.5 rounded-xl mb-5 text-sm"
+                  style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}
                   initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                  <span className="flex-1">{errorMsg}</span>
-                  <button onClick={() => setErrorMsg('')} className="text-red-400 hover:text-red-300 transition-colors cursor-pointer">✕</button>
+                  <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 leading-snug">{errorMsg}</span>
+                  <button onClick={() => setErrorMsg('')}
+                    className="text-red-400 hover:text-red-300 cursor-pointer text-base leading-none">✕</button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -250,87 +302,100 @@ const Registro = () => {
             <form onSubmit={handleSubmit}>
               <AnimatePresence mode="wait">
                 {step === 1 && (
-                  <motion.div key="s1" className="space-y-5"
+                  <motion.div key="s1" className="space-y-4"
                     initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}>
                     <div>
-                      <label className="block text-xs font-semibold mb-2 tracking-wide uppercase" style={{ color: '#94a3b8', fontFamily: "'Fira Sans', sans-serif" }}>Nombre completo *</label>
+                      <label className="block text-xs font-semibold mb-2 tracking-wider uppercase text-slate-400">Nombre completo *</label>
                       <FieldInput icon={User} name="nombre" type="text" required value={formData.nombre} onChange={handleChange} placeholder="Tu nombre completo" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold mb-2 tracking-wide uppercase" style={{ color: '#94a3b8', fontFamily: "'Fira Sans', sans-serif" }}>Correo electrónico *</label>
+                      <label className="block text-xs font-semibold mb-2 tracking-wider uppercase text-slate-400">Correo electrónico *</label>
                       <FieldInput icon={Mail} name="email" type="email" required value={formData.email} onChange={handleChange} placeholder="correo@ejemplo.com" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold mb-2 tracking-wide uppercase" style={{ color: '#94a3b8', fontFamily: "'Fira Sans', sans-serif" }}>Teléfono <span style={{ color: '#64748b' }}>(opcional)</span></label>
+                      <label className="block text-xs font-semibold mb-2 tracking-wider uppercase text-slate-400">
+                        Teléfono <span className="text-slate-500 normal-case font-normal">(opcional)</span>
+                      </label>
                       <FieldInput icon={Phone} name="telefono" type="tel" value={formData.telefono} onChange={handleChange} placeholder="+591 7XXXXXXX" />
                     </div>
                     <motion.button type="button" onClick={nextStep}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold text-slate-950 text-sm mt-3 cursor-pointer"
-                      style={{ background: 'linear-gradient(90deg, #00FF88, #10B981)', boxShadow: '0 4px 20px rgba(0,255,136,0.25)' }}
-                      whileHover={{ y: -1, boxShadow: '0 8px 28px rgba(0,255,136,0.35)' }}
+                      className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-slate-950 text-sm mt-3 cursor-pointer"
+                      style={{
+                        background: `linear-gradient(90deg, ${GREEN3}, ${GREEN}, ${GREEN2})`,
+                        boxShadow: `0 8px 28px ${GREEN}55`,
+                      }}
+                      whileHover={{ y: -2, boxShadow: `0 12px 36px ${GREEN}88` }}
                       whileTap={{ scale: 0.98 }}>
-                      <span>Continuar</span><ArrowRight size={15} />
+                      <span>Continuar</span><ArrowRight size={16} />
                     </motion.button>
                   </motion.div>
                 )}
 
                 {step === 2 && (
-                  <motion.div key="s2" className="space-y-5"
+                  <motion.div key="s2" className="space-y-4"
                     initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}>
                     <div>
-                      <label className="block text-xs font-semibold mb-2 tracking-wide uppercase" style={{ color: '#94a3b8', fontFamily: "'Fira Sans', sans-serif" }}>Contraseña *</label>
+                      <label className="block text-xs font-semibold mb-2 tracking-wider uppercase"
+                        style={{ color: passFocus ? GREEN2 : '#94a3b8' }}>Contraseña *</label>
                       <div className="relative">
-                        <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-200" style={{ color: '#64748b' }} />
+                        <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
+                          style={{ color: passFocus ? GREEN2 : '#64748b' }} />
                         <input name="password" type={showPassword ? 'text' : 'password'} required
                           value={formData.password} onChange={handleChange} placeholder="••••••••"
-                          className="w-full pl-10 pr-12 py-3 rounded-xl text-white text-sm transition-all duration-200 bg-white/5 border border-white/10 focus:border-emerald-500 focus:shadow-[0_0_12px_rgba(16,185,129,0.18)] outline-none"
-                          style={inputStyle}
-                          onFocus={e => { e.target.previousSibling.style.color = '#00FF88' }}
-                          onBlur={e => { e.target.previousSibling.style.color = '#64748b' }}
-                        />
+                          onFocus={() => setPassFocus(true)} onBlur={() => setPassFocus(false)}
+                          className="w-full pl-10 pr-12 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
+                          style={{
+                            background: 'rgba(15,30,22,0.45)',
+                            border: `1.5px solid ${passFocus ? GREEN : 'rgba(34,197,94,0.15)'}`,
+                            boxShadow: passFocus ? `0 0 16px ${GREEN}33` : 'none',
+                          }} />
                         <button type="button" onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 cursor-pointer transition-colors duration-200"
-                          style={{ color: '#64748b' }}
-                          onMouseEnter={e => e.currentTarget.style.color = '#00FF88'}
-                          onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 cursor-pointer transition-colors"
+                          style={{ color: passFocus ? GREEN2 : '#64748b' }}>
                           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                       </div>
-                      <p className="text-[10px] mt-1.5" style={{ color: '#64748b', fontFamily: "'Fira Sans', sans-serif" }}>Mínimo 6 caracteres</p>
+                      <p className="text-[10px] mt-1.5 text-slate-500">Mínimo 6 caracteres</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold mb-2 tracking-wide uppercase" style={{ color: '#94a3b8', fontFamily: "'Fira Sans', sans-serif" }}>Confirmar contraseña *</label>
+                      <label className="block text-xs font-semibold mb-2 tracking-wider uppercase text-slate-400">Confirmar contraseña *</label>
                       <FieldInput icon={Lock} name="confirmPassword" type={showPassword ? 'text' : 'password'} required
                         value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" />
                     </div>
                     <div className="flex items-start gap-3 pt-1">
-                      <input id="terms" type="checkbox" required className="mt-0.5 w-4 h-4 rounded accent-emerald-500 bg-white/5 border-white/10 cursor-pointer" />
-                      <label htmlFor="terms" className="text-xs cursor-pointer leading-normal" style={{ color: '#94a3b8', fontFamily: "'Fira Sans', sans-serif" }}>
+                      <input id="terms" type="checkbox" required className="mt-0.5 w-4 h-4 rounded cursor-pointer"
+                        style={{ accentColor: GREEN }} />
+                      <label htmlFor="terms" className="text-xs cursor-pointer leading-normal text-slate-400">
                         Acepto los{' '}
-                        <Link to="/terminos" className="font-semibold transition-colors duration-200" style={{ color: '#00FF88' }}>
+                        <Link to="/terminos" className="font-semibold transition-colors" style={{ color: GREEN2 }}>
                           Términos y Condiciones
                         </Link>
                       </label>
                     </div>
                     <div className="flex gap-3 pt-2">
                       <motion.button type="button" onClick={() => { setStep(1); setErrorMsg('') }}
-                        className="flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-bold text-slate-400 text-sm cursor-pointer border border-white/10 hover:border-white/20 transition-all bg-white/5"
-                        style={{ fontFamily: "'Fira Sans', sans-serif" }}
-                        whileHover={{ background: 'rgba(255,255,255,0.08)' }}
+                        className="flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-bold text-slate-400 text-sm cursor-pointer"
+                        style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${GREEN}1a` }}
+                        whileHover={{ background: `${GREEN}10`, color: '#cbd5e1' }}
                         whileTap={{ scale: 0.98 }}>
                         <ArrowLeft size={16} /><span>Atrás</span>
                       </motion.button>
                       <motion.button type="submit" disabled={isLoading}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-slate-950 text-sm cursor-pointer"
+                        className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-slate-950 text-sm cursor-pointer"
                         style={{
-                          background: isLoading ? 'rgba(0,255,136,0.45)' : 'linear-gradient(90deg, #00FF88, #10B981)',
-                          boxShadow: isLoading ? 'none' : '0 4px 20px rgba(0,255,136,0.25)',
+                          background: `linear-gradient(90deg, ${GREEN3}, ${GREEN}, ${GREEN2})`,
+                          boxShadow: isLoading ? 'none' : `0 8px 28px ${GREEN}55`,
+                          opacity: isLoading ? 0.85 : 1,
                           cursor: isLoading ? 'not-allowed' : 'pointer',
                         }}
-                        whileHover={isLoading ? {} : { y: -1, boxShadow: '0 8px 28px rgba(0,255,136,0.35)' }}
+                        whileHover={isLoading ? {} : { y: -2, boxShadow: `0 12px 36px ${GREEN}88` }}
                         whileTap={isLoading ? {} : { scale: 0.98 }}>
                         {isLoading
-                          ? <><motion.div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full" animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} /><span>Registrando...</span></>
+                          ? <>
+                              <motion.div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full"
+                                animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} />
+                              <span>Creando...</span>
+                            </>
                           : <span>Crear cuenta</span>}
                       </motion.button>
                     </div>
@@ -341,24 +406,32 @@ const Registro = () => {
 
             {/* Divider */}
             <div className="relative flex items-center my-6">
-              <div className="flex-grow border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }} />
-              <span className="mx-3 text-[10px] uppercase font-bold tracking-wider" style={{ color: '#64748b', fontFamily: "'Fira Sans', sans-serif" }}>o regístrate con</span>
-              <div className="flex-grow border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+              <div className="flex-grow border-t" style={{ borderColor: `${GREEN}1a` }} />
+              <span className="mx-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">o regístrate con</span>
+              <div className="flex-grow border-t" style={{ borderColor: `${GREEN}1a` }} />
             </div>
 
-            <div className="flex justify-center border border-white/5 rounded-xl overflow-hidden shadow-lg hover:border-emerald-500/25 transition">
+            <div className="flex justify-center rounded-xl overflow-hidden transition"
+              style={{ border: `1px solid ${GREEN}26` }}>
               <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => setErrorMsg('Error al registrarse con Google')}
                 theme="filled_black" shape="rectangular" size="large" text="signup_with" locale="es" />
             </div>
 
-            <p className="text-center mt-8 text-xs" style={{ color: '#64748b', fontFamily: "'Fira Sans', sans-serif" }}>
+            <p className="text-center mt-7 text-xs text-slate-500">
               ¿Ya tienes una cuenta?{' '}
-              <Link to="/login" className="font-bold transition-colors duration-200" style={{ color: '#00FF88' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#00F5FF'}
-                onMouseLeave={e => e.currentTarget.style.color = '#00FF88'}>
+              <Link to="/login" className="font-bold transition-colors" style={{ color: GREEN2 }}
+                onMouseEnter={e => e.currentTarget.style.color = GREEN}
+                onMouseLeave={e => e.currentTarget.style.color = GREEN2}>
                 Inicia sesión
               </Link>
             </p>
+          </div>
+
+          {/* Back to home */}
+          <div className="text-center mt-4">
+            <Link to="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+              ← Volver al inicio
+            </Link>
           </div>
         </motion.div>
       </div>

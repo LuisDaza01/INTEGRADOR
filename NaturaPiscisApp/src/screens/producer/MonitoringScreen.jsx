@@ -758,13 +758,13 @@ const MonitoringScreen = ({ navigation }) => {
             </View>
           )}
           <Text style={[styles.codigoHint, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Regular' }]}>
-            Ingresa la clave cuántica de tu sensor ESP32:
+            Pega aquí el código que te dio el administrador junto con tu sensor ESP32:
           </Text>
           <View style={styles.codigoInputRow}>
             <TextInput
               value={codigoInput}
               onChangeText={v => setCodigoInput(v.toUpperCase())}
-              placeholder="Ej: NP-A3F2"
+              placeholder="Ej: NP-A1B2C3"
               placeholderTextColor={colors.textMuted || '#64748b'}
               autoCapitalize="characters"
               style={[styles.codigoInput, { color: colors.text, borderColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.2)', fontFamily: 'SpaceGrotesk-Bold' }]}
@@ -801,7 +801,7 @@ const MonitoringScreen = ({ navigation }) => {
             <Ionicons name="hardware-chip-outline" size={48} color={colors.textSecondary || '#64748b'} />
             <Text style={[styles.emptyTitle, { color: colors.text, fontFamily: 'SpaceGrotesk-Bold' }]}>SIN SENSOR VINCULADO</Text>
             <Text style={[styles.emptyText, { color: colors.textSecondary || '#64748b', fontFamily: 'SpaceGrotesk-Regular', textAlign: 'center', paddingHorizontal: 40 }]}>
-              Toca la barra superior e ingresa el ID cuántico de tu ESP32.
+              Toca la barra superior y pega el código que te dio el administrador con tu ESP32.
             </Text>
           </View>
         ) : !laguna.conectado ? (

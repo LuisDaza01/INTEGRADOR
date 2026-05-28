@@ -619,20 +619,20 @@ const MonitoringScreen = ({ navigation }) => {
             const min = Math.min(...arr);
             const max = Math.max(...arr);
             const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+            const statBg     = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.025)';
+            const statBorder = isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
             return (
               <View style={styles.statsRow}>
-                <View style={styles.statBox}>
-                  <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>MÍN</Text>
-                  <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{min.toFixed(1)}{cfg.unit}</Text>
-                </View>
-                <View style={styles.statBox}>
-                  <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>PROM</Text>
-                  <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{avg.toFixed(1)}{cfg.unit}</Text>
-                </View>
-                <View style={styles.statBox}>
-                  <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>MÁX</Text>
-                  <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{max.toFixed(1)}{cfg.unit}</Text>
-                </View>
+                {[
+                  { lbl: 'MÍN',  val: min },
+                  { lbl: 'PROM', val: avg },
+                  { lbl: 'MÁX',  val: max },
+                ].map((s, i) => (
+                  <View key={i} style={[styles.statBox, { backgroundColor: statBg, borderColor: statBorder }]}>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>{s.lbl}</Text>
+                    <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{s.val.toFixed(1)}{cfg.unit}</Text>
+                  </View>
+                ))}
               </View>
             );
           })()}
@@ -888,9 +888,9 @@ const styles = StyleSheet.create({
   chipDot:         { width: 7, height: 7, borderRadius: 4 },
   chipText:        { fontSize: 12 },
 
-  // Stats row debajo del gráfico (min / prom / máx)
+  // Stats row debajo del gráfico (min / prom / máx) — bg/border inline para respetar el tema
   statsRow:        { flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 6 },
-  statBox:         { flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', alignItems: 'center' },
+  statBox:         { flex: 1, paddingVertical: 8, borderRadius: 10, borderWidth: 1, alignItems: 'center' },
   statLabel:       { fontSize: 9, letterSpacing: 0.8, marginBottom: 2 },
   statValue:       { fontSize: 14 },
   codigoBar:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginBottom: 8, padding: 11, borderRadius: 12, borderWidth: 1 },

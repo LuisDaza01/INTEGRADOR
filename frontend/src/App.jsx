@@ -166,7 +166,8 @@ const App = () => {
           <Route path="/trazabilidad/:productoId" element={<TrazabilidadPublica />} />
 
           {/* FALLBACK */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* Cualquier URL desconocida cae al landing publico (no al login) */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

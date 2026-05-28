@@ -22,13 +22,13 @@ const SENSOR_CONFIG = {
     label: "Temperatura", unit: "°C",
     min: 25, max: 34, optMin: 27, optMax: 32,
     icon: Thermometer,
-    color: "#00F5FF", chartColor: "#00F5FF", // Neon Cyan
+    color: "#4ade80", chartColor: "#4ade80", // Neon Cyan
   },
   ph: {
     label: "pH", unit: "",
     min: 6.5, max: 8.5, optMin: 7.0, optMax: 7.8,
     icon: Waves,
-    color: "#00FF88", chartColor: "#00FF88", // Neon Green
+    color: "#22C55E", chartColor: "#22C55E", // Neon Green
   },
   turbidez: {
     label: "Turbidez", unit: "NTU",
@@ -84,7 +84,7 @@ const SensorCard = ({ sensorKey, data, isConnected }) => {
     : isWarning    ? 'rgba(250,204,21,0.3)'
     : `${cfg.color}35`
 
-  const activeColor = isOutOfRange ? '#f87171' : isWarning ? '#facc15' : '#00FF88'
+  const activeColor = isOutOfRange ? '#f87171' : isWarning ? '#facc15' : '#22C55E'
 
   return (
     <div 
@@ -119,10 +119,10 @@ const SensorCard = ({ sensorKey, data, isConnected }) => {
           {isConnected ? (
             isOutOfRange ? <AlertTriangle size={18} style={{ color: '#f87171', filter: 'drop-shadow(0 0 6px #f87171)' }} className="animate-pulse" />
             : isWarning  ? <AlertTriangle size={18} style={{ color: '#facc15' }} />
-            : <CheckCircle size={18} style={{ color: '#00FF88', filter: 'drop-shadow(0 0 4px #00FF88)' }} />
+            : <CheckCircle size={18} style={{ color: '#22C55E', filter: 'drop-shadow(0 0 4px #22C55E)' }} />
           ) : <WifiOff size={18} style={{ color: '#64748b' }} />}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-            {trend === "up"   ? <TrendingUp   size={14} style={{ color: '#00FF88' }} /> :
+            {trend === "up"   ? <TrendingUp   size={14} style={{ color: '#22C55E' }} /> :
              trend === "down" ? <TrendingDown size={14} style={{ color: '#f87171' }} /> :
                                 <Minus        size={14} style={{ color: '#64748b' }} />}
           </div>
@@ -155,7 +155,7 @@ const SensorCard = ({ sensorKey, data, isConnected }) => {
         {!isConnected ? <span style={{ color: '#64748b' }}>SENSORES FUERA DE LINEA</span>
         : isOutOfRange ? <span style={{ color: '#f87171' }}>🚨 BIO-ALARMA CRÍTICA</span>
         : isWarning    ? <span style={{ color: '#facc15' }}>⚡ RANGO NO ÓPTIMO</span>
-        : <span style={{ color: '#00FF88' }}>✓ ESTADO SALUDABLE</span>}
+        : <span style={{ color: '#22C55E' }}>✓ ESTADO SALUDABLE</span>}
       </div>
     </div>
   )
@@ -228,8 +228,8 @@ const SensorChart = ({ sensorKey, data, timeRange }) => {
           tick={{ fontSize: 9.5, fill: 'rgba(255,255,255,0.4)', fontFamily: "'Fira Code', monospace" }}
         />
         <Tooltip content={<CustomTooltip sensorKey={sensorKey} />} />
-        <ReferenceLine y={cfg.optMin} stroke="#00FF88" strokeDasharray="3 3" strokeWidth={1} strokeOpacity={0.4} />
-        <ReferenceLine y={cfg.optMax} stroke="#00FF88" strokeDasharray="3 3" strokeWidth={1} strokeOpacity={0.4} />
+        <ReferenceLine y={cfg.optMin} stroke="#22C55E" strokeDasharray="3 3" strokeWidth={1} strokeOpacity={0.4} />
+        <ReferenceLine y={cfg.optMax} stroke="#22C55E" strokeDasharray="3 3" strokeWidth={1} strokeOpacity={0.4} />
         <Area
           type="monotone" dataKey="value"
           stroke={cfg.chartColor} strokeWidth={2.5}
@@ -245,7 +245,7 @@ const SensorChart = ({ sensorKey, data, timeRange }) => {
 
 // ─── Indicador de riesgo Glassmorphic ───
 const RISK_COLORS = {
-  green:  { border: 'rgba(0,255,136,0.2)', text: '#00FF88', bar: '#00FF88', noteBg: 'rgba(0,255,136,0.05)',   noteBorder: 'rgba(0,255,136,0.15)'   },
+  green:  { border: 'rgba(34,197,94,0.2)', text: '#22C55E', bar: '#22C55E', noteBg: 'rgba(34,197,94,0.05)',   noteBorder: 'rgba(34,197,94,0.15)'   },
   yellow: { border: 'rgba(250,204,21,0.2)', text: '#facc15', bar: '#facc15', noteBg: 'rgba(250,204,21,0.05)',   noteBorder: 'rgba(250,204,21,0.15)'   },
   orange: { border: 'rgba(251,146,60,0.2)', text: '#fb923c', bar: '#fb923c', noteBg: 'rgba(251,146,60,0.05)',   noteBorder: 'rgba(251,146,60,0.15)'   },
   red:    { border: 'rgba(239,68,68,0.2)', text: '#f87171', bar: '#f87171', noteBg: 'rgba(239,68,68,0.05)',  noteBorder: 'rgba(239,68,68,0.15)'  },
@@ -349,11 +349,11 @@ const Monitoring = () => {
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: D.text, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Fira Code', monospace", letterSpacing: '-0.5px' }}>
-            <Fish size={22} style={{ color: '#00F5FF', filter: 'drop-shadow(0 0 6px #00F5FF)' }} />
+            <Fish size={22} style={{ color: '#4ade80', filter: 'drop-shadow(0 0 6px #4ade80)' }} />
             Monitoreo IoT
           </h2>
           <p style={{ fontSize: 12, color: D.muted, margin: 0, fontFamily: "'Fira Code', monospace", letterSpacing: '0.04em' }}>
-            <span style={{ color: isConnected ? '#00FF88' : '#f87171' }}>●</span>{' '}
+            <span style={{ color: isConnected ? '#22C55E' : '#f87171' }}>●</span>{' '}
             {isConnected ? `SISTEMA EN LÍNEA · ${lastUpdated.toLocaleTimeString("es-BO", { hour: '2-digit', minute: '2-digit' })}` : "MODO OFFLINE"}
           </p>
         </div>
@@ -363,7 +363,7 @@ const Monitoring = () => {
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 40, height: 40, border: `1px solid rgba(255,255,255,0.08)`,
-            borderRadius: 10, color: '#00F5FF', cursor: 'pointer',
+            borderRadius: 10, color: '#4ade80', cursor: 'pointer',
           }}
           title="Refrescar"
         >
@@ -382,8 +382,8 @@ const Monitoring = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   padding: '6px 14px', borderRadius: 18, height: 32,
-                  border: `1px solid ${active ? '#00F5FF' : 'rgba(255,255,255,0.08)'}`,
-                  background: active ? '#00F5FF' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${active ? '#4ade80' : 'rgba(255,255,255,0.08)'}`,
+                  background: active ? '#4ade80' : 'rgba(255,255,255,0.04)',
                   color: active ? '#030712' : D.text,
                   fontSize: 12, fontWeight: 700, cursor: 'pointer',
                   fontFamily: "'Fira Code', monospace", letterSpacing: '0.04em',
@@ -391,7 +391,7 @@ const Monitoring = () => {
                 }}>
                 <span style={{
                   width: 7, height: 7, borderRadius: '50%',
-                  background: l.codigo_dispositivo ? '#00FF88' : '#6b7280',
+                  background: l.codigo_dispositivo ? '#22C55E' : '#6b7280',
                 }} />
                 {l.nombre?.toUpperCase()}
               </button>
@@ -407,9 +407,9 @@ const Monitoring = () => {
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '11px 14px', borderRadius: 12,
             background: 'rgba(255,255,255,0.03)',
-            border: `1px solid rgba(0,245,255,0.18)`,
+            border: `1px solid rgba(74,222,128,0.18)`,
           }}>
-          <Cpu size={16} style={{ color: '#00F5FF', flexShrink: 0 }} />
+          <Cpu size={16} style={{ color: '#4ade80', flexShrink: 0 }} />
           <span style={{
             flex: 1, fontSize: 12, color: D.text, fontWeight: 600,
             fontFamily: "'Fira Code', monospace", letterSpacing: '0.04em',
@@ -425,7 +425,7 @@ const Monitoring = () => {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: 6, border: `1px solid rgba(255,255,255,0.08)`,
                 borderRadius: 8, background: 'transparent',
-                cursor: 'pointer', color: copiedCode ? '#00FF88' : D.muted,
+                cursor: 'pointer', color: copiedCode ? '#22C55E' : D.muted,
               }}>
               {copiedCode ? <CheckCircle size={14} /> : <Copy size={14} />}
             </button>
@@ -446,9 +446,9 @@ const Monitoring = () => {
               style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 gap: 6, padding: '10px 12px', borderRadius: 8, border: 'none',
-                background: active ? 'rgba(0,245,255,0.08)' : 'transparent',
-                borderBottom: active ? '2px solid #00F5FF' : '2px solid transparent',
-                color: active ? '#00F5FF' : D.muted,
+                background: active ? 'rgba(74,222,128,0.08)' : 'transparent',
+                borderBottom: active ? '2px solid #4ade80' : '2px solid transparent',
+                color: active ? '#4ade80' : D.muted,
                 fontSize: 12, fontWeight: 700, cursor: 'pointer',
                 fontFamily: "'Fira Code', monospace", letterSpacing: '0.05em',
                 transition: 'all 0.15s',
@@ -488,7 +488,7 @@ const Monitoring = () => {
         border: '1px solid rgba(255,255,255,0.08)'
       }}>
         {/* Línea superior neón */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-green-400 to-transparent" />
 
         {/* Rejilla de fondo HUD */}
         <div style={{
@@ -499,10 +499,10 @@ const Monitoring = () => {
         
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
-            <div className="np-pulse-ring" style={{ '--pulse-color': '#00F5FF' }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#00F5FF', boxShadow: '0 0 8px #00F5FF' }} />
+            <div className="np-pulse-ring" style={{ '--pulse-color': '#4ade80' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80' }} />
             </div>
-            <span style={{ fontSize: 11, fontFamily: "'Fira Code', monospace", fontWeight: 700, color: '#00F5FF', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 11, fontFamily: "'Fira Code', monospace", fontWeight: 700, color: '#4ade80', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               HUD TELEMETRÍA EN VIVO · FIREBASE
             </span>
             <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.3)', marginLeft: 'auto', fontFamily: "'Fira Code', monospace" }}>
@@ -570,7 +570,7 @@ const Monitoring = () => {
               style={{
                 padding: '6px 12px', borderRadius: 7, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
                 background: timeRange === r.key ? 'rgba(255,255,255,0.06)' : 'transparent',
-                color: timeRange === r.key ? '#00F5FF' : D.muted,
+                color: timeRange === r.key ? '#4ade80' : D.muted,
                 fontFamily: "'Fira Code', monospace"
               }}>
               {r.label.toUpperCase()}
@@ -602,7 +602,7 @@ const Monitoring = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 11.5, color: D.muted, fontFamily: "'Fira Code', monospace" }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: 12, height: 0, borderTop: '2px dashed #00FF88' }} /> Rango óptimo
+                    <div style={{ width: 12, height: 0, borderTop: '2px dashed #22C55E' }} /> Rango óptimo
                   </span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <div style={{ width: 12, height: 2, background: cfg.color }} /> Medición
@@ -660,15 +660,15 @@ const Monitoring = () => {
       <div
         className="glass relative overflow-hidden"
         style={{
-          border: `1px solid rgba(0,245,255,0.2)`,
+          border: `1px solid rgba(74,222,128,0.2)`,
           borderRadius: 16,
           padding: 20
         }}
       >
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-cyan-500" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-green-500" />
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ padding: 8, background: 'rgba(0,245,255,0.12)', borderRadius: 10 }}>
-            <Info size={18} style={{ color: '#00F5FF', filter: 'drop-shadow(0 0 3px #00F5FF)' }} />
+          <div style={{ padding: 8, background: 'rgba(74,222,128,0.12)', borderRadius: 10 }}>
+            <Info size={18} style={{ color: '#4ade80', filter: 'drop-shadow(0 0 3px #4ade80)' }} />
           </div>
           <div className="w-full">
             <h4 style={{ fontWeight: 700, color: D.text, margin: '0 0 12px', fontSize: 14, fontFamily: "'Fira Code', monospace" }}>
@@ -678,7 +678,7 @@ const Monitoring = () => {
               {Object.entries(SENSOR_CONFIG).map(([key, cfg]) => (
                 <div key={key} className="glass" style={{ padding: 12, borderRadius: 10 }}>
                   <p style={{ fontSize: 10.5, color: D.muted, fontWeight: 700, textTransform: 'uppercase', margin: '0 0 3px', fontFamily: "'Fira Code', monospace" }}>{cfg.label}</p>
-                  <p style={{ color: '#00F5FF', fontWeight: 700, margin: '0 0 3px', fontSize: 14, fontFamily: "'Fira Code', monospace" }}>{cfg.optMin}–{cfg.optMax} {cfg.unit}</p>
+                  <p style={{ color: '#4ade80', fontWeight: 700, margin: '0 0 3px', fontSize: 14, fontFamily: "'Fira Code', monospace" }}>{cfg.optMin}–{cfg.optMax} {cfg.unit}</p>
                   <p style={{ fontSize: 11, color: D.dim, margin: 0 }}>Rango seguro: {cfg.min}–{cfg.max} {cfg.unit}</p>
                 </div>
               ))}

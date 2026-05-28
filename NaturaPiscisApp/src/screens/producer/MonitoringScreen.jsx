@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Svg, { Path, Line, Text as SvgText, Rect, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useLagunas } from '../../hooks/useLagunas';
+import { useSensorHistory } from '../../api/services/sensorHistory.service';
 import { useTheme } from '../../contexts/ThemeContext';
 import { LoadingSpinner } from '../../components/common/Loading';
 import { SPACING, BORDER_RADIUS } from '../../constants/theme';
@@ -39,18 +40,6 @@ const TIME_TABS = [
 ];
 
 // ── Generar historial simulado ─────────────────────────────────
-const generateHistory = (currentVal, sensorKey, range) => {
-  const cfg   = SENSOR_CFG[sensorKey];
-  const counts = { '1h': 24, '24h': 48, '7d': 56 };
-  const n     = counts[range] || 48;
-  const base  = currentVal || (cfg.min + cfg.max) / 2;
-  return Array.from({ length: n }, (_, i) => {
-    const noise = (Math.random() - 0.5) * (cfg.max - cfg.min) * 0.12;
-    const trend = Math.sin(i / n * Math.PI * 2) * (cfg.max - cfg.min) * 0.04;
-    return Math.max(cfg.min * 0.9, Math.min(cfg.max * 1.1, base + noise + trend));
-  });
-};
-
 // ── Mini gráfico SVG ──
 const MiniChart = ({ data, cfg, isDark, neonCyan }) => {
   if (!data || data.length < 2) return null;
@@ -354,7 +343,6 @@ const MonitoringScreen = ({ navigation }) => {
 
   const [refreshing, setRefreshing]       = useState(false);
   const [timeRange, setTimeRange]         = useState('24h');
-  const [historyMap, setHistoryMap]       = useState({});
   const [activeTab, setActiveTab]         = useState('sensores');
   const [selectedId, setSelectedId]       = useState(null);
   const [codigoInput, setCodigoInput]     = useState('');
@@ -399,14 +387,13 @@ const MonitoringScreen = ({ navigation }) => {
     laguna.sensors.forEach(s => { currentVals[s.type] = parseFloat(s.value); });
   }
 
-  useEffect(() => {
-    if (!laguna) return;
-    const map = {};
-    Object.keys(SENSOR_CFG).forEach(key => {
-      map[key] = generateHistory(currentVals[key] || 0, key, timeRange);
-    });
-    setHistoryMap(map);
-  }, [laguna?.id, timeRange]);
+  // Histórico real desde PostgreSQL (sensorBridge guarda cada 30s por laguna).
+  const {
+    historyMap,
+    loading: loadingHistory,
+    count:   historyCount,
+    refresh: refreshHistory,
+  } = useSensorHistory(laguna?.id, timeRange);
 
   const risk = calcRisk(currentVals, historyMap);
   const recommendations = getRecommendations(currentVals);
@@ -415,6 +402,7 @@ const MonitoringScreen = ({ navigation }) => {
     setRefreshing(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     refresh();
+    refreshHistory();
     setTimeout(() => setRefreshing(false), 1000);
   };
 
@@ -568,6 +556,16 @@ const MonitoringScreen = ({ navigation }) => {
   // ── Tab: Gráficos Históricos ──
   const renderGraficos = () => (
     <View style={styles.sectionContent}>
+      {/* Header de fuente */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, paddingHorizontal: 4 }}>
+        <Text style={{ fontSize: 10.5, color: '#64748b', fontFamily: 'SpaceGrotesk-Medium', letterSpacing: 0.6 }}>
+          HISTORIAL · POSTGRESQL
+        </Text>
+        <Text style={{ fontSize: 10.5, color: '#64748b', fontFamily: 'SpaceGrotesk-Medium' }}>
+          {loadingHistory ? 'cargando...' : `${historyCount} registros`}
+        </Text>
+      </View>
+
       {/* Selector de rango de cristal */}
       <GlassContainer intensity="light" style={styles.rangePicker}>
         {TIME_TABS.map(t => (
@@ -597,7 +595,15 @@ const MonitoringScreen = ({ navigation }) => {
           </View>
           
           <MiniChart data={historyMap[key] || []} cfg={cfg} isDark={isDarkMode} neonCyan={neonCyan} />
-          
+
+          {(historyMap[key]?.length || 0) === 0 && !loadingHistory && (
+            <Text style={[styles.chartFooter, { color: '#94a3b8', fontFamily: 'SpaceGrotesk-Regular', textAlign: 'center', marginVertical: 8 }]}>
+              {laguna?.codigo_dispositivo
+                ? 'Sin lecturas en este rango — esperando datos del sensor...'
+                : 'Vincula un sensor a esta laguna para ver el historial'}
+            </Text>
+          )}
+
           <Text style={[styles.chartFooter, { color: colors.textSecondary || '#64748b', fontFamily: 'SpaceGrotesk-Regular' }]}>
             Parámetros de Seguridad: {cfg.min}–{cfg.max}{cfg.unit} (Óptimo: {cfg.optMin}–{cfg.optMax}{cfg.unit})
           </Text>

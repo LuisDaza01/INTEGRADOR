@@ -10,6 +10,8 @@ const getExpo = async () => {
 };
 
 // ✅ Enviar notificación genérica
+// data.channelId (opcional) sobrescribe el canal Android: 'alerts' | 'orders' | 'default'.
+// Alertas críticas (sensores) deben usar 'alerts' (MAX importance + bypass DND).
 const sendPushNotification = async (pushToken, title, body, data = {}) => {
   if (!pushToken) {
     console.log('⚠️ Push token ausente');
@@ -21,9 +23,10 @@ const sendPushNotification = async (pushToken, title, body, data = {}) => {
       console.log('⚠️ Push token inválido:', pushToken);
       return;
     }
+    const channelId = data.channelId || 'orders';
     const message = {
       to: pushToken, sound: 'default',
-      title, body, data, priority: 'high', channelId: 'orders',
+      title, body, data, priority: 'high', channelId,
     };
     const chunks = expo.chunkPushNotifications([message]);
     for (const chunk of chunks) {

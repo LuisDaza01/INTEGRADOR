@@ -199,8 +199,10 @@ export const NotificationProvider = ({ children }) => {
         destinatarioId: data.destinatarioId,
         nombre:         data.nombre || 'Chat',
       });
-    } else if (data?.type === 'sensor_alert') {
-      // Navegar a sensores
+    } else if (data?.type === 'sensor' || data?.type === 'sensor_alert') {
+      // Alerta de sensor → ir a Monitoring (la pantalla muestra la laguna afectada)
+      const { navigate } = require('../navigation/navigationRef');
+      navigate('Monitoring', { lagunaId: data.lagunaId });
     } else if (data?.type === 'new_order') {
       // Navegar a pedidos
     }

@@ -118,8 +118,15 @@ async function maybeAlert(laguna, data) {
     );
     const token = tokenRow[0]?.expo_push_token;
     if (token) {
+      // Crítico → canal 'alerts' (MAX importance + bypass DND).
+      // Warning / recuperación → canal 'orders' (HIGH importance, no rompe el DND).
+      const channelId = principal.status === 'critical' ? 'alerts' : 'orders';
       await sendPushNotification(token, titulo, mensaje, {
-        type: 'sensor', lagunaId: laguna.id, status: principal.status, screen: 'Monitoring',
+        type: 'sensor',
+        lagunaId: laguna.id,
+        status: principal.status,
+        screen: 'Monitoring',
+        channelId,
       });
     }
   } catch (e) { logger.warn('Push sensor error', { error: e.message }); }

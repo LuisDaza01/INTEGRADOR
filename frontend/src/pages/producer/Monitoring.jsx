@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect } from "react"
 import {
   Thermometer, Eye, Waves, RefreshCw, AlertTriangle,
   Clock, Activity, TrendingUp, TrendingDown, Minus,
@@ -10,8 +10,8 @@ import {
   CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts"
 import { useSensorData, TAMBAQUI_INFO } from "../../api/services/sensor.service"
+import { useSensorHistory } from "../../api/services/sensorHistory.service"
 import PrediccionRiesgo from "./PrediccionRiesgo"
-import { getHistoricalData } from "../../api/config/firebase"
 import { useTheme } from "../../contexts/ThemeContext"
 import HUDGauge from "../../components/effects/HUDGauge"
 
@@ -62,23 +62,6 @@ const formatChartTime = (ts, range) => {
   const d = new Date(ts)
   if (range === "1h" || range === "24h") return d.toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })
   return d.toLocaleDateString("es-BO", { month: "short", day: "numeric" })
-}
-
-const generateSimulatedHistory = (currentValue, sensorKey, range) => {
-  const now = Date.now()
-  const ranges = { "1h": 3600000, "24h": 86400000, "7d": 604800000, "30d": 2592000000 }
-  const points = { "1h": 24, "24h": 48, "7d": 56, "30d": 60 }
-  const duration = ranges[range] || ranges["24h"]
-  const count    = points[range]  || 48
-  const cfg = SENSOR_CONFIG[sensorKey]
-  const base = currentValue || ((cfg.min + cfg.max) / 2)
-  return Array.from({ length: count }, (_, i) => {
-    const ts    = now - duration + (i * duration / count)
-    const noise = (Math.random() - 0.5) * (cfg.max - cfg.min) * 0.15
-    const trend = Math.sin(i / count * Math.PI * 2) * (cfg.max - cfg.min) * 0.05
-    const value = Math.max(cfg.min * 0.9, Math.min(cfg.max * 1.1, base + noise + trend))
-    return { timestamp: ts, [sensorKey]: parseFloat(value.toFixed(2)) }
-  })
 }
 
 // ─── Componente SensorCard Glassmorphic ───
@@ -314,43 +297,20 @@ const Monitoring = () => {
   const { D } = useTheme()
   const { data: sensorsData, isConnected, alerts, refreshData } = useSensorData()
   const [timeRange, setTimeRange] = useState("24h")
-  const [historicalData, setHistoricalData] = useState({})
-  const [loadingHistory, setLoadingHistory] = useState(false)
   const [lastUpdated, setLastUpdated] = useState(new Date())
   const [alertHistory, setAlertHistory] = useState([])
-  const currentRef = useRef(sensorsData)
 
-  useEffect(() => { currentRef.current = sensorsData }, [sensorsData])
+  // Histórico desde PostgreSQL (vía sensorBridge → /api/lagunas/:id/sensores/history).
+  // Detecta la primera laguna del productor automáticamente.
+  const {
+    points: currentHistory,
+    loading: loadingHistory,
+    refresh: refreshHistory,
+    lagunaId: lagunaActivaId,
+    lagunas,
+  } = useSensorHistory(timeRange)
 
-  const loadHistory = useCallback(async (range) => {
-    setLoadingHistory(true)
-    try {
-      const raw = await getHistoricalData(range)
-      if (raw && raw.length > 0) {
-        setHistoricalData(prev => ({ ...prev, [range]: raw }))
-      } else {
-        const current = currentRef.current
-        const merged = Object.keys(SENSOR_CONFIG).reduce((acc, key) => {
-          const pts = generateSimulatedHistory(
-            parseFloat(current?.[key]?.raw ?? current?.[key]?.value ?? 0), key, range
-          )
-          pts.forEach((p, i) => {
-            if (!acc[i]) acc[i] = { timestamp: p.timestamp }
-            acc[i][key] = p[key]
-          })
-          return acc
-        }, [])
-        setHistoricalData(prev => ({ ...prev, [range]: merged }))
-      }
-    } catch (e) {
-      console.error("Error cargando historial:", e)
-    } finally {
-      setLoadingHistory(false)
-      setLastUpdated(new Date())
-    }
-  }, [])
-
-  useEffect(() => { loadHistory(timeRange) }, [timeRange, loadHistory])
+  useEffect(() => { if (!loadingHistory) setLastUpdated(new Date()) }, [loadingHistory])
 
   useEffect(() => {
     if (alerts?.length > 0) {
@@ -361,7 +321,7 @@ const Monitoring = () => {
     }
   }, [alerts])
 
-  const currentHistory = historicalData[timeRange] || []
+  const lagunaActiva = lagunas?.find(l => l.id === lagunaActivaId)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 40 }} className="text-slate-100">
@@ -393,7 +353,7 @@ const Monitoring = () => {
             {isConnected ? "EN LÍNEA" : "DESCONECTADO"}
           </div>
           <button
-            onClick={() => { refreshData(); loadHistory(timeRange) }}
+            onClick={() => { refreshData(); refreshHistory() }}
             className="glass transition hover:bg-white/5 active:scale-95"
             style={{ 
               display: 'flex', alignItems: 'center', gap: 6, 
@@ -448,10 +408,10 @@ const Monitoring = () => {
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#00F5FF', boxShadow: '0 0 8px #00F5FF' }} />
             </div>
             <span style={{ fontSize: 11, fontFamily: "'Fira Code', monospace", fontWeight: 700, color: '#00F5FF', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-              HUD TELEMETRÍA CUÁNTICA EN VIVO
+              HUD TELEMETRÍA EN VIVO · FIREBASE
             </span>
             <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.3)', marginLeft: 'auto', fontFamily: "'Fira Code', monospace" }}>
-              {isConnected ? '● MONITOREO HABILITADO' : '○ ENLACE CAÍDO'}
+              {isConnected ? '● ACTUALIZA CADA ~5s' : '○ ENLACE CAÍDO'}
             </span>
           </div>
           
@@ -491,9 +451,16 @@ const Monitoring = () => {
 
       {/* Selector de rango */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-        <h3 style={{ fontSize: 11, fontWeight: 700, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0, fontFamily: "'Fira Code', monospace" }}>
-          HISTORIAL DE PARÁMETROS
-        </h3>
+        <div>
+          <h3 style={{ fontSize: 11, fontWeight: 700, color: D.muted, letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0, fontFamily: "'Fira Code', monospace" }}>
+            HISTORIAL DE PARÁMETROS · POSTGRESQL
+          </h3>
+          <p style={{ fontSize: 10.5, color: D.dim, margin: '3px 0 0', fontFamily: "'Fira Code', monospace" }}>
+            {lagunaActiva
+              ? `${lagunaActiva.nombre}${lagunaActiva.codigo_dispositivo ? ` · ${lagunaActiva.codigo_dispositivo}` : ''}`
+              : 'Sin laguna detectada'}
+          </p>
+        </div>
         
         {/* Selector glass */}
         <div className="glass" style={{ display: 'flex', borderRadius: 10, padding: 3, gap: 2 }}>
@@ -544,9 +511,11 @@ const Monitoring = () => {
               </div>
               <SensorChart sensorKey={key} data={currentHistory} timeRange={timeRange} />
               <p style={{ fontSize: 10.5, color: D.dim, marginTop: 8, textAlign: 'right', fontFamily: "'Fira Code', monospace" }}>
-                {!historicalData[timeRange] || historicalData[timeRange].length === 0
-                  ? "* Datos simulados de biomasa"
-                  : `${currentHistory.length} registros encriptados`}
+                {currentHistory.length === 0
+                  ? (lagunaActivaId
+                      ? "* Aún sin lecturas en este rango — espera a que el sensor publique"
+                      : "* Vincula un sensor a tu laguna para ver el historial")
+                  : `${currentHistory.length} registros · PostgreSQL`}
               </p>
             </div>
           ))}

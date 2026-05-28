@@ -425,15 +425,43 @@ const MonitoringScreen = ({ navigation }) => {
   };
 
   const handleVincular = async () => {
-    if (!codigoInput.trim() || !laguna) return;
+    if (!laguna) return;
+    const codigo = codigoInput.trim().toUpperCase();
+    if (!codigo) {
+      Alert.alert('Código requerido', 'Pega el código que te dio el administrador.');
+      return;
+    }
     setVinculando(true);
     try {
-      await vincularCodigo(laguna.id, codigoInput.trim());
+      await vincularCodigo(laguna.id, codigo);
       setCodigoInput('');
       setShowCodigo(false);
-      Alert.alert('✅ Vinculado', `Sensor "${codigoInput.trim().toUpperCase()}" conectado a ${laguna.nombre}`);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert(
+        '✅ Sensor vinculado',
+        `"${codigo}" quedó conectado a ${laguna.nombre}. Los datos empezarán a llegar en unos segundos.`
+      );
     } catch (e) {
-      Alert.alert('Error', e.response?.data?.message || 'No se pudo vincular el dispositivo');
+      const status = e.response?.status;
+      const msg    = e.response?.data?.message;
+      let titulo   = 'No se pudo vincular';
+      let cuerpo   = msg || 'Verifica el código e intenta de nuevo.';
+
+      if (status === 404) {
+        titulo = 'Código no encontrado';
+        cuerpo = 'Ese código no existe. Pídele al administrador uno válido.';
+      } else if (status === 409) {
+        titulo = 'Código ya usado';
+        cuerpo = msg || 'Este código ya está vinculado a otra laguna.';
+      } else if (status === 400) {
+        titulo = 'Código inválido';
+        cuerpo = msg || 'El formato del código no es correcto.';
+      } else if (status === 403) {
+        titulo = 'Dispositivo desactivado';
+        cuerpo = msg || 'Este dispositivo está desactivado. Contacta al administrador.';
+      }
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert(titulo, cuerpo);
     } finally {
       setVinculando(false);
     }

@@ -24,8 +24,8 @@ import NeonText from '../../components/ui/NeonText';
 
 const { width } = Dimensions.get('window');
 const CHART_WIDTH  = width - 48;
-const CHART_HEIGHT = 160;
-const CHART_PAD    = { top: 12, right: 16, bottom: 28, left: 36 };
+const CHART_HEIGHT = 200;
+const CHART_PAD    = { top: 16, right: 16, bottom: 32, left: 40 };
 
 // ── Configuración de sensores ──────────────────────────────────
 const SENSOR_CFG = {
@@ -40,10 +40,17 @@ const TIME_TABS = [
   { key: '7d',  label: '7d'  },
 ];
 
-// ── Generar historial simulado ─────────────────────────────────
 // ── Mini gráfico SVG ──
 const MiniChart = ({ data, cfg, isDark, neonCyan }) => {
-  if (!data || data.length < 2) return null;
+  if (!data || data.length < 2) {
+    return (
+      <View style={{ height: CHART_HEIGHT, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: isDark ? 'rgba(255,255,255,0.35)' : '#94a3b8', fontSize: 12, fontFamily: 'SpaceGrotesk-Medium' }}>
+          {data?.length === 1 ? 'Solo 1 lectura — espera más datos' : 'Sin datos en este rango'}
+        </Text>
+      </View>
+    );
+  }
   const w = CHART_WIDTH - CHART_PAD.left - CHART_PAD.right;
   const h = CHART_HEIGHT - CHART_PAD.top  - CHART_PAD.bottom;
 
@@ -343,7 +350,7 @@ const MonitoringScreen = ({ navigation }) => {
   const { lagunasArray, isConnected, isLoading, alerts, lastUpdate, controlBomba, vincularCodigo, refresh } = useLagunas();
 
   const [refreshing, setRefreshing]       = useState(false);
-  const [timeRange, setTimeRange]         = useState('24h');
+  const [timeRange, setTimeRange]         = useState('1h');
   const [activeTab, setActiveTab]         = useState('sensores');
   const [selectedId, setSelectedId]       = useState(null);
   const [codigoInput, setCodigoInput]     = useState('');
@@ -606,8 +613,32 @@ const MonitoringScreen = ({ navigation }) => {
             </Text>
           )}
 
+          {/* Estadísticas del rango cuando hay datos */}
+          {(historyMap[key]?.length || 0) >= 2 && (() => {
+            const arr = historyMap[key];
+            const min = Math.min(...arr);
+            const max = Math.max(...arr);
+            const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+            return (
+              <View style={styles.statsRow}>
+                <View style={styles.statBox}>
+                  <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>MÍN</Text>
+                  <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{min.toFixed(1)}{cfg.unit}</Text>
+                </View>
+                <View style={styles.statBox}>
+                  <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>PROM</Text>
+                  <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{avg.toFixed(1)}{cfg.unit}</Text>
+                </View>
+                <View style={styles.statBox}>
+                  <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>MÁX</Text>
+                  <Text style={[styles.statValue, { color: cfg.color, fontFamily: 'SpaceGrotesk-Bold' }]}>{max.toFixed(1)}{cfg.unit}</Text>
+                </View>
+              </View>
+            );
+          })()}
+
           <Text style={[styles.chartFooter, { color: colors.textSecondary || '#64748b', fontFamily: 'SpaceGrotesk-Regular' }]}>
-            Parámetros de Seguridad: {cfg.min}–{cfg.max}{cfg.unit} (Óptimo: {cfg.optMin}–{cfg.optMax}{cfg.unit})
+            Óptimo: {cfg.optMin}–{cfg.optMax}{cfg.unit} · Seguridad: {cfg.min}–{cfg.max}{cfg.unit}
           </Text>
         </GlassContainer>
       ))}
@@ -710,25 +741,27 @@ const MonitoringScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Selector de lagunas */}
+      {/* Selector de lagunas — pills compactos */}
       {lagunasArray.length > 1 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}
-          style={{ paddingHorizontal: 16, marginBottom: 8 }}
-          contentContainerStyle={{ gap: 8, paddingRight: 24 }}>
-          {lagunasArray.map(l => (
-            <TouchableOpacity key={l.id}
-              onPress={() => setSelectedId(l.id)}
-              activeOpacity={0.7}
-              style={[styles.lagunaChip,
-                { backgroundColor: selectedId === l.id ? neonCyan : (isDarkMode ? 'rgba(255,255,255,0.04)' : colors.surface),
-                  borderColor: selectedId === l.id ? neonCyan : 'rgba(255,255,255,0.08)' }]}>
-              <View style={[styles.chipDot, { backgroundColor: l.conectado ? neonGreen : '#6b7280' }]} />
-              <Text style={[styles.chipText, { color: selectedId === l.id ? '#030712' : colors.text, fontFamily: 'SpaceGrotesk-Bold' }]}>
-                {l.nombre.toUpperCase()}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={{ height: 40, marginBottom: 8 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}
+            style={{ paddingHorizontal: 16 }}
+            contentContainerStyle={{ gap: 8, paddingRight: 24, alignItems: 'center' }}>
+            {lagunasArray.map(l => (
+              <TouchableOpacity key={l.id}
+                onPress={() => setSelectedId(l.id)}
+                activeOpacity={0.7}
+                style={[styles.lagunaChip,
+                  { backgroundColor: selectedId === l.id ? neonCyan : (isDarkMode ? 'rgba(255,255,255,0.04)' : colors.surface),
+                    borderColor: selectedId === l.id ? neonCyan : 'rgba(255,255,255,0.08)' }]}>
+                <View style={[styles.chipDot, { backgroundColor: l.conectado ? neonGreen : '#6b7280' }]} />
+                <Text style={[styles.chipText, { color: selectedId === l.id ? '#030712' : colors.text, fontFamily: 'SpaceGrotesk-Bold' }]}>
+                  {l.nombre.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
       )}
 
       {/* Barra de código */}
@@ -851,9 +884,15 @@ const MonitoringScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container:       { flex: 1 },
   header:          { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.md },
-  lagunaChip:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1 },
+  lagunaChip:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 18, borderWidth: 1, height: 32 },
   chipDot:         { width: 7, height: 7, borderRadius: 4 },
-  chipText:        { fontSize: 12.5 },
+  chipText:        { fontSize: 12 },
+
+  // Stats row debajo del gráfico (min / prom / máx)
+  statsRow:        { flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 6 },
+  statBox:         { flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', alignItems: 'center' },
+  statLabel:       { fontSize: 9, letterSpacing: 0.8, marginBottom: 2 },
+  statValue:       { fontSize: 14 },
   codigoBar:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginBottom: 8, padding: 11, borderRadius: 12, borderWidth: 1 },
   codigoBarText:   { flex: 1, fontSize: 11.5, letterSpacing: 0.3 },
   codigoPanel:     { marginHorizontal: 16, marginBottom: 12, padding: 16, borderRadius: 16, borderWidth: 1, gap: 10 },

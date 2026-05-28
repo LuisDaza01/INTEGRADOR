@@ -18,7 +18,7 @@ const Skeleton = ({ width = '100%', height = 14, borderRadius = 7, style }) => {
 
   const bg = shimmer.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: ['rgba(0,245,255,0.03)', 'rgba(0,245,255,0.09)', 'rgba(0,245,255,0.03)'],
+    outputRange: ['rgba(74,222,128,0.03)', 'rgba(74,222,128,0.09)', 'rgba(74,222,128,0.03)'],
   });
 
   return (
@@ -93,26 +93,26 @@ const s = StyleSheet.create({
   productCard: {
     width: 158, borderRadius: 18, overflow: 'hidden', marginRight: 12,
     backgroundColor: 'rgba(10,15,30,0.65)',
-    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
+    borderWidth: 1, borderColor: 'rgba(74,222,128,0.08)',
   },
   productorCard: {
     borderRadius: 18, overflow: 'hidden', marginBottom: 12,
     backgroundColor: 'rgba(10,15,30,0.65)',
-    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
+    borderWidth: 1, borderColor: 'rgba(74,222,128,0.08)',
   },
   orderCard: {
     padding: 14, borderRadius: 18, marginBottom: 10, overflow: 'hidden',
     backgroundColor: 'rgba(10,15,30,0.65)',
-    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
+    borderWidth: 1, borderColor: 'rgba(74,222,128,0.08)',
   },
   orderShimmerLine: {
     position: 'absolute', top: 0, left: 20, right: 20, height: 1,
-    backgroundColor: 'rgba(0,245,255,0.08)',
+    backgroundColor: 'rgba(74,222,128,0.08)',
   },
   statCard: {
     flex: 1, minWidth: '45%', padding: 14, borderRadius: 18, alignItems: 'center',
     backgroundColor: 'rgba(10,15,30,0.65)',
-    borderWidth: 1, borderColor: 'rgba(0,245,255,0.08)',
+    borderWidth: 1, borderColor: 'rgba(74,222,128,0.08)',
   },
 });
 

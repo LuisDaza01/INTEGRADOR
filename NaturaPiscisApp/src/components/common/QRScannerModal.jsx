@@ -37,7 +37,7 @@ const QRScannerModal = ({ visible, onClose, onScanned }) => {
   if (!permission) {
     return (
       <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-        <View style={styles.center}><ActivityIndicator color="#00F5FF" /></View>
+        <View style={styles.center}><ActivityIndicator color="#4ade80" /></View>
       </Modal>
     );
   }
@@ -48,7 +48,7 @@ const QRScannerModal = ({ visible, onClose, onScanned }) => {
       <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
         <View style={styles.backdrop}>
           <View style={styles.permCard}>
-            <Ionicons name="camera-outline" size={48} color="#00F5FF" />
+            <Ionicons name="camera-outline" size={48} color="#4ade80" />
             <Text style={styles.permTitle}>Permiso de cámara</Text>
             <Text style={styles.permText}>
               Necesitamos acceso a la cámara para escanear el código QR de tu sensor IoT.
@@ -87,7 +87,7 @@ const QRScannerModal = ({ visible, onClose, onScanned }) => {
 
         {/* Overlay con marco */}
         <View style={styles.overlay} pointerEvents="none">
-          <View style={[styles.frame, scanned && { borderColor: '#00FF88' }]} />
+          <View style={[styles.frame, scanned && { borderColor: '#22C55E' }]} />
           <Text style={styles.hint}>
             {scanned ? '✓ CÓDIGO DETECTADO' : 'Apunta la cámara al QR del sensor'}
           </Text>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   backdrop:   { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.75)', padding: 24 },
   permCard:   {
     backgroundColor: '#0f172a', borderRadius: 18, padding: 24, alignItems: 'center',
-    borderWidth: 1, borderColor: 'rgba(0,245,255,0.25)', maxWidth: 340, width: '100%', gap: 12,
+    borderWidth: 1, borderColor: 'rgba(74,222,128,0.25)', maxWidth: 340, width: '100%', gap: 12,
   },
   permTitle:  { color: '#fff', fontSize: 17, fontWeight: '700', marginTop: 4 },
   permText:   { color: '#94a3b8', fontSize: 14, textAlign: 'center', lineHeight: 20 },
@@ -115,14 +115,14 @@ const styles = StyleSheet.create({
   btn:        { flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
   btnGhost:   { borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
   btnGhostText: { color: '#cbd5e1', fontWeight: '600' },
-  btnPrimary: { backgroundColor: '#00F5FF' },
+  btnPrimary: { backgroundColor: '#4ade80' },
   btnPrimaryText: { color: '#030712', fontWeight: '700' },
 
   fullScreen: { flex: 1, backgroundColor: '#000' },
   overlay:    { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   frame:      {
-    width: 250, height: 250, borderWidth: 3, borderColor: '#00F5FF', borderRadius: 16,
-    shadowColor: '#00F5FF', shadowOpacity: 0.6, shadowRadius: 12,
+    width: 250, height: 250, borderWidth: 3, borderColor: '#4ade80', borderRadius: 16,
+    shadowColor: '#4ade80', shadowOpacity: 0.6, shadowRadius: 12,
   },
   hint:       {
     color: '#fff', marginTop: 24, fontSize: 14, fontWeight: '600', letterSpacing: 0.5,

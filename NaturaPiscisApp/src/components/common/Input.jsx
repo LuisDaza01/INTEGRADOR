@@ -53,7 +53,7 @@ const Input = ({
   const isPassword = secureTextEntry;
 
   // Colores dinámicos
-  const nc = neonColor || colors.neonCyan || '#00F5FF';
+  const nc = neonColor || colors.neonCyan || '#4ade80';
   const errColor = colors.error || '#ef4444';
   const activeBorderColor = error ? errColor : nc;
 

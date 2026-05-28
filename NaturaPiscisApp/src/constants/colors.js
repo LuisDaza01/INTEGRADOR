@@ -79,11 +79,11 @@ export const COLORS = {
 
 // Colores neón futuristas — acentos vibrantes para UI premium
 export const NEON_COLORS = {
-  cyan: '#00F5FF',
-  green: '#00FF88',
-  magenta: '#FF00E5',
-  amber: '#FFAA00',
-  purple: '#BF5AF2',
+  cyan: '#4ade80',     // verde claro brand (era #4ade80 cyan)
+  green: '#22C55E',    // verde brand (era #22C55E fluo)
+  magenta: '#FF00E5',  // se mantiene
+  amber: '#FFAA00',    // alertas warning
+  purple: '#BF5AF2',   // se mantiene
 };
 
 // Colores para glassmorphism — variantes con opacidad
@@ -99,8 +99,8 @@ export const GLASS_COLORS = {
   lightHeavy: 'rgba(255, 255, 255, 0.25)',
 
   // Bordes con brillo neón
-  borderCyan: 'rgba(0, 245, 255, 0.15)',
-  borderGreen: 'rgba(0, 255, 136, 0.15)',
+  borderCyan: 'rgba(74,222,128, 0.15)',
+  borderGreen: 'rgba(34,197,94, 0.15)',
   borderMagenta: 'rgba(255, 0, 229, 0.15)',
   borderAmber: 'rgba(255, 170, 0, 0.15)',
   borderPrimary: 'rgba(34, 197, 94, 0.18)',
@@ -116,22 +116,22 @@ export const GRADIENT_PRESETS = {
 
   // Gradientes de tarjetas
   cardDark: ['rgba(10, 15, 30, 0.9)', 'rgba(3, 7, 18, 0.95)'],
-  cardGlow: ['rgba(0, 245, 255, 0.05)', 'rgba(0, 255, 136, 0.02)'],
-  cardNeon: ['rgba(0, 245, 255, 0.08)', 'rgba(0, 255, 136, 0.04)'],
+  cardGlow: ['rgba(74,222,128, 0.05)', 'rgba(34,197,94, 0.02)'],
+  cardNeon: ['rgba(74,222,128, 0.08)', 'rgba(34,197,94, 0.04)'],
 
   // Gradientes de botones y acentos
-  primary: ['#00FF88', '#22C55E'],
-  secondary: ['#00F5FF', '#0284C7'],
-  neon: ['#00F5FF', '#00FF88'],
+  primary: ['#22C55E', '#22C55E'],
+  secondary: ['#4ade80', '#0284C7'],
+  neon: ['#4ade80', '#22C55E'],
   magenta: ['#FF00E5', '#BF5AF2'],
   amber: ['#FFAA00', '#F59E0B'],
   sunset: ['#FF00E5', '#FFAA00'],
-  ocean: ['#00F5FF', '#3B82F6'],
-  aurora: ['#00FF88', '#00F5FF', '#BF5AF2'],
+  ocean: ['#4ade80', '#3B82F6'],
+  aurora: ['#22C55E', '#4ade80', '#BF5AF2'],
 
   // Gradientes para texto (meshGradient style)
   textShimmer: ['#FFFFFF', '#94A3B8', '#FFFFFF'],
-  textNeon: ['#00F5FF', '#00FF88'],
+  textNeon: ['#4ade80', '#22C55E'],
 };
 
 // Colores para sensores (neón vibrante, identidad acuícola)

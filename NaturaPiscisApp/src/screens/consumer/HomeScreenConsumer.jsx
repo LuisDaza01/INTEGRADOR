@@ -34,8 +34,8 @@ const HomeScreenConsumer = ({ navigation }) => {
   const { isFavorito, toggle } = useFavoritos();
 
   // Colores neón con fallback para compatibilidad
-  const neonCyan  = colors.neonCyan  || '#00F5FF';
-  const neonGreen = colors.neonGreen || '#00FF88';
+  const neonCyan  = colors.neonCyan  || '#4ade80';
+  const neonGreen = colors.neonGreen || '#22C55E';
 
   const C = {
     bg:      colors.background,
@@ -366,7 +366,7 @@ const HomeScreenConsumer = ({ navigation }) => {
               activeOpacity={0.88}>
               {/* Gradiente interior glassmorphism */}
               <LinearGradient
-                colors={isDarkMode ? ['rgba(0,245,255,0.05)', 'rgba(10,15,30,0.85)'] : ['transparent', 'transparent']}
+                colors={isDarkMode ? ['rgba(74,222,128,0.05)', 'rgba(10,15,30,0.85)'] : ['transparent', 'transparent']}
                 style={StyleSheet.absoluteFill} />
 
               {/* Imagen del producto */}
@@ -581,7 +581,7 @@ const makeStyles = (C, isDarkMode) => StyleSheet.create({
   // Botones de acción con glassmorphism
   heroIconBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: isDarkMode ? 'rgba(0,245,255,0.08)' : 'rgba(34,197,94,0.1)',
+    backgroundColor: isDarkMode ? 'rgba(74,222,128,0.08)' : 'rgba(34,197,94,0.1)',
     borderWidth: 1,
     borderColor: isDarkMode ? `${C.neonCyan}25` : 'rgba(34,197,94,0.22)',
     justifyContent: 'center', alignItems: 'center',

@@ -70,20 +70,20 @@ const FloatingParticle = ({ delay, size, x, y, color, duration }) => {
 };
 
 const PARTICLES = [
-  { delay: 0,    size: 4, x: width * 0.15, y: height * 0.85, color: '#00F5FF', duration: 5000 },
-  { delay: 500,  size: 3, x: width * 0.4,  y: height * 0.9,  color: '#00FF88', duration: 4200 },
+  { delay: 0,    size: 4, x: width * 0.15, y: height * 0.85, color: '#4ade80', duration: 5000 },
+  { delay: 500,  size: 3, x: width * 0.4,  y: height * 0.9,  color: '#22C55E', duration: 4200 },
   { delay: 1000, size: 5, x: width * 0.65, y: height * 0.8,  color: '#FF00E5', duration: 5500 },
-  { delay: 1500, size: 3, x: width * 0.85, y: height * 0.75, color: '#00F5FF', duration: 4800 },
+  { delay: 1500, size: 3, x: width * 0.85, y: height * 0.75, color: '#4ade80', duration: 4800 },
   { delay: 800,  size: 4, x: width * 0.3,  y: height * 0.7,  color: '#BF5AF2', duration: 5200 },
-  { delay: 2000, size: 3, x: width * 0.55, y: height * 0.88, color: '#00FF88', duration: 4000 },
+  { delay: 2000, size: 3, x: width * 0.55, y: height * 0.88, color: '#22C55E', duration: 4000 },
 ];
 
 const WelcomeScreen = ({ navigation }) => {
   const { colors, isDarkMode } = useTheme();
 
   // Colores de acento neón
-  const neonCyan = colors.neonCyan || '#00F5FF';
-  const neonGreen = colors.neonGreen || '#00FF88';
+  const neonCyan = colors.neonCyan || '#4ade80';
+  const neonGreen = colors.neonGreen || '#22C55E';
   const neonMagenta = colors.neonMagenta || '#FF00E5';
 
   // Animaciones para el logo
@@ -186,7 +186,7 @@ const WelcomeScreen = ({ navigation }) => {
               }
             ]}>
               <LinearGradient
-                colors={isDarkMode ? ['rgba(0, 245, 255, 0.12)', 'transparent'] : ['rgba(0, 245, 255, 0.05)', 'transparent']}
+                colors={isDarkMode ? ['rgba(74,222,128, 0.12)', 'transparent'] : ['rgba(74,222,128, 0.05)', 'transparent']}
                 style={StyleSheet.absoluteFill}
               />
               <Ionicons name="fish" size={64} color={neonCyan} />

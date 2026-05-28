@@ -58,12 +58,12 @@ const FloatingParticle = ({ delay, size, x, y, color, duration }) => {
 };
 
 const PARTICLES = [
-  { delay: 0,    size: 3, x: width * 0.1,  y: height * 0.8, color: '#00F5FF', duration: 4000 },
-  { delay: 400,  size: 2, x: width * 0.3,  y: height * 0.9, color: '#00FF88', duration: 3500 },
-  { delay: 800,  size: 4, x: width * 0.5,  y: height * 0.75, color: '#00F5FF', duration: 4500 },
+  { delay: 0,    size: 3, x: width * 0.1,  y: height * 0.8, color: '#4ade80', duration: 4000 },
+  { delay: 400,  size: 2, x: width * 0.3,  y: height * 0.9, color: '#22C55E', duration: 3500 },
+  { delay: 800,  size: 4, x: width * 0.5,  y: height * 0.75, color: '#4ade80', duration: 4500 },
   { delay: 1200, size: 2, x: width * 0.7,  y: height * 0.85, color: '#BF5AF2', duration: 3800 },
-  { delay: 1600, size: 3, x: width * 0.9,  y: height * 0.7, color: '#00FF88', duration: 4200 },
-  { delay: 600,  size: 2, x: width * 0.2,  y: height * 0.6, color: '#00F5FF', duration: 5000 },
+  { delay: 1600, size: 3, x: width * 0.9,  y: height * 0.7, color: '#22C55E', duration: 4200 },
+  { delay: 600,  size: 2, x: width * 0.2,  y: height * 0.6, color: '#4ade80', duration: 5000 },
   { delay: 1000, size: 3, x: width * 0.8,  y: height * 0.95, color: '#22C55E', duration: 3600 },
   { delay: 200,  size: 2, x: width * 0.45, y: height * 0.65, color: '#BF5AF2', duration: 4800 },
 ];
@@ -193,8 +193,8 @@ const LoginScreen = ({ navigation }) => {
 
   const C = colors;
   const rotate = ringRotate.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
-  const neonCyan = C.neonCyan || '#00F5FF';
-  const neonGreen = C.neonGreen || '#00FF88';
+  const neonCyan = C.neonCyan || '#4ade80';
+  const neonGreen = C.neonGreen || '#22C55E';
 
   return (
     <View style={[s.container, { backgroundColor: C.background }]}>
@@ -259,7 +259,7 @@ const LoginScreen = ({ navigation }) => {
               <Text style={[s.label, { color: C.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>Correo Electrónico</Text>
               <View style={[s.inputWrap, {
                 backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.inputBackground,
-                borderColor: emailFocused ? neonCyan : (isDarkMode ? 'rgba(0,245,255,0.12)' : C.inputBorder),
+                borderColor: emailFocused ? neonCyan : (isDarkMode ? 'rgba(74,222,128,0.12)' : C.inputBorder),
                 shadowColor: emailFocused ? neonCyan : 'transparent',
                 shadowOpacity: emailFocused ? 0.3 : 0,
                 shadowRadius: emailFocused ? 12 : 0,
@@ -281,7 +281,7 @@ const LoginScreen = ({ navigation }) => {
               <Text style={[s.label, { color: C.textSecondary, fontFamily: 'SpaceGrotesk-Medium' }]}>Contraseña</Text>
               <View style={[s.inputWrap, {
                 backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.inputBackground,
-                borderColor: passFocused ? neonCyan : (isDarkMode ? 'rgba(0,245,255,0.12)' : C.inputBorder),
+                borderColor: passFocused ? neonCyan : (isDarkMode ? 'rgba(74,222,128,0.12)' : C.inputBorder),
                 shadowColor: passFocused ? neonCyan : 'transparent',
                 shadowOpacity: passFocused ? 0.3 : 0,
                 shadowRadius: passFocused ? 12 : 0,
@@ -303,7 +303,7 @@ const LoginScreen = ({ navigation }) => {
 
             {/* Biometría */}
             {biometricAvailable && (
-              <TouchableOpacity style={[s.biometricBtn, { borderColor: `${neonCyan}25`, backgroundColor: isDarkMode ? 'rgba(0,245,255,0.05)' : C.surface }]} onPress={handleBiometricLogin} activeOpacity={0.8}>
+              <TouchableOpacity style={[s.biometricBtn, { borderColor: `${neonCyan}25`, backgroundColor: isDarkMode ? 'rgba(74,222,128,0.05)' : C.surface }]} onPress={handleBiometricLogin} activeOpacity={0.8}>
                 <View style={[s.bioRing, { borderColor: `${neonCyan}50` }]}>
                   <Ionicons name={biometricType === 'face' ? 'scan-outline' : 'finger-print-outline'} size={22} color={neonCyan} />
                 </View>
@@ -330,7 +330,7 @@ const LoginScreen = ({ navigation }) => {
             <Animated.View style={{ transform: [{ scale: btnScale }] }}>
               <TouchableOpacity onPress={handleLogin} disabled={isLoading} activeOpacity={0.85} style={s.loginBtnWrap}>
                 <LinearGradient
-                  colors={['#00FF88', '#22C55E', '#16a34a']}
+                  colors={['#22C55E', '#22C55E', '#16a34a']}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
                   style={[s.loginBtn, isLoading && { opacity: 0.7 }]}
                 >
@@ -356,7 +356,7 @@ const LoginScreen = ({ navigation }) => {
 
           {/* ── Google ── */}
           <TouchableOpacity
-            style={[s.googleBtn, { backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.surface, borderColor: isDarkMode ? 'rgba(0,245,255,0.12)' : C.border }]}
+            style={[s.googleBtn, { backgroundColor: isDarkMode ? 'rgba(10,15,30,0.75)' : C.surface, borderColor: isDarkMode ? 'rgba(74,222,128,0.12)' : C.border }]}
             onPress={() => promptGoogleAsync()} disabled={googleLoading} activeOpacity={0.8}
           >
             {googleLoading ? (
@@ -378,7 +378,7 @@ const LoginScreen = ({ navigation }) => {
           </View>
 
           {/* Info */}
-          <View style={[s.appInfo, { borderTopColor: isDarkMode ? 'rgba(0,245,255,0.08)' : C.border }]}>
+          <View style={[s.appInfo, { borderTopColor: isDarkMode ? 'rgba(74,222,128,0.08)' : C.border }]}>
             <View style={[s.infoIcon, { backgroundColor: `${neonCyan}12`, borderColor: `${neonCyan}25` }]}>
               <Ionicons name="notifications-outline" size={14} color={neonCyan} />
             </View>
@@ -399,7 +399,7 @@ const s = StyleSheet.create({
 
   // Grid de fondo
   gridOverlay: { ...StyleSheet.absoluteFillObject },
-  gridLine:    { position: 'absolute', backgroundColor: 'rgba(0,245,255,0.03)' },
+  gridLine:    { position: 'absolute', backgroundColor: 'rgba(74,222,128,0.03)' },
   gridH:       { left: 0, right: 0, height: 1 },
   gridV:       { top: 0, bottom: 0, width: 1 },
 
@@ -421,7 +421,7 @@ const s = StyleSheet.create({
   },
   logoInner: {
     width: 78, height: 78, borderRadius: 39,
-    backgroundColor: 'rgba(0,245,255,0.06)', borderWidth: 1.5,
+    backgroundColor: 'rgba(74,222,128,0.06)', borderWidth: 1.5,
     justifyContent: 'center', alignItems: 'center',
   },
   title:    { fontSize: 32, letterSpacing: 0.5, marginBottom: 6 },
@@ -452,7 +452,7 @@ const s = StyleSheet.create({
   },
   bioRing: {
     width: 38, height: 38, borderRadius: 19, borderWidth: 1.5,
-    justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,245,255,0.06)',
+    justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(74,222,128,0.06)',
   },
   biometricText: { fontSize: 15 },
 
@@ -464,7 +464,7 @@ const s = StyleSheet.create({
   forgotText:   { fontSize: 13 },
 
   // Login button
-  loginBtnWrap: { borderRadius: 16, overflow: 'hidden', marginTop: 6, shadowColor: '#00FF88', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 16, elevation: 12 },
+  loginBtnWrap: { borderRadius: 16, overflow: 'hidden', marginTop: 6, shadowColor: '#22C55E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 16, elevation: 12 },
   loginBtn:     { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, paddingVertical: 16 },
   loginBtnText: { fontSize: 16, color: '#030712', letterSpacing: 0.3 },
 

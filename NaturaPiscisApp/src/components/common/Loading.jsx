@@ -17,8 +17,8 @@ export const LoadingSpinner = ({ size = 'large', color }) => {
 // Loading con logo — splash futurista con anillos neón y partículas
 export const LoadingScreen = ({ message = 'Cargando...' }) => {
   const { colors, isDarkMode } = useTheme();
-  const neonCyan  = colors.neonCyan  || '#00F5FF';
-  const neonGreen = colors.neonGreen || '#00FF88';
+  const neonCyan  = colors.neonCyan  || '#4ade80';
+  const neonGreen = colors.neonGreen || '#22C55E';
 
   const logoScale   = useRef(new Animated.Value(0.3)).current;
   const logoOpacity = useRef(new Animated.Value(0)).current;
@@ -200,7 +200,7 @@ export const LoadingScreen = ({ message = 'Cargando...' }) => {
 // Loading overlay (para poner sobre contenido)
 export const LoadingOverlay = ({ visible, message }) => {
   const { colors, isDarkMode } = useTheme();
-  const neonCyan = colors.neonCyan || '#00F5FF';
+  const neonCyan = colors.neonCyan || '#4ade80';
 
   if (!visible) return null;
 
@@ -220,7 +220,7 @@ export const LoadingOverlay = ({ visible, message }) => {
 // Loading inline (para dentro de cards o secciones)
 export const LoadingInline = ({ message }) => {
   const { colors } = useTheme();
-  const neonCyan = colors.neonCyan || '#00F5FF';
+  const neonCyan = colors.neonCyan || '#4ade80';
 
   return (
     <View style={styles.inline}>

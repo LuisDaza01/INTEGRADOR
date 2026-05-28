@@ -41,11 +41,11 @@ const lightColors = {
   secondaryLight: '#38bdf8',
   secondaryDark: '#0369a1',
 
-  // Acentos neón — tonos suaves para modo claro
-  neonCyan: '#06B6D4',
-  neonGreen: '#10B981',
-  neonMagenta: '#D946EF',
-  neonAmber: '#F59E0B',
+  // Acentos brand — alineados con el verde NaturaPiscis del login/menu web
+  neonCyan: '#22C55E',    // verde brand para modo claro (era #06B6D4 azul)
+  neonGreen: '#16A34A',   // verde oscuro brand (era #10B981)
+  neonMagenta: '#D946EF', // se mantiene
+  neonAmber: '#F59E0B',   // se mantiene
 
   // Glassmorphism — cristal claro
   glass: 'rgba(255, 255, 255, 0.85)',
@@ -132,15 +132,16 @@ const darkColors = {
   secondaryLight: '#7dd3fc',
   secondaryDark: '#0284c7',
 
-  // Acentos neón futuristas
-  neonCyan: '#00F5FF',
-  neonGreen: '#00FF88',
-  neonMagenta: '#FF00E5',
-  neonAmber: '#FFAA00',
+  // Acentos brand — alineados con el verde NaturaPiscis del login/menu web
+  // (antes eran cyan/verde-fluo, pisaban el primary; ahora son tonos del primary brand)
+  neonCyan: '#4ade80',    // verde-claro brand (era #4ade80)
+  neonGreen: '#22C55E',   // verde brand (era #22C55E)
+  neonMagenta: '#FF00E5', // se mantiene como acento secundario
+  neonAmber: '#FFAA00',   // se mantiene para alertas
 
   // Glassmorphism — superficies de cristal oscuro
   glass: 'rgba(10, 15, 30, 0.72)',
-  glassBorder: 'rgba(0, 245, 255, 0.12)',
+  glassBorder: 'rgba(74, 222, 128, 0.18)',
   glassLight: 'rgba(255, 255, 255, 0.04)',
 
   // Status
@@ -154,14 +155,14 @@ const darkColors = {
   infoBg: 'rgba(56, 189, 248, 0.1)',
 
   // Borders & Dividers — cyan-tinted futurista
-  border: 'rgba(0, 245, 255, 0.10)',
-  divider: 'rgba(0, 245, 255, 0.06)',
+  border: 'rgba(74,222,128, 0.10)',
+  divider: 'rgba(74,222,128, 0.06)',
 
   // Cards & Containers
   card: '#0A0F1E',
-  cardBorder: 'rgba(0, 245, 255, 0.12)',
+  cardBorder: 'rgba(74,222,128, 0.12)',
   cardGlass: 'rgba(10, 15, 30, 0.75)',
-  cardGlassBorder: 'rgba(0, 245, 255, 0.15)',
+  cardGlassBorder: 'rgba(74,222,128, 0.15)',
 
   // Glow
   glowColor: '#22C55E',
@@ -169,14 +170,14 @@ const darkColors = {
 
   // Tab Bar
   tabBar: 'rgba(3, 7, 18, 0.92)',
-  tabBarBorder: 'rgba(0, 245, 255, 0.15)',
+  tabBarBorder: 'rgba(74,222,128, 0.15)',
   tabActive: '#22C55E',
   tabInactive: '#334155',
 
   // Inputs
   inputBackground: '#0A0F1E',
-  inputBorder: 'rgba(0, 245, 255, 0.10)',
-  inputBorderFocused: '#00F5FF',
+  inputBorder: 'rgba(74,222,128, 0.10)',
+  inputBorderFocused: '#4ade80',
   placeholder: '#64748B',
 
   // Buttons
@@ -191,13 +192,13 @@ const darkColors = {
   overlay: 'rgba(0, 0, 0, 0.78)',
 
   // Shadows
-  shadowColor: '#00F5FF',
+  shadowColor: '#4ade80',
 
   // Gradientes futuristas
-  gradientPrimary: ['#00FF88', '#22C55E'],
-  gradientSecondary: ['#00F5FF', '#0284c7'],
+  gradientPrimary: ['#22C55E', '#22C55E'],
+  gradientSecondary: ['#4ade80', '#0284c7'],
   gradientDark: ['#0A0F1E', '#030712'],
-  gradientNeon: ['#00F5FF', '#00FF88'],
+  gradientNeon: ['#4ade80', '#22C55E'],
   gradientMagenta: ['#FF00E5', '#BF5AF2'],
 };
 

@@ -92,7 +92,7 @@ const MiniChart = ({ data, cfg, isDark, neonCyan }) => {
 
       {/* Zona óptima */}
       <Rect x={CHART_PAD.left} y={optMinY} width={w} height={optH}
-        fill="#00FF88" opacity="0.05" />
+        fill="#22C55E" opacity="0.05" />
 
       {/* Área rellena */}
       <Path d={area} fill={`url(#${cfg.gradId})`} />
@@ -118,7 +118,7 @@ const MiniChart = ({ data, cfg, isDark, neonCyan }) => {
 
 // ── Gauge de riesgo ──
 const RiskGauge = ({ score, label, colors, isDarkMode, neonCyan }) => {
-  const color = score >= 75 ? '#ef4444' : score >= 50 ? '#ff8f00' : score >= 25 ? '#eab308' : '#00FF88';
+  const color = score >= 75 ? '#ef4444' : score >= 50 ? '#ff8f00' : score >= 25 ? '#eab308' : '#22C55E';
   const levelLabel = score >= 75 ? 'CRÍTICO' : score >= 50 ? 'ALTO' : score >= 25 ? 'MODERADO' : 'ESTABLE';
   
   return (
@@ -178,11 +178,11 @@ const getRecommendations = (currentVals) => {
   const p = currentVals.ph;
   const tr = currentVals.turbidez;
   if (t > 33) recs.push({ icon: 'thermometer-outline', text: 'Activar aireación — temperatura crítica en ascenso', color: '#ef4444' });
-  if (t < 26) recs.push({ icon: 'snow-outline',        text: 'Temperatura baja detectada — reduce alimentación', color: '#00F5FF' });
+  if (t < 26) recs.push({ icon: 'snow-outline',        text: 'Temperatura baja detectada — reduce alimentación', color: '#4ade80' });
   if (p < 6.5) recs.push({ icon: 'flask-outline',      text: 'pH ácido detectado — aplicar cal agrícola foliar', color: '#FFAA00' });
   if (p > 8.5) recs.push({ icon: 'flask-outline',      text: 'pH alcalino crítico — recambio parcial de agua',  color: '#FF00E5' });
   if (tr > 60) recs.push({ icon: 'eye-outline',        text: 'Turbidez excesiva — limpiar y revisar filtros',   color: '#BF5AF2' });
-  if (recs.length === 0) recs.push({ icon: 'checkmark-circle-outline', text: 'Todos los biosensores estables en rango óptimo', color: '#00FF88' });
+  if (recs.length === 0) recs.push({ icon: 'checkmark-circle-outline', text: 'Todos los biosensores estables en rango óptimo', color: '#22C55E' });
   return recs;
 };
 
@@ -366,8 +366,8 @@ const MonitoringScreen = ({ navigation }) => {
   const spinValue = useRef(new Animated.Value(0)).current;
 
   // Colores neón
-  const neonCyan = colors.neonCyan || '#00F5FF';
-  const neonGreen = colors.neonGreen || '#00FF88';
+  const neonCyan = colors.neonCyan || '#4ade80';
+  const neonGreen = colors.neonGreen || '#22C55E';
   const neonMagenta = colors.neonMagenta || '#FF00E5';
   const neonAmber = colors.neonAmber || '#FFAA00';
 
@@ -804,7 +804,7 @@ const MonitoringScreen = ({ navigation }) => {
           <View style={styles.codigoInputRow}>
             <TouchableOpacity
               onPress={() => setScannerOpen(true)}
-              style={[styles.codigoScanBtn, { borderColor: 'rgba(0,245,255,0.35)', backgroundColor: 'rgba(0,245,255,0.08)' }]}
+              style={[styles.codigoScanBtn, { borderColor: 'rgba(74,222,128,0.35)', backgroundColor: 'rgba(74,222,128,0.08)' }]}
               activeOpacity={0.7}>
               <Ionicons name="qr-code-outline" size={20} color={neonCyan} />
             </TouchableOpacity>

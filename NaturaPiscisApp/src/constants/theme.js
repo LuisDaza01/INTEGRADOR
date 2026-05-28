@@ -89,14 +89,14 @@ export const SHADOWS = {
     elevation: 6,
   },
   neonCyan: {
-    shadowColor: '#00F5FF',
+    shadowColor: '#4ade80',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 16,
     elevation: 12,
   },
   neonGreen: {
-    shadowColor: '#00FF88',
+    shadowColor: '#22C55E',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 14,
@@ -118,7 +118,7 @@ export const SHADOWS = {
   },
   // Sombra de elevación para tarjetas flotantes
   float: {
-    shadowColor: '#00F5FF',
+    shadowColor: '#4ade80',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 24,
@@ -129,14 +129,14 @@ export const SHADOWS = {
 // Resplandor neón — presets de sombra para elementos brillantes
 export const GLOW = {
   cyan: {
-    shadowColor: '#00F5FF',
+    shadowColor: '#4ade80',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.7,
     shadowRadius: 20,
     elevation: 14,
   },
   green: {
-    shadowColor: '#00FF88',
+    shadowColor: '#22C55E',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 18,
@@ -175,12 +175,12 @@ export const GLASS = {
   medium: {
     backgroundColor: 'rgba(10, 15, 30, 0.65)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 245, 255, 0.12)',
+    borderColor: 'rgba(74,222,128, 0.12)',
   },
   heavy: {
     backgroundColor: 'rgba(10, 15, 30, 0.85)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 245, 255, 0.18)',
+    borderColor: 'rgba(74,222,128, 0.18)',
   },
 };
 

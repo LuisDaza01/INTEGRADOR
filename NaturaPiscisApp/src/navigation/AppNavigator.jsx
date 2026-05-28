@@ -28,14 +28,14 @@ const TabBarBackground = ({ customColors }) => {
       />
       {/* Línea shimmer superior neón */}
       <LinearGradient
-        colors={['transparent', 'rgba(0,245,255,0.35)', 'rgba(0,255,136,0.25)', 'transparent']}
+        colors={['transparent', 'rgba(74,222,128,0.35)', 'rgba(34,197,94,0.25)', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{ position: 'absolute', top: 0, left: 20, right: 20, height: 1 }}
       />
       {/* Línea shimmer inferior sutil */}
       <LinearGradient
-        colors={['transparent', 'rgba(0,245,255,0.12)', 'rgba(0,255,136,0.08)', 'transparent']}
+        colors={['transparent', 'rgba(74,222,128,0.12)', 'rgba(34,197,94,0.08)', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{ position: 'absolute', bottom: 0, left: 30, right: 30, height: 1 }}
@@ -195,10 +195,10 @@ const ProducerTabs = () => {
   const pendientes = stats?.pendientes || 0;
 
   const iconMap = {
-    Home:       { active: 'home',          inactive: 'home-outline',          glow: '#00F5FF' },
+    Home:       { active: 'home',          inactive: 'home-outline',          glow: '#4ade80' },
     Orders:     { active: 'receipt',       inactive: 'receipt-outline',       glow: '#FFAA00' },
-    Inventario: { active: 'cube',          inactive: 'cube-outline',          glow: '#00FF88' },
-    Devices:    { active: 'hardware-chip', inactive: 'hardware-chip-outline', glow: '#00F5FF' },
+    Inventario: { active: 'cube',          inactive: 'cube-outline',          glow: '#22C55E' },
+    Devices:    { active: 'hardware-chip', inactive: 'hardware-chip-outline', glow: '#4ade80' },
     Profile:    { active: 'person',        inactive: 'person-outline',        glow: '#BF5AF2' },
   };
 
@@ -215,18 +215,18 @@ const ProducerTabs = () => {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: isDarkMode ? 'rgba(0,245,255,0.15)' : colors.border,
+          borderColor: isDarkMode ? 'rgba(74,222,128,0.15)' : colors.border,
           borderRadius: 28,
           height: 72,
           paddingBottom: 12,
           paddingTop: 8,
-          shadowColor: isDarkMode ? '#00F5FF' : '#000',
+          shadowColor: isDarkMode ? '#4ade80' : '#000',
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: isDarkMode ? 0.25 : 0.08,
           shadowRadius: 20,
           elevation: 20,
         },
-        tabBarActiveTintColor:   '#00F5FF',
+        tabBarActiveTintColor:   '#4ade80',
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIcon: ({ focused, color }) => {
@@ -262,9 +262,9 @@ const ConsumerTabs = () => {
   const { colors, isDarkMode } = useTheme();
   const { count: cartCount } = useCarrito();
   const iconMap = {
-    Inicio:      { active: 'home',       inactive: 'home-outline',       glow: '#00F5FF' },
-    Tienda:      { active: 'storefront', inactive: 'storefront-outline', glow: '#00FF88' },
-    Reservas:    { active: 'calendar',   inactive: 'calendar-outline',   glow: '#00F5FF' },
+    Inicio:      { active: 'home',       inactive: 'home-outline',       glow: '#4ade80' },
+    Tienda:      { active: 'storefront', inactive: 'storefront-outline', glow: '#22C55E' },
+    Reservas:    { active: 'calendar',   inactive: 'calendar-outline',   glow: '#4ade80' },
     Carrito:     { active: 'cart',       inactive: 'cart-outline',       glow: '#FFAA00' },
     Perfil:      { active: 'person',     inactive: 'person-outline',     glow: '#BF5AF2' },
   };
@@ -282,18 +282,18 @@ const ConsumerTabs = () => {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: isDarkMode ? 'rgba(0,245,255,0.15)' : colors.border,
+          borderColor: isDarkMode ? 'rgba(74,222,128,0.15)' : colors.border,
           borderRadius: 28,
           height: 72,
           paddingBottom: 12,
           paddingTop: 8,
-          shadowColor: isDarkMode ? '#00F5FF' : '#000',
+          shadowColor: isDarkMode ? '#4ade80' : '#000',
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: isDarkMode ? 0.25 : 0.08,
           shadowRadius: 20,
           elevation: 20,
         },
-        tabBarActiveTintColor:   '#00F5FF',
+        tabBarActiveTintColor:   '#4ade80',
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIcon: ({ focused, color }) => {
@@ -340,22 +340,22 @@ const RepartidorTabs = () => {
         backgroundColor: 'transparent',
         borderTopWidth: 0,
         borderWidth: 1,
-        borderColor: isDarkMode ? 'rgba(0,245,255,0.15)' : colors.border,
+        borderColor: isDarkMode ? 'rgba(74,222,128,0.15)' : colors.border,
         borderRadius: 28,
         height: 72,
         paddingBottom: 12,
         paddingTop: 8,
-        shadowColor: isDarkMode ? '#00F5FF' : '#000',
+        shadowColor: isDarkMode ? '#4ade80' : '#000',
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: isDarkMode ? 0.25 : 0.08,
         shadowRadius: 20,
         elevation: 20,
       },
-      tabBarActiveTintColor:   '#00F5FF',
+      tabBarActiveTintColor:   '#4ade80',
       tabBarInactiveTintColor: colors.textMuted,
       tabBarLabelStyle: styles.tabBarLabel,
       tabBarIcon: ({ focused, color }) => (
-        <AnimatedTabIcon name={focused ? 'bicycle' : 'bicycle-outline'} size={23} color={color} focused={focused} glowColor="#00F5FF" />
+        <AnimatedTabIcon name={focused ? 'bicycle' : 'bicycle-outline'} size={23} color={color} focused={focused} glowColor="#4ade80" />
       ),
     })}
   >

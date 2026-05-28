@@ -17,7 +17,7 @@ export const Card = ({
   ...props
 }) => {
   const { colors, isDarkMode } = useTheme();
-  const neonCyan = colors.neonCyan || '#00F5FF';
+  const neonCyan = colors.neonCyan || '#4ade80';
   const Component = onPress ? TouchableOpacity : View;
 
   const variantStyle = (() => {
@@ -76,7 +76,7 @@ export const Card = ({
       {/* Shimmer line neón en la parte superior */}
       {shimmer && isDarkMode && (
         <LinearGradient
-          colors={['transparent', `${neonColor || neonCyan}30`, `${colors.neonGreen || '#00FF88'}20`, 'transparent']}
+          colors={['transparent', `${neonColor || neonCyan}30`, `${colors.neonGreen || '#22C55E'}20`, 'transparent']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
           style={styles.shimmerLine}
         />
@@ -106,7 +106,7 @@ export const CardBody = ({ children, style }) => (
 
 export const CardFooter = ({ children, style }) => {
   const { colors, isDarkMode } = useTheme();
-  const neonCyan = colors.neonCyan || '#00F5FF';
+  const neonCyan = colors.neonCyan || '#4ade80';
   return (
     <View style={[styles.footer, { borderTopColor: isDarkMode ? `${neonCyan}08` : colors.divider }, style]}>
       {children}

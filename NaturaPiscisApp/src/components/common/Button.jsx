@@ -39,7 +39,7 @@ const Button = ({
   };
 
   const isDisabled = disabled || loading;
-  const nc = neonColor || '#00F5FF';
+  const nc = neonColor || '#4ade80';
 
   // Colores de icono según variante
   const iconColor = (() => {
@@ -54,7 +54,7 @@ const Button = ({
 
   const gradientColors = (() => {
     if (variant === 'neon') return [nc, `${nc}cc`];
-    if (variant === 'primary') return ['#00FF88', '#22C55E', '#16a34a'];
+    if (variant === 'primary') return ['#22C55E', '#22C55E', '#16a34a'];
     return ['transparent', 'transparent'];
   })();
 
@@ -71,7 +71,7 @@ const Button = ({
       case 'secondary':
         return {
           backgroundColor: COLORS.background?.elevated || '#334155',
-          borderWidth: 1, borderColor: 'rgba(0,245,255,0.1)',
+          borderWidth: 1, borderColor: 'rgba(74,222,128,0.1)',
         };
       case 'outline':
         return {
@@ -127,7 +127,7 @@ const Button = ({
         <TouchableOpacity
           onPress={handlePress} disabled={isDisabled} activeOpacity={0.85}
           style={[styles.gradientWrap, isDisabled && styles.disabled,
-            { shadowColor: variant === 'neon' ? nc : '#00FF88', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 14, elevation: 10 },
+            { shadowColor: variant === 'neon' ? nc : '#22C55E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 14, elevation: 10 },
             style,
           ]}
           {...props}

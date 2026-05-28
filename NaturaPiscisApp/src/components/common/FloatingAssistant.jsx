@@ -42,8 +42,8 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // Colores neón con fallback
-  const neonCyan = colors.neonCyan || '#00F5FF';
-  const neonGreen = colors.neonGreen || '#00FF88';
+  const neonCyan = colors.neonCyan || '#4ade80';
+  const neonGreen = colors.neonGreen || '#22C55E';
   const neonMagenta = colors.neonMagenta || '#FF00E5';
 
   useEffect(() => {
@@ -75,12 +75,12 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
   const C = {
     bg:      isDarkMode ? 'rgba(10, 15, 30, 0.94)' : 'rgba(255, 255, 255, 0.95)',
     surface: isDarkMode ? 'rgba(3, 7, 18, 0.6)' : 'rgba(243, 244, 246, 0.6)',
-    border:  isDarkMode ? 'rgba(0, 245, 255, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+    border:  isDarkMode ? 'rgba(74,222,128, 0.15)' : 'rgba(16, 185, 129, 0.15)',
     text:    colors.text,
     muted:   colors.textMuted || '#94a3b8',
     input:   isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
-    bubble:  isDarkMode ? 'rgba(0, 245, 255, 0.08)' : 'rgba(16, 185, 129, 0.06)',
-    bubbleBorder: isDarkMode ? 'rgba(0, 245, 255, 0.15)' : 'rgba(16, 185, 129, 0.12)',
+    bubble:  isDarkMode ? 'rgba(74,222,128, 0.08)' : 'rgba(16, 185, 129, 0.06)',
+    bubbleBorder: isDarkMode ? 'rgba(74,222,128, 0.15)' : 'rgba(16, 185, 129, 0.12)',
     neonCyan,
     neonGreen,
   };
@@ -220,7 +220,7 @@ const FloatingAssistant = ({ rol = 'consumidor' }) => {
                         s.chip,
                         {
                           borderColor: `${neonCyan}40`,
-                          backgroundColor: isDarkMode ? 'rgba(0,245,255,0.05)' : 'rgba(0,182,212,0.06)'
+                          backgroundColor: isDarkMode ? 'rgba(74,222,128,0.05)' : 'rgba(0,182,212,0.06)'
                         }
                       ]}
                     >
@@ -408,7 +408,7 @@ const s = StyleSheet.create({
   bubbleUser: {
     alignSelf: 'flex-end',
     borderColor: 'transparent',
-    shadowColor: '#00F5FF',
+    shadowColor: '#4ade80',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -430,7 +430,7 @@ const s = StyleSheet.create({
     marginTop: 1,
     flexShrink: 0,
     borderWidth: 0.5,
-    borderColor: 'rgba(0, 245, 255, 0.3)',
+    borderColor: 'rgba(74,222,128, 0.3)',
   },
   bubbleText: { fontSize: 13, lineHeight: 19 },
 

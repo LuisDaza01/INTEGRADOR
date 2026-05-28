@@ -15,7 +15,9 @@ const initFirebase = () => {
       : null;
 
     const appConfig = {
-      databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://examen-ac07b-default-rtdb.firebaseio.com',
+      // Default alineado con la URL usada por la app móvil (NaturaPiscisApp/src/config/firebase.js).
+      // En producción se sobreescribe con la variable de entorno FIREBASE_DATABASE_URL.
+      databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://naturapiscis-default-rtdb.firebaseio.com',
     };
 
     if (serviceAccount) {

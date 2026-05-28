@@ -75,6 +75,11 @@ async function startServer() {
       `ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS resumen_mensual_ia TEXT`,
       `ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS resumen_mensual_at TIMESTAMP`,
       `ALTER TABLE pedidos  ADD COLUMN IF NOT EXISTS eta_estimada      TIMESTAMP`,
+      // Sensor readings — multi-laguna + campos extra
+      `ALTER TABLE sensor_readings ADD COLUMN IF NOT EXISTS laguna_id INTEGER REFERENCES lagunas(id)`,
+      `ALTER TABLE sensor_readings ADD COLUMN IF NOT EXISTS nivel     NUMERIC(6,2)`,
+      `ALTER TABLE sensor_readings ADD COLUMN IF NOT EXISTS oxigeno   NUMERIC(5,2)`,
+      `CREATE INDEX IF NOT EXISTS idx_sensor_readings_laguna_ts ON sensor_readings (laguna_id, timestamp DESC)`,
     ];
     for (const sql of safeMigrations) {
       try {

@@ -133,7 +133,7 @@ const Ajustes = () => {
               <div style={{ marginBottom: 20 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: D.muted, marginBottom: 10 }}>Color principal</label>
                 <div style={{ display: 'flex', gap: 10 }}>
-                  {["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"].map((color) => (
+                  {["#3B82F6", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6"].map((color) => (
                     <motion.button key={color} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                       style={{ width: 30, height: 30, borderRadius: '50%', background: color, border: color === "#3B82F6" ? `3px solid ${D.text}` : `2px solid transparent`, cursor: 'pointer' }} />
                   ))}

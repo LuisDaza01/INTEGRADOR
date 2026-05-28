@@ -41,7 +41,7 @@ const TiendaScreen = ({ navigation }) => {
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
     primary: colors.primary,
-    teal:    '#10b981',
+    teal:    '#22C55E',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',

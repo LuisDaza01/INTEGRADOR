@@ -400,7 +400,7 @@ const Estadisticas = () => {
     }
     const distribucionProductos = stats.distribucionProductos
     let cumulativePercentage = 0
-    const colors = ["#22C55E", "#06B6D4", "#10B981", "#6366F1", "#8B5CF6"]
+    const colors = ["#22C55E", "#06B6D4", "#22C55E", "#6366F1", "#8B5CF6"]
     return (
       <div style={{ position: 'relative', width: 200, height: 200, margin: '16px auto 0' }}>
         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
@@ -732,7 +732,7 @@ const Estadisticas = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
               {stats.distribucionProductos.map((item, index) => (
                 <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: ["#22C55E","#06B6D4","#10B981","#6366F1","#8B5CF6"][index % 5], flexShrink: 0 }} />
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: ["#22C55E","#06B6D4","#22C55E","#6366F1","#8B5CF6"][index % 5], flexShrink: 0 }} />
                   <span style={{ color: D.text, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.producto}</span>
                   <span style={{ fontWeight: 600, color: D.muted }}>{item.porcentaje}%</span>
                 </div>

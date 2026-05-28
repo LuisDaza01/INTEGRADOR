@@ -804,7 +804,7 @@ const DashboardProductor = () => {
                         { name: 'Vie', produccion: 165 }, { name: 'Sáb', produccion: 158 },
                         { name: 'Dom', produccion: 145 },
                       ]}
-                      dataKey="produccion" type="bar" color="#10b981" xAxisDataKey="name" height={250}
+                      dataKey="produccion" type="bar" color="#22C55E" xAxisDataKey="name" height={250}
                     />
 
                     <ActivityFeed activities={[

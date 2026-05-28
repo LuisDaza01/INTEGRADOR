@@ -46,7 +46,7 @@ const HomeScreenConsumer = ({ navigation }) => {
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
     primary: colors.primary,
-    teal:    '#10b981',
+    teal:    '#22C55E',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',
@@ -156,7 +156,7 @@ const HomeScreenConsumer = ({ navigation }) => {
   const pedidoEnCamino  = pedidos.find(p => (p.estado || p.status) === 'en_camino');
   const firstName       = user?.nombre?.split(' ')[0] || 'Amigo';
 
-  const statusColor = e => ({ pendiente:'#f59e0b', confirmado:'#3b82f6', preparando:'#8b5cf6', listo_para_recoger:'#10b981', en_camino:'#06b6d4', entregado:'#22c55e', cancelado:'#ef4444' }[e] || '#6b7280');
+  const statusColor = e => ({ pendiente:'#f59e0b', confirmado:'#3b82f6', preparando:'#8b5cf6', listo_para_recoger:'#22C55E', en_camino:'#06b6d4', entregado:'#22c55e', cancelado:'#ef4444' }[e] || '#6b7280');
   const statusLabel = e => ({ pendiente:'Pendiente', confirmado:'Confirmado', preparando:'Preparando', listo_para_recoger:'Listo', en_camino:'En camino', entregado:'Entregado', cancelado:'Cancelado' }[e] || e);
   const puedeTracking = e => ['pendiente','confirmado','preparando','listo_para_recoger','en_camino'].includes(e);
 

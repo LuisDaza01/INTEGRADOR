@@ -43,7 +43,7 @@ const lightColors = {
 
   // Acentos brand — alineados con el verde NaturaPiscis del login/menu web
   neonCyan: '#22C55E',    // verde brand para modo claro (era #06B6D4 azul)
-  neonGreen: '#16A34A',   // verde oscuro brand (era #10B981)
+  neonGreen: '#16A34A',   // verde oscuro brand (era #22C55E)
   neonMagenta: '#D946EF', // se mantiene
   neonAmber: '#F59E0B',   // se mantiene
 
@@ -106,7 +106,7 @@ const lightColors = {
   gradientPrimary: ['#16A34A', '#22C55E'],
   gradientSecondary: ['#0284c7', '#38bdf8'],
   gradientDark: ['#0F172A', '#1E293B'],
-  gradientNeon: ['#10B981', '#22C55E'],
+  gradientNeon: ['#22C55E', '#22C55E'],
   gradientMagenta: ['#D946EF', '#A855F7'],
 };
 

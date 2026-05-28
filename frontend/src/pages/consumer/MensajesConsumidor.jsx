@@ -197,10 +197,10 @@ const MensajesConsumidor = () => {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 20,
-              background: connected ? "rgba(52,211,153,0.1)" : "rgba(239,68,68,0.1)",
-              border: `1px solid ${connected ? "rgba(52,211,153,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+              background: connected ? "rgba(74,222,128,0.1)" : "rgba(239,68,68,0.1)",
+              border: `1px solid ${connected ? "rgba(74,222,128,0.3)" : "rgba(239,68,68,0.3)"}` }}>
               {connected
-                ? <><Wifi size={13} color="#34d399" /><span style={{ fontSize: 12, color: "#34d399", fontWeight: 600 }}>En vivo</span></>
+                ? <><Wifi size={13} color="#4ade80" /><span style={{ fontSize: 12, color: "#4ade80", fontWeight: 600 }}>En vivo</span></>
                 : <><WifiOff size={13} color="#f87171" /><span style={{ fontSize: 12, color: "#f87171", fontWeight: 600 }}>Reconectando</span></>}
             </div>
           </div>
@@ -285,8 +285,8 @@ const MensajesConsumidor = () => {
                 )}
                 {connected && (
                   <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
-                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#34d399", display: "inline-block", boxShadow: "0 0 6px #34d399" }} />
-                    <span style={{ fontSize: 11, color: "#34d399" }}>En vivo</span>
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80", display: "inline-block", boxShadow: "0 0 6px #4ade80" }} />
+                    <span style={{ fontSize: 11, color: "#4ade80" }}>En vivo</span>
                   </div>
                 )}
               </div>

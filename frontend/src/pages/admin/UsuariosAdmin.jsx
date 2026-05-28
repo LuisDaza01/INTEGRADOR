@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search, UserX, UserCheck, Shield, ShoppingBag, Fish, AlertCircle, Edit2, Eye, EyeOff, X, Save, Trash2 } from "lucide-react"
 import axiosInstance from "../../api/config/axios"
 
-const rolColor = { 1: "bg-purple-100 text-purple-700", 2: "bg-green-100 text-green-700", 3: "bg-emerald-100 text-emerald-700" }
+const rolColor = { 1: "bg-purple-100 text-purple-700", 2: "bg-green-100 text-green-700", 3: "bg-green-100 text-green-700" }
 const rolNombre = { 1: "Admin", 2: "Productor", 3: "Consumidor" }
 const rolIcon = { 1: Shield, 2: Fish, 3: ShoppingBag }
 
@@ -179,7 +179,7 @@ const UsuariosAdmin = () => {
                       <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0
                         ${u.rol_id === 1 ? "bg-gradient-to-br from-purple-500 to-purple-600"
                           : u.rol_id === 2 ? "bg-gradient-to-br from-green-500 to-green-600"
-                          : "bg-gradient-to-br from-emerald-400 to-emerald-500"}`}>
+                          : "bg-gradient-to-br from-green-400 to-green-500"}`}>
                         {iniciales}
                       </div>
                       <div>

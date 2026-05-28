@@ -151,7 +151,7 @@ const SidebarProductor = () => {
                 style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 16px rgba(34,197,94,0.5)' }}>
                 <Fish size={18} className="text-white" />
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0f172a]" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#0f172a]" />
             </div>
             <div className="min-w-0">
               <p className="font-bold text-sm tracking-wide truncate" style={{ color: D.text }}>NaturaPiscis</p>
@@ -215,7 +215,7 @@ const SidebarProductor = () => {
               style={{ background: 'linear-gradient(135deg, #16a34a, #22C55E)', boxShadow: '0 0 12px rgba(34,197,94,0.4)', color: '#fff' }}>
               {iniciales}
             </div>
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ border: `2px solid ${D.surface}` }} />
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-400" style={{ border: `2px solid ${D.surface}` }} />
           </div>
 
           {(expanded || isMobile) && (

@@ -66,7 +66,7 @@ const TarjetaProductoMultiBotones = ({ producto, onReservar, onVerDetalle, onTog
             {producto.imagen ? (
               <img src={producto.imagen} alt={producto.nombre} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-emerald-100">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-green-100">
                 <Package size={32} className="text-green-400" />
               </div>
             )}

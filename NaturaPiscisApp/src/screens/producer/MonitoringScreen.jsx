@@ -540,27 +540,27 @@ const MonitoringScreen = ({ navigation }) => {
 
       {/* Control Bomba Glassmorphism */}
       {laguna && (
-        <GlassContainer intensity="medium" style={styles.bombaCard} borderGlow={laguna.bomba} neonColor={colors.secondary || '#10b981'}>
+        <GlassContainer intensity="medium" style={styles.bombaCard} borderGlow={laguna.bomba} neonColor={colors.secondary || '#22C55E'}>
           <View style={styles.bombaRow}>
             <View style={[
               styles.bombaIconBg,
-              { backgroundColor: laguna.bomba ? `${colors.secondary || '#10b981'}25` : 'rgba(255,255,255,0.04)' }
+              { backgroundColor: laguna.bomba ? `${colors.secondary || '#22C55E'}25` : 'rgba(255,255,255,0.04)' }
             ]}>
-              <Ionicons name="water-outline" size={22} color={laguna.bomba ? (colors.secondary || '#10b981') : '#64748b'} />
+              <Ionicons name="water-outline" size={22} color={laguna.bomba ? (colors.secondary || '#22C55E') : '#64748b'} />
             </View>
             <View style={styles.bombaInfo}>
               <Text style={[styles.bombaTitle, { color: colors.text, fontFamily: 'SpaceGrotesk-SemiBold' }]}>
                 Turbina / Bomba Recambio
               </Text>
-              <Text style={[styles.bombaStatus, { color: laguna.bomba ? (colors.secondary || '#10b981') : '#64748b', fontFamily: 'SpaceGrotesk-Regular' }]}>
+              <Text style={[styles.bombaStatus, { color: laguna.bomba ? (colors.secondary || '#22C55E') : '#64748b', fontFamily: 'SpaceGrotesk-Regular' }]}>
                 {laguna.bomba ? 'SISTEMA DE AIREACIÓN ACTIVO' : 'SISTEMA DETENIDO'}
               </Text>
             </View>
             <Switch
               value={laguna.bomba || false}
               onValueChange={handleBomba}
-              trackColor={{ false: 'rgba(255,255,255,0.06)', true: `${colors.secondary || '#10b981'}50` }}
-              thumbColor={laguna.bomba ? (colors.secondary || '#10b981') : '#64748b'}
+              trackColor={{ false: 'rgba(255,255,255,0.06)', true: `${colors.secondary || '#22C55E'}50` }}
+              thumbColor={laguna.bomba ? (colors.secondary || '#22C55E') : '#64748b'}
             />
           </View>
         </GlassContainer>

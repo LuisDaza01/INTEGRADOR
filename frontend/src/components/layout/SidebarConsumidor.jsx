@@ -14,7 +14,7 @@ const menuItems = [
   { id: "tienda",      label: "Tienda",      icon: Store,        color: '#4ade80', path: "/dashboard-consumidor/tienda" },
   { id: "carrito",     label: "Reservar",    icon: CalendarPlus, color: '#fb923c', path: "/dashboard-consumidor/carrito", badge: null },
   { id: "mis-pedidos",  label: "Mis Pedidos",  icon: Package,      color: '#a78bfa', path: "/dashboard-consumidor/mis-pedidos"  },
-  { id: "mis-reservas", label: "Mis Reservas", icon: CalendarDays,    color: '#34d399', path: "/dashboard-consumidor/mis-reservas" },
+  { id: "mis-reservas", label: "Mis Reservas", icon: CalendarDays,    color: '#4ade80', path: "/dashboard-consumidor/mis-reservas" },
   { id: "mensajes",     label: "Mensajes",     icon: MessageCircle,   color: '#22C55E', path: "/dashboard-consumidor/mensajes"    },
   { id: "perfil",       label: "Mi Perfil",    icon: User,            color: '#4ade80', path: "/dashboard-consumidor/perfil"      },
   { id: "analizar-frescura", label: "Analizar Frescura", icon: Microscope, color: '#86efac', path: "/dashboard-consumidor/analizar-frescura" },

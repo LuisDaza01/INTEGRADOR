@@ -358,9 +358,9 @@ const Productores = () => {
                 .split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase()
               const gradients = [
                 { from: "#3B82F6", to: "#06B6D4" },
-                { from: "#10B981", to: "#14B8A6" },
+                { from: "#22C55E", to: "#14B8A6" },
                 { from: "#6366F1", to: "#3B82F6" },
-                { from: "#06B6D4", to: "#10B981" },
+                { from: "#06B6D4", to: "#22C55E" },
                 { from: "#8B5CF6", to: "#6366F1" },
               ]
               const grad = gradients[index % gradients.length]

@@ -536,7 +536,7 @@ export default function InventarioScreen() {
     const sacos    = item.sacos_disponibles || 0;
     const kgTotal  = sacos * (item.peso_saco_kg || 25);
     const colorFase = item.fase === 'inicial' ? '#3b82f6'
-      : item.fase === 'crecimiento' ? '#10b981' : '#f59e0b';
+      : item.fase === 'crecimiento' ? '#22C55E' : '#f59e0b';
 
     return (
       <View key={item.id || item.codigo} style={S.stockCard}>

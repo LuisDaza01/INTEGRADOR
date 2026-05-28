@@ -255,8 +255,8 @@ const ChatScreen = ({ route, navigation }) => {
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>{nombre || 'Chat'}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 1 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: connected ? '#34d399' : '#9ca3af' }} />
-            <Text style={[styles.headerSub, { color: connected ? '#34d399' : C.muted }]}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: connected ? '#4ade80' : '#9ca3af' }} />
+            <Text style={[styles.headerSub, { color: connected ? '#4ade80' : C.muted }]}>
               {connected ? 'En vivo' : 'Reconectando...'}
             </Text>
           </View>

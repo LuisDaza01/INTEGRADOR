@@ -419,7 +419,7 @@ function LagunaTab({ user, D, isDark }) {
             {stockAlim.map((s, i) => {
               const sacos   = s.sacos_disponibles || 0;
               const kgTotal = sacos * (s.peso_saco_kg || 25);
-              const colorFase = s.fase === "inicial" ? "#3b82f6" : s.fase === "crecimiento" ? "#10b981" : "#f59e0b";
+              const colorFase = s.fase === "inicial" ? "#3b82f6" : s.fase === "crecimiento" ? "#22C55E" : "#f59e0b";
               return (
                 <div key={i} style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 16 }}>
                   <div style={{ background: colorFase + "22", color: colorFase, fontSize: 10, fontWeight: 700,

@@ -146,7 +146,7 @@ const CategoriasAdmin = () => {
             ) : (
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
                     <Tag size={15} className="text-green-600" />
                   </div>
                   <div>

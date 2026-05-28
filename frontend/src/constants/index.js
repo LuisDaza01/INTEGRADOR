@@ -59,8 +59,8 @@ export const ORDER_STATUS_COLORS = {
     badge: 'purple',
   },
   [ORDER_STATUS.SHIPPED]: {
-    bg: 'bg-emerald-100',
-    text: 'text-emerald-800',
+    bg: 'bg-green-100',
+    text: 'text-green-800',
     badge: 'emerald',
   },
   [ORDER_STATUS.DELIVERED]: {

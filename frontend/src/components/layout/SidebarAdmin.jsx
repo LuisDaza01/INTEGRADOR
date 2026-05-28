@@ -13,7 +13,7 @@ const menuItems = [
   { id: "estadisticas",        label: "Estadísticas",       icon: LayoutDashboard, color: '#22C55E', path: "/dashboard-admin" },
   { id: "productos",           label: "Productos",           icon: Package,         color: '#4ade80', path: "/dashboard-admin/productos" },
   { id: "pedidos",             label: "Pedidos",             icon: ShoppingBag,     color: '#fb923c', path: "/dashboard-admin/pedidos" },
-  { id: "categorias",          label: "Categorías",          icon: Tag,             color: '#34d399', path: "/dashboard-admin/categorias" },
+  { id: "categorias",          label: "Categorías",          icon: Tag,             color: '#4ade80', path: "/dashboard-admin/categorias" },
   { id: "usuarios",            label: "Usuarios",            icon: Users,           color: '#a78bfa', path: "/dashboard-admin/usuarios" },
   { id: "registrar-productor", label: "Registrar Usuario",   icon: UserPlus,        color: '#c084fc', path: "/dashboard-admin/registrar-productor" },
   { id: "dispositivos",        label: "Dispositivos IoT",    icon: Cpu,             color: '#06b6d4', path: "/dashboard-admin/dispositivos" },

@@ -17,7 +17,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 // Per-producer gradient pairs
 const GRADIENTS = [
   ['#16a34a', '#15803d'],
-  ['#10b981', '#0f766e'],
+  ['#22C55E', '#0f766e'],
   ['#8b5cf6', '#6d28d9'],
   ['#f97316', '#c2410c'],
   ['#ec4899', '#be185d'],
@@ -35,7 +35,7 @@ const ProductoresScreen = ({ navigation }) => {
     sub:     colors.textSecondary,
     hint:    colors.textMuted,
     primary: colors.primary,
-    teal:    '#10b981',
+    teal:    '#22C55E',
     green:   '#4ade80',
     orange:  '#fb923c',
     purple:  '#c084fc',

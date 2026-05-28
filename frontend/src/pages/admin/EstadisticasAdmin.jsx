@@ -212,7 +212,7 @@ const EstadisticasAdmin = () => {
         <KPICard label="Total Pedidos"         value={stats.totalPedidos}      icon={ShoppingBag} color="#fb923c" trend={makeTrend(3, 8)} delay={0.1} />
         <KPICard label="Total Productos"       value={stats.totalProductos}    icon={Package}     color="#4ade80" trend={makeTrend(5, 8)} delay={0.15} />
         <KPICard label="Pedidos Pendientes"    value={stats.pedidosPendientes} icon={Activity}    color="#fbbf24" trend={makeTrend(2, 8)} delay={0.2} />
-        <KPICard label="Pedidos Entregados"    value={stats.pedidosEntregados} icon={TrendingUp}  color="#34d399" trend={makeTrend(6, 8)} delay={0.25} />
+        <KPICard label="Pedidos Entregados"    value={stats.pedidosEntregados} icon={TrendingUp}  color="#4ade80" trend={makeTrend(6, 8)} delay={0.25} />
       </div>
 
       {/* ── Gráfico de ventas mensuales + pie de estados ── */}

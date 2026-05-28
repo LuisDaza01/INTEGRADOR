@@ -26,13 +26,13 @@ const SLIDES = [
   {
     key: 'iot',
     icon: 'pulse',
-    accent: '#34d399',
+    accent: '#4ade80',
     bg: ['#04120f', '#061e16', '#082b1e'],
-    orb1: 'rgba(52,211,153,0.18)',
+    orb1: 'rgba(74,222,128,0.18)',
     orb2: 'rgba(5,150,105,0.1)',
     title: 'Monitoreo IoT\nen tiempo real',
     subtitle: 'Sensores ESP32 monitorizan temperatura, pH y turbidez del agua las 24 horas del día.',
-    particles: ['#34d399', '#10b981', '#6ee7b7', '#059669'],
+    particles: ['#4ade80', '#22C55E', '#6ee7b7', '#059669'],
   },
   {
     key: 'track',

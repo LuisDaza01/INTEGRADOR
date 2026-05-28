@@ -9,7 +9,7 @@ export const COLORS = {
     100: '#D1FAE5',
     200: '#A7F3D0',
     300: '#6EE7B7',
-    400: '#34D399',
+    400: '#4ade80',
     500: '#22C55E',  // Color principal
     600: '#16A34A',
     700: '#15803D',

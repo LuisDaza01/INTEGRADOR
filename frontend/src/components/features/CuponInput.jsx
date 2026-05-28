@@ -45,14 +45,14 @@ const CuponInput = ({ subtotal = 0, onApply, onRemove }) => {
     return (
       <div style={{
         borderRadius: 12, padding: '12px 16px',
-        background: 'rgba(52,211,153,0.08)',
-        border: '1px solid rgba(52,211,153,0.3)',
+        background: 'rgba(74,222,128,0.08)',
+        border: '1px solid rgba(74,222,128,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <CheckCircle size={18} style={{ color: '#34d399', flexShrink: 0 }} />
+          <CheckCircle size={18} style={{ color: '#4ade80', flexShrink: 0 }} />
           <div>
-            <p style={{ margin: 0, fontWeight: 700, color: '#34d399', fontSize: 14 }}>
+            <p style={{ margin: 0, fontWeight: 700, color: '#4ade80', fontSize: 14 }}>
               {applied.cupon.codigo}
             </p>
             <p style={{ margin: 0, color: D.muted, fontSize: 12 }}>
@@ -64,7 +64,7 @@ const CuponInput = ({ subtotal = 0, onApply, onRemove }) => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontWeight: 700, color: '#34d399', fontSize: 15 }}>
+          <span style={{ fontWeight: 700, color: '#4ade80', fontSize: 15 }}>
             −Bs {applied.descuento.toFixed(2)}
           </span>
           <button onClick={remove}

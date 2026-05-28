@@ -307,7 +307,7 @@ export default function DashboardRepartidor() {
         <div style={{ display: 'flex', gap: 10 }}>
           <KPICard icon={Calendar}    label="Hoy"       value={kpis.hoy}    color="#22C55E" D={D} />
           <KPICard icon={TrendingUp}  label="Semana"    value={kpis.semana} color="#4ade80" D={D} />
-          <KPICard icon={CheckCircle} label="Total"     value={kpis.total}  color="#10b981" D={D} />
+          <KPICard icon={CheckCircle} label="Total"     value={kpis.total}  color="#22C55E" D={D} />
         </div>
 
         {/* ── Código de retiro ── */}

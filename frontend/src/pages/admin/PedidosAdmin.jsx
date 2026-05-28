@@ -12,7 +12,7 @@ const estadoColor = {
   pendiente:  { bg: 'rgba(251,191,36,0.15)', border: 'rgba(251,191,36,0.35)', text: '#fbbf24' },
   confirmado: { bg: 'rgba(34,197,94,0.15)',  border: 'rgba(34,197,94,0.35)',  text: '#22C55E' },
   enviado:    { bg: 'rgba(74,222,128,0.15)', border: 'rgba(74,222,128,0.35)', text: '#4ade80' },
-  entregado:  { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.35)', text: '#34d399' },
+  entregado:  { bg: 'rgba(74,222,128,0.15)', border: 'rgba(74,222,128,0.35)', text: '#4ade80' },
   cancelado:  { bg: 'rgba(248,113,113,0.15)',border: 'rgba(248,113,113,0.35)',text: '#f87171' },
 }
 

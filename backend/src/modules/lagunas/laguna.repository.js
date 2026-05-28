@@ -296,6 +296,54 @@ class LagunaRepository {
     );
     return parseFloat(rows[0]?.total || 0);
   }
+
+  // ── SENSORES ───────────────────────────────────────────────────
+  async getSensoresLatest(lagunaId) {
+    const rows = await db.query(
+      `SELECT id, laguna_id, temperatura, ph, turbidez, bomba, nivel, oxigeno, timestamp
+       FROM sensor_readings
+       WHERE laguna_id = $1
+       ORDER BY timestamp DESC
+       LIMIT 1`,
+      [lagunaId]
+    );
+    return rows[0] || null;
+  }
+
+  // bucket: 'raw' | 'hour' | 'day'
+  async getSensoresHistory(lagunaId, { desde, hasta, bucket = 'hour', limit = 500 }) {
+    if (bucket === 'raw') {
+      return db.query(
+        `SELECT timestamp AS ts, temperatura, ph, turbidez, bomba, nivel, oxigeno
+         FROM sensor_readings
+         WHERE laguna_id = $1
+           AND timestamp >= $2
+           AND timestamp <= $3
+         ORDER BY timestamp ASC
+         LIMIT $4`,
+        [lagunaId, desde, hasta, limit]
+      );
+    }
+    const trunc = bucket === 'day' ? 'day' : 'hour';
+    return db.query(
+      `SELECT DATE_TRUNC($4, timestamp) AS ts,
+              AVG(temperatura)::numeric(5,2) AS temperatura,
+              AVG(ph)::numeric(4,2)          AS ph,
+              AVG(turbidez)::numeric(6,2)    AS turbidez,
+              AVG(nivel)::numeric(6,2)       AS nivel,
+              AVG(oxigeno)::numeric(5,2)     AS oxigeno,
+              BOOL_OR(bomba)                 AS bomba,
+              COUNT(*)::int                  AS muestras
+       FROM sensor_readings
+       WHERE laguna_id = $1
+         AND timestamp >= $2
+         AND timestamp <= $3
+       GROUP BY DATE_TRUNC($4, timestamp)
+       ORDER BY ts ASC
+       LIMIT $5`,
+      [lagunaId, desde, hasta, trunc, limit]
+    );
+  }
 }
 
 module.exports = new LagunaRepository();

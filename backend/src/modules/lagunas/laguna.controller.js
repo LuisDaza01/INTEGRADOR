@@ -104,6 +104,21 @@ const registrarCompraAlimento = asyncHandler(async (req, res) => {
   createdResponse(res, result, 'Compra de alimento registrada');
 });
 
+// GET /api/lagunas/:id/sensores/latest
+const getSensoresLatest = asyncHandler(async (req, res) => {
+  const latest = await lagunaService.getSensoresLatest(req.params.id, req.user.id);
+  successResponse(res, latest);
+});
+
+// GET /api/lagunas/:id/sensores/history?desde=&hasta=&bucket=&limit=
+const getSensoresHistory = asyncHandler(async (req, res) => {
+  const { desde, hasta, bucket, limit } = req.query;
+  const data = await lagunaService.getSensoresHistory(req.params.id, req.user.id, {
+    desde, hasta, bucket, limit,
+  });
+  successResponse(res, data);
+});
+
 module.exports = {
   getMisLagunas,
   getLagunaDetalle,
@@ -121,4 +136,6 @@ module.exports = {
   getStockAlimento,
   registrarCompraAlimento,
   vincularDispositivo,
+  getSensoresLatest,
+  getSensoresHistory,
 };

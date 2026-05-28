@@ -404,6 +404,50 @@ class LagunaService {
   async getTiposAlimento() {
     return TIPOS_ALIMENTO;
   }
+
+  // ── SENSORES (lecturas IoT persistidas) ────────────────────────
+
+  async getSensoresLatest(lagunaId, productorId) {
+    const ok = await lagunaRepository.verificarPropietario(lagunaId, productorId);
+    if (!ok) throw new ForbiddenError('No tienes acceso a esta laguna');
+    return lagunaRepository.getSensoresLatest(lagunaId);
+  }
+
+  async getSensoresHistory(lagunaId, productorId, { desde, hasta, bucket, limit } = {}) {
+    const ok = await lagunaRepository.verificarPropietario(lagunaId, productorId);
+    if (!ok) throw new ForbiddenError('No tienes acceso a esta laguna');
+
+    // Defaults: últimas 24 h, bucket horario
+    const ahora  = new Date();
+    const hastaD = hasta ? new Date(hasta) : ahora;
+    const desdeD = desde ? new Date(desde) : new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+
+    if (isNaN(desdeD.getTime()) || isNaN(hastaD.getTime())) {
+      throw new ValidationError('Parámetros "desde" / "hasta" deben ser fechas ISO válidas');
+    }
+    if (desdeD >= hastaD) {
+      throw new ValidationError('"desde" debe ser anterior a "hasta"');
+    }
+
+    const bucketNorm = ['raw', 'hour', 'day'].includes(bucket) ? bucket : 'hour';
+    const limitNorm  = Math.max(1, Math.min(parseInt(limit, 10) || 500, 2000));
+
+    const points = await lagunaRepository.getSensoresHistory(lagunaId, {
+      desde: desdeD,
+      hasta: hastaD,
+      bucket: bucketNorm,
+      limit: limitNorm,
+    });
+
+    return {
+      laguna_id: parseInt(lagunaId, 10),
+      desde: desdeD.toISOString(),
+      hasta: hastaD.toISOString(),
+      bucket: bucketNorm,
+      total: points.length,
+      points,
+    };
+  }
 }
 
 module.exports = new LagunaService();

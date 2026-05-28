@@ -36,4 +36,8 @@ router.get ('/:id/movimientos', ctrl.getMovimientos);
 // ── Historial de siembras ──────────────────────────
 router.get ('/:id/historial',   ctrl.getHistorial);
 
+// ── Sensores (lecturas IoT persistidas) ────────────
+router.get ('/:id/sensores/latest',  ctrl.getSensoresLatest);
+router.get ('/:id/sensores/history', ctrl.getSensoresHistory);
+
 module.exports = router;

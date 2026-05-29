@@ -167,9 +167,9 @@ const WelcomeHome = () => {
       {/* ─────────────── HEADER ─────────────── */}
       <motion.header className="fixed top-0 left-0 right-0 z-50 px-4 pt-4"
         initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
-        <div className="max-w-7xl mx-auto rounded-2xl backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+        <div className="rounded-2xl backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
           style={{ background: "rgba(8,20,14,0.55)", border: `1px solid ${GREEN}20` }}>
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="px-6 py-4 flex justify-between items-center">
             <AnimatedLogo />
             <nav className="hidden lg:flex items-center space-x-6">
               {menuItems.map((item, i) => (

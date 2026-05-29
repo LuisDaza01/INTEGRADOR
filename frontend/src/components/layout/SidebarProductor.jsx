@@ -226,27 +226,7 @@ const SidebarProductor = () => {
           )}
         </div>
 
-        {(expanded || isMobile) && (
-          <motion.button variants={contentVariants} onClick={handleLogout}
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-xl transition-all"
-            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.2)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(239,68,68,0.2)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.boxShadow = 'none' }}>
-            <LogOut size={15} />
-            Cerrar Sesión
-          </motion.button>
-        )}
-
-        {!expanded && !isMobile && (
-          <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-            onClick={handleLogout} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
-            className="mt-3 w-full flex items-center justify-center p-2 rounded-xl transition-all"
-            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
-            title="Cerrar sesión">
-            <LogOut size={15} />
-          </motion.button>
-        )}
+        {/* Logout: ahora se hace desde el dropdown del avatar en el header */}
       </div>
     </div>
   )
@@ -427,22 +407,7 @@ const SidebarProductor = () => {
                   })}
                 </div>
 
-                <div style={{ padding: '4px 16px 8px' }}>
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => { setMoreOpen(false); handleLogout() }}
-                    style={{
-                      width: '100%', display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '14px 16px', borderRadius: 14,
-                      border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.08)', cursor: 'pointer',
-                    }}
-                  >
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(239,68,68,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <LogOut size={18} color="#f87171" />
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#f87171' }}>Cerrar Sesión</span>
-                  </motion.button>
-                </div>
+                {/* Logout: ahora se hace desde el dropdown del avatar en el header */}
               </motion.div>
             </>
           )}

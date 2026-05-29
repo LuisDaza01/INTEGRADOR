@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import axiosInstance from '../../api/config/axios'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
+import UserMenu from '../../components/layout/UserMenu'
 import {
   Bike, MapPin, Package, CheckCircle, Clock, RefreshCw, Key, LogOut,
   History, AlertCircle, TrendingUp, Calendar, Navigation, Phone, X,
@@ -274,20 +275,20 @@ export default function DashboardRepartidor() {
       }}>
         <div style={{ position: 'absolute', inset: '0 0 auto 0', height: 1, background: 'linear-gradient(90deg, transparent, #22C55E, transparent)' }} />
 
+        {/* Identidad del panel */}
         <div style={{
-          width: 44, height: 44, borderRadius: '50%',
+          width: 40, height: 40, borderRadius: 10,
           background: 'linear-gradient(135deg, #16a34a, #22C55E)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 700, color: '#fff', fontSize: 15, letterSpacing: 0.5,
-          boxShadow: '0 0 16px rgba(34,197,94,0.45)',
-        }}>{iniciales}</div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontWeight: 700, color: D.text, fontSize: 15 }}>{user?.nombre || 'Repartidor'}</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-            <Bike size={11} color={D.muted} />
-            <p style={{ margin: 0, fontSize: 11, color: D.muted }}>Panel de entregas</p>
-          </div>
+          boxShadow: '0 0 16px rgba(34,197,94,0.35)',
+        }}>
+          <Bike size={18} color="#fff" />
         </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ margin: 0, fontWeight: 700, color: D.text, fontSize: 15 }}>Panel de Entregas</p>
+          <p style={{ margin: 0, fontSize: 11, color: D.muted, marginTop: 2 }}>Repartidor — NaturaPiscis</p>
+        </div>
+
         {pedidosActivos.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(34,197,94,0.12)', padding: '5px 12px', borderRadius: 20, border: '1px solid rgba(34,197,94,0.3)' }}>
             <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.4, repeat: Infinity }}
@@ -295,10 +296,9 @@ export default function DashboardRepartidor() {
             <span style={{ fontSize: 11, color: '#4ade80', fontWeight: 700 }}>{pedidosActivos.length} en camino</span>
           </div>
         )}
-        <button onClick={() => setLogoutModalOpen(true)} title="Cerrar sesión"
-          style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', cursor: 'pointer', color: '#f87171', padding: 9, borderRadius: 10, display: 'flex', alignItems: 'center' }}>
-          <LogOut size={18} />
-        </button>
+
+        {/* User menu (avatar + cerrar sesión) */}
+        <UserMenu role="repartidor" showLabel={false} />
       </header>
 
       <main style={{ flex: 1, maxWidth: 720, width: '100%', margin: '0 auto', padding: '20px 16px 60px', display: 'flex', flexDirection: 'column', gap: 16, position: 'relative', zIndex: 1 }}>
@@ -490,18 +490,7 @@ export default function DashboardRepartidor() {
         )}
       </main>
 
-      {/* Modales y toasts */}
-      <ConfirmModal
-        open={logoutModalOpen}
-        title="Cerrar sesión"
-        message="¿Seguro que quieres salir? Tendrás que iniciar sesión de nuevo."
-        confirmText="Cerrar sesión"
-        cancelText="Cancelar"
-        danger
-        onCancel={() => setLogoutModalOpen(false)}
-        onConfirm={() => { setLogoutModalOpen(false); logout() }}
-        D={D}
-      />
+      {/* Modales y toasts (logout ahora lo maneja UserMenu) */}
       <ConfirmModal
         open={!!entregaModal}
         title="Confirmar entrega"

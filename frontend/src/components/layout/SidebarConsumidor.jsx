@@ -209,30 +209,7 @@ const SidebarConsumidor = () => {
         </motion.div>
       )}
 
-      {/* Logout */}
-      <div style={{ padding: '10px', borderTop: `1px solid ${D.border}`, flexShrink: 0 }}>
-        <motion.button
-          whileHover={{ x: isCollapsed && !isMobile ? 0 : 3 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => setShowLogoutModal(true)}
-          style={{
-            width: '100%', display: 'flex', alignItems: 'center',
-            gap: isCollapsed && !isMobile ? 0 : 10,
-            justifyContent: isCollapsed && !isMobile ? 'center' : 'flex-start',
-            padding: '10px 14px',
-            borderRadius: 10, border: 'none', cursor: 'pointer',
-            background: 'transparent', color: D.red,
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(248,113,113,0.08)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-        >
-          <LogOut size={20} style={{ flexShrink: 0 }} />
-          {(!isCollapsed || isMobile) && (
-            <span style={{ fontWeight: 600, fontSize: 14 }}>Cerrar Sesión</span>
-          )}
-        </motion.button>
-      </div>
+      {/* Logout: ahora se hace desde el dropdown del avatar en el header */}
     </div>
   )
 

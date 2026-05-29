@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Outlet, useLocation } from "react-router-dom"
 import { Bell, Fish, Shield, Activity } from "lucide-react"
 import SidebarAdmin from "../../components/layout/SidebarAdmin"
+import UserMenu from "../../components/layout/UserMenu"
 import { useAuth } from "../../contexts/AuthContext"
 import { useTheme } from "../../contexts/ThemeContext"
 
@@ -139,28 +140,8 @@ const DashboardAdmin = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Avatar */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div className="hidden md:block" style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: D.text, margin: 0 }}>{nombreCorto}</p>
-                  <p style={{ fontSize: 11, color: D.muted, margin: 0 }}>Administrador</p>
-                </div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    width: 38, height: 38, borderRadius: '50%',
-                    background: 'linear-gradient(135deg,#16a34a,#22C55E)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14, fontWeight: 700, color: '#fff',
-                    boxShadow: '0 0 12px rgba(34,197,94,0.3)',
-                    border: `2px solid rgba(34,197,94,0.3)`,
-                    flexShrink: 0,
-                  }}
-                >
-                  {iniciales}
-                </motion.div>
-              </div>
+              {/* Avatar + Dropdown usuario */}
+              <UserMenu role="admin" showLabel={true} />
             </div>
           </div>
 
@@ -176,6 +157,7 @@ const DashboardAdmin = () => {
           <Outlet />
         </main>
       </div>
+
     </div>
   )
 }

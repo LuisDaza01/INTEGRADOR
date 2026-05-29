@@ -31,6 +31,7 @@ import {
 
 // Components
 import SidebarProductor from '../../components/layout/SidebarProductor';
+import UserMenu from '../../components/layout/UserMenu';
 import SensorCard from '../../components/features/SensorCard';
 import GlitchText from '../../components/effects/GlitchText';
 
@@ -500,6 +501,9 @@ const DashboardProductor = () => {
                 {systemStatus.text}
               </span>
             </div>
+
+            {/* User menu (avatar + cerrar sesión) */}
+            <UserMenu role="productor" showLabel={!isMobile} />
           </div>
         </div>
 

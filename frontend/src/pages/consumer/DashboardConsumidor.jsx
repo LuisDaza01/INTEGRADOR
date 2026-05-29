@@ -6,6 +6,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { io } from "socket.io-client"
 import { useQueryClient } from "@tanstack/react-query"
 import SidebarConsumidor from "../../components/layout/SidebarConsumidor"
+import UserMenu from "../../components/layout/UserMenu"
 import { useAuth } from "../../contexts/AuthContext"
 import { useTheme } from "../../contexts/ThemeContext"
 import { useNotificaciones, useMarcarLeidaMutation, useMarcarTodasLeidasMutation } from "../../hooks/queries"
@@ -262,32 +263,8 @@ const DashboardConsumidor = () => {
               </AnimatePresence>
             </div>
 
-            {/* User */}
-            <div
-              onClick={() => navigate('/dashboard-consumidor/perfil')}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-              title="Ir a Mi Perfil"
-            >
-              <div className="hidden md:block" style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: D.text }}>{nombreCorto}</p>
-                <p style={{ fontSize: 11, color: D.muted }}>Consumidor</p>
-              </div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  width: 38, height: 38, borderRadius: '50%',
-                  background: 'linear-gradient(135deg,#16a34a,#22C55E)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, fontWeight: 700, color: '#fff',
-                  boxShadow: '0 0 12px rgba(34,197,94,0.3)',
-                  border: `2px solid rgba(34,197,94,0.3)`,
-                  flexShrink: 0,
-                }}
-              >
-                {iniciales}
-              </motion.div>
-            </div>
+            {/* User menu (avatar + perfil + cerrar sesión) */}
+            <UserMenu role="consumidor" showLabel={true} />
           </div>
         </div>
 

@@ -75,7 +75,7 @@ const SidebarAdmin = () => {
   }
 
   const SidebarContent = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Mobile header */}
       {isMobile && (
         <div style={{
@@ -372,9 +372,10 @@ const SidebarAdmin = () => {
           backdropFilter: 'blur(24px) saturate(180%)',
           WebkitBackdropFilter: 'blur(24px) saturate(180%)',
           borderRight: `1px solid ${D.border}`,
-          height: '100%', minHeight: '100vh',
+          // Sidebar fijo al viewport — no scrollea con la página, footer queda pegado abajo
+          height: '100vh', maxHeight: '100vh',
           display: 'flex', flexDirection: 'column',
-          position: 'relative', flexShrink: 0,
+          position: 'sticky', top: 0, alignSelf: 'flex-start', flexShrink: 0,
           boxShadow: '2px 0 32px rgba(0,0,0,0.2)',
         }}
       >

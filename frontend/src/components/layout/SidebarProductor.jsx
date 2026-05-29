@@ -125,7 +125,7 @@ const SidebarProductor = () => {
   }
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full min-h-screen" style={{
+    <div className="flex flex-col h-full" style={{
       background: D.sidebarBg,
       backdropFilter: 'blur(24px) saturate(180%)',
       WebkitBackdropFilter: 'blur(24px) saturate(180%)',
@@ -455,8 +455,11 @@ const SidebarProductor = () => {
 
   return (
     <motion.aside initial={false} animate={expanded ? "expanded" : "collapsed"} variants={sidebarVariants}
-      className="relative min-h-screen h-full flex flex-col flex-shrink-0"
+      className="flex flex-col flex-shrink-0"
       style={{
+        // Sidebar fijo al viewport — footer queda pegado abajo aunque la página scrollee
+        position: 'sticky', top: 0, alignSelf: 'flex-start',
+        height: '100vh', maxHeight: '100vh',
         width: expanded ? (screenSize === 'large' ? '280px' : '260px') : '72px',
         minWidth: expanded ? (screenSize === 'large' ? '280px' : '260px') : '72px',
         maxWidth: expanded ? (screenSize === 'large' ? '280px' : '260px') : '72px',

@@ -684,7 +684,7 @@ const PerfilProductorConsumidor = () => {
           style={{ background: `linear-gradient(to bottom, transparent, ${D.bg})` }} />
 
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 pt-5 pb-10">
+        <div className="relative px-4 pt-5 pb-10">
           <div className="flex items-center justify-between mb-5">
             <button onClick={goBack}
               className="inline-flex items-center gap-1.5 text-sm transition-all px-3 py-1.5 rounded-lg"
@@ -823,7 +823,7 @@ const PerfilProductorConsumidor = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* ── Columna principal ──────────────────────────── */}

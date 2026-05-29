@@ -78,7 +78,7 @@ const AnalizarFrescura = () => {
     : resultado?.fresco === false ? 'No está fresco' : 'No determinado'
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: 860, margin: '0 auto' }}>
+    <div style={{ padding: '28px 24px' }}>
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, color: D.text, margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 10 }}>

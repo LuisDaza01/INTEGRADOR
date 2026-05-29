@@ -750,7 +750,7 @@ const Carrito = () => {
         }} />
       </div>
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: 1200, margin: '0 auto', padding: '32px 24px 0' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '32px 24px 0' }}>
         <StepIndicator step={step} />
 
         <AnimatePresence mode="wait">

@@ -355,7 +355,7 @@ const TrackingPedidoWeb = () => {
 
   return (
     <div style={{ padding: 24, paddingBottom: 32, background: D.bg, minHeight: '100vh' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 960, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

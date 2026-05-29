@@ -472,49 +472,59 @@ const SidebarItem = ({ icon: Icon, text, isActive, onClick, badge, glowColor, ex
     <motion.button onClick={onClick}
       whileHover={{ x: expanded ? 3 : 0 }}
       whileTap={{ scale: 0.97 }}
-      className={`relative w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${!expanded ? 'justify-center' : ''}`}
-      style={isActive ? {
-        background: `linear-gradient(135deg, ${glowColor}22, ${glowColor}0a)`,
-        border: `1px solid ${glowColor}40`,
-        boxShadow: `0 0 24px ${glowColor}20, inset 0 0 24px ${glowColor}08, 0 2px 8px rgba(0,0,0,0.3)`,
-        color: glowColor,
-      } : {
-        color: D.sub,
-        border: '1px solid transparent',
+      title={!expanded && !isMobile ? text : ''}
+      style={{
+        width: '100%', display: 'flex', alignItems: 'center',
+        gap: expanded ? 12 : 0,
+        justifyContent: expanded ? 'flex-start' : 'center',
+        padding: expanded ? '11px 14px' : '12px 0',
+        borderRadius: 12, border: 'none', cursor: 'pointer',
+        background: isActive ? 'rgba(34,197,94,0.1)' : 'transparent',
+        borderLeft: isActive ? `3px solid ${glowColor}` : '3px solid transparent',
+        boxShadow: isActive ? 'inset 0 0 12px rgba(34,197,94,0.06)' : 'none',
+        transition: 'all 0.15s',
+        position: 'relative',
       }}
-      onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = D.inputBg; e.currentTarget.style.color = D.text; e.currentTarget.style.border = `1px solid ${D.border}` } }}
-      onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = D.sub; e.currentTarget.style.border = '1px solid transparent' } }}>
+      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = D.inputBg || 'rgba(255,255,255,0.04)' }}
+      onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}>
 
-      {/* Active left glow bar */}
-      {isActive && (
-        <motion.div layoutId="activeBar"
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-          style={{ background: glowColor, boxShadow: `0 0 8px ${glowColor}` }} />
+      <Icon size={21} color={isActive ? glowColor : D.muted} style={{ flexShrink: 0 }} />
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.18 }}
+            style={{
+              fontWeight: isActive ? 700 : 500, fontSize: 14,
+              color: isActive ? glowColor : D.muted,
+              overflow: 'hidden', whiteSpace: 'nowrap',
+            }}>
+            {text}
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      {/* Badge cuando expandido — al lado del texto */}
+      {expanded && badge && (
+        <span style={{
+          marginLeft: 'auto', background: '#ef4444', color: '#fff',
+          fontSize: 10, fontWeight: 700, borderRadius: '50%',
+          width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          {badge}
+        </span>
       )}
 
-      {/* Cuando colapsado: SOLO icono. Cuando expandido: SOLO texto. */}
-      {!expanded && (
-        <Icon size={18} className="shrink-0 transition-colors"
-          style={{ color: isActive ? glowColor : 'inherit', filter: isActive ? `drop-shadow(0 0 4px ${glowColor})` : 'none' }} />
-      )}
-
+      {/* Badge cuando colapsado — esquina superior derecha del icono */}
       {!expanded && !isMobile && badge && (
         <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full flex items-center justify-center text-white font-bold"
           style={{ fontSize: 9, background: '#ef4444', boxShadow: '0 0 6px rgba(239,68,68,0.6)' }}>
           {badge}
         </span>
-      )}
-
-      {expanded && (
-        <motion.div variants={contentVariants} className="flex-1 min-w-0 flex items-center justify-between">
-          <span className="truncate font-semibold">{text}</span>
-          {badge && (
-            <span className="ml-2 px-1.5 py-0.5 rounded-full text-white font-bold flex-shrink-0"
-              style={{ fontSize: 9, background: isActive ? glowColor : '#ef4444', boxShadow: isActive ? `0 0 8px ${glowColor}60` : '0 0 6px rgba(239,68,68,0.5)' }}>
-              {badge}
-            </span>
-          )}
-        </motion.div>
       )}
     </motion.button>
 

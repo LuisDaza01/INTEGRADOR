@@ -45,7 +45,7 @@ export default function MisReservas() {
   })
 
   return (
-    <div style={{ padding: 24, maxWidth: 1100, margin: "0 auto" }}>
+    <div style={{ padding: 24 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, color: D.text, display: "flex", alignItems: "center", gap: 10 }}>

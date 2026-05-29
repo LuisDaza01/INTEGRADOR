@@ -198,7 +198,7 @@ export default function Calendario({ embedded = false }) {
   const hoy = ymd(new Date())
   const wrapperStyle = embedded
     ? { display: 'flex', flexDirection: 'column', gap: 18 }
-    : { padding: 24, maxWidth: 1100, margin: "0 auto", display: 'flex', flexDirection: 'column', gap: 20 }
+    : { padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }
 
   return (
     <div style={wrapperStyle}>

@@ -447,7 +447,7 @@ const Pedidos = () => {
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: D.bg }}>
-      <div style={{ padding: 24, maxWidth: 1100, margin: '0 auto' }}>
+      <div style={{ padding: 24 }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>

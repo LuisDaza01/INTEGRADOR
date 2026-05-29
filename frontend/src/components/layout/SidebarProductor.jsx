@@ -196,13 +196,15 @@ const SidebarProductor = () => {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto flex flex-col">
-        <div className="space-y-7">
-          <MenuSection title="Principal" items={mainMenu} currentTab={currentTab} setCurrentTab={handleItemClick}
-            expanded={expanded || isMobile} contentVariants={contentVariants} isMobile={isMobile} />
-          <MenuSection title="Análisis" items={analyticsMenu} currentTab={currentTab} setCurrentTab={handleItemClick}
-            expanded={expanded || isMobile} contentVariants={contentVariants} isMobile={isMobile} />
-          <MenuSection title="Sistema" items={configMenu} currentTab={currentTab} setCurrentTab={handleItemClick}
-            expanded={expanded || isMobile} contentVariants={contentVariants} isMobile={isMobile} />
+        <div className="space-y-1">
+          {[...mainMenu, ...analyticsMenu, ...configMenu].map((item) => (
+            <SidebarItem key={item.id} {...item}
+              isActive={currentTab === item.id}
+              onClick={() => handleItemClick(item.id)}
+              expanded={expanded || isMobile}
+              contentVariants={contentVariants}
+              isMobile={isMobile} />
+          ))}
         </div>
         <div className="flex-1 min-h-0" />
       </nav>
@@ -470,7 +472,7 @@ const SidebarItem = ({ icon: Icon, text, isActive, onClick, badge, glowColor, ex
     <motion.button onClick={onClick}
       whileHover={{ x: expanded ? 3 : 0 }}
       whileTap={{ scale: 0.97 }}
-      className="relative w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200"
+      className={`relative w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${!expanded ? 'justify-center' : ''}`}
       style={isActive ? {
         background: `linear-gradient(135deg, ${glowColor}22, ${glowColor}0a)`,
         border: `1px solid ${glowColor}40`,
@@ -490,8 +492,11 @@ const SidebarItem = ({ icon: Icon, text, isActive, onClick, badge, glowColor, ex
           style={{ background: glowColor, boxShadow: `0 0 8px ${glowColor}` }} />
       )}
 
-      <Icon size={18} className={`shrink-0 transition-colors ${expanded ? "mr-3" : ""}`}
-        style={{ color: isActive ? glowColor : 'inherit', filter: isActive ? `drop-shadow(0 0 4px ${glowColor})` : 'none' }} />
+      {/* Cuando colapsado: SOLO icono. Cuando expandido: SOLO texto. */}
+      {!expanded && (
+        <Icon size={18} className="shrink-0 transition-colors"
+          style={{ color: isActive ? glowColor : 'inherit', filter: isActive ? `drop-shadow(0 0 4px ${glowColor})` : 'none' }} />
+      )}
 
       {!expanded && !isMobile && badge && (
         <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full flex items-center justify-center text-white font-bold"

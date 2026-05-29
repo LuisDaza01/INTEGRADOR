@@ -3,6 +3,7 @@
 // Se usa en los 4 dashboards (admin, productor, consumidor, repartidor) para mantener
 // el mismo patrón en todos lados.
 import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { LogOut, AlertCircle, Shield, Store, User as UserIcon, Truck } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
@@ -113,7 +114,7 @@ const UserMenu = ({ role = "consumidor", showLabel = true }) => {
               {/* Acciones */}
               <div style={{ padding: 6 }}>
                 <button
-                  onClick={() => setConfirmOpen(true)}
+                  onClick={() => { setOpen(false); setConfirmOpen(true) }}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                     padding: '10px 12px', borderRadius: 10,
@@ -132,58 +133,62 @@ const UserMenu = ({ role = "consumidor", showLabel = true }) => {
         </AnimatePresence>
       </div>
 
-      {/* Modal confirmación */}
-      <AnimatePresence>
-        {confirmOpen && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => setConfirmOpen(false)}
-            style={{
-              position: 'fixed', inset: 0, zIndex: 100,
-              background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
-            }}>
+      {/* Modal confirmación — portal a document.body para escapar de
+          ancestros con transform/filter que rompen position:fixed */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {confirmOpen && (
             <motion.div
-              initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setConfirmOpen(false)}
               style={{
-                background: D.surface || D.card, border: `1px solid ${D.border}`,
-                borderRadius: 18, padding: 28,
-                maxWidth: 380, width: '100%',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.4)', textAlign: 'center',
+                position: 'fixed', inset: 0, zIndex: 1000,
+                background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
               }}>
-              <div style={{
-                margin: '0 auto 14px', width: 52, height: 52, borderRadius: '50%',
-                background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <AlertCircle size={26} color="#ef4444" />
-              </div>
-              <h3 style={{ fontWeight: 700, color: D.text, fontSize: 18, margin: '0 0 8px' }}>¿Cerrar Sesión?</h3>
-              <p style={{ color: D.muted, fontSize: 14, margin: '0 0 20px' }}>
-                Vas a salir de tu cuenta. ¿Estás seguro?
-              </p>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button onClick={() => setConfirmOpen(false)} style={{
-                  flex: 1, padding: '12px 0', borderRadius: 10,
-                  border: `1px solid ${D.border}`, background: D.card || D.surface,
-                  color: D.text, fontWeight: 600, fontSize: 14, cursor: 'pointer',
+              <motion.div
+                initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  background: D.surface || D.card, border: `1px solid ${D.border}`,
+                  borderRadius: 18, padding: 28,
+                  maxWidth: 380, width: '100%',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.4)', textAlign: 'center',
                 }}>
-                  Cancelar
-                </button>
-                <button onClick={handleLogout} style={{
-                  flex: 1, padding: '12px 0', borderRadius: 10, border: 'none',
-                  background: 'linear-gradient(135deg,#ef4444,#dc2626)',
-                  color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
-                  boxShadow: '0 0 14px rgba(239,68,68,0.3)',
+                <div style={{
+                  margin: '0 auto 14px', width: 52, height: 52, borderRadius: '50%',
+                  background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  Sí, cerrar
-                </button>
-              </div>
+                  <AlertCircle size={26} color="#ef4444" />
+                </div>
+                <h3 style={{ fontWeight: 700, color: D.text, fontSize: 18, margin: '0 0 8px' }}>¿Cerrar Sesión?</h3>
+                <p style={{ color: D.muted, fontSize: 14, margin: '0 0 20px' }}>
+                  Vas a salir de tu cuenta. ¿Estás seguro?
+                </p>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button onClick={() => setConfirmOpen(false)} style={{
+                    flex: 1, padding: '12px 0', borderRadius: 10,
+                    border: `1px solid ${D.border}`, background: D.card || D.surface,
+                    color: D.text, fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  }}>
+                    Cancelar
+                  </button>
+                  <button onClick={handleLogout} style={{
+                    flex: 1, padding: '12px 0', borderRadius: 10, border: 'none',
+                    background: 'linear-gradient(135deg,#ef4444,#dc2626)',
+                    color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                    boxShadow: '0 0 14px rgba(239,68,68,0.3)',
+                  }}>
+                    Sí, cerrar
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }
